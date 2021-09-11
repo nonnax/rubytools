@@ -2,7 +2,7 @@
 # Id$ nonnax 2021-08-22 20:38:32 +0800
 
 class String
-  # colorization
+  # color helper for drawing candlestick patterns on a Unix/Linux terminal
   def set_color(color_code)
     "\e[#{color_code}m#{self}\e[0m"
   end
@@ -23,6 +23,10 @@ class String
 end
 
 module AsciiPlot
+  #
+  # Unix-compatible Terminal OHLC data plotter
+  # uses ANSI box drawing chars 
+  #
   extend self
 
   DENSITY_SIGNS = [" ", "░", "▒", "▓", "█"].freeze
@@ -30,16 +34,19 @@ module AsciiPlot
   # BOX_HORIZ = '-'.freeze
   BOX_HORIZ_VERT = '┼'.freeze
 
-  BAR_DOMAIN_LIMIT = 50
+  BAR_XLIMIT = 50
   @x_axis_limit = nil
 
   class << self
     attr_accessor :x_axis_limit
   end
   
-  def candlestick(name, open, high, low, close, min, max) 
-    #plot an olhc type dataset row
-    @x_axis_limit ||= BAR_DOMAIN_LIMIT
+  def candlestick(name, open, high, low, close, min=0, max=100) 
+    # 
+    # plot an OHLC row as candlestick pattern 
+    # row format == [:row_1, o, h, l, c, min, max]
+    #
+    @x_axis_limit ||= BAR_XLIMIT
     bar = ' '*@x_axis_limit
     
     up_down=(close<=>open)
@@ -62,10 +69,10 @@ module AsciiPlot
   end
   
   def plot_df(data)    
-    ''' 
-    plots an OHLC dataframe
-    dataframe=[[:row_1, o, h, l, c], ...[:row_n, o, h, l, c]]
-    '''
+    # 
+    # plots an OHLC dataframe
+    # dataframe=[[:row_1, o, h, l, c], ...[:row_n, o, h, l, c]]
+    #
     min, max=data.map{|r| r.values_at(1..-1)}.flatten.minmax
     data.each do |row|
       row_h=%i[label open low high close].zip(row).to_h
@@ -107,9 +114,7 @@ data=[]
   data<<[:next20, o, h, l, c]
 }
 
-# data=[]
 20.times{
-  # min, max = 120, 150
   min, max = 10, 70
   @min, @max=min, max
   o, l, h, c  = rand(min..max), max+rand(5), min+rand(10), rand(min..max)
@@ -118,21 +123,15 @@ data=[]
   data<<[Time.now.to_s, o, h, l, c]
 }
 
-# min, max=data.flatten.minmax
-
-# data.each do |row|
-  # puts [min, AsciiPlot.candlestick(*row, min, max), max].join(' ')
-# end
-
 AsciiPlot.plot_df(data){|bar, r| 
   puts [bar, r].join(' ')
 }
 
 AsciiPlot.x_axis_limit=50
+
+# array plot
 data.plot_df{|b, r| 
-
   puts [b, r].join("\t")
-
 }
 
 end
