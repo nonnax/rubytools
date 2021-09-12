@@ -33,6 +33,7 @@ module AsciiPlot
   BOX_HORIZ = '─'.freeze
   # BOX_HORIZ = '-'.freeze
   BOX_HORIZ_VERT = '┼'.freeze
+  # BOX_HORIZ_VERT = '|'.freeze
 
   BAR_XLIMIT = 50
   @x_axis_limit = nil
@@ -61,6 +62,7 @@ module AsciiPlot
     len=(stop-start)
     case len
       when 0
+        start=[start-1, 0].max
         bar[start]=BOX_HORIZ_VERT
       else  
         bar[start...(start+len)]=DENSITY_SIGNS[-1]*len
@@ -75,7 +77,7 @@ module AsciiPlot
     #
     min, max=data.map{|r| r.values_at(1..-1)}.flatten.minmax
     data.each do |row|
-      row_h=%i[label open low high close].zip(row).to_h
+      row_h=%i[title open high low close].zip(row).to_h
       yield *[AsciiPlot.candlestick(*row, min, max), row_h]
     end
   end
