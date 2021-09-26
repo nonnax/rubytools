@@ -12,28 +12,6 @@ class String
   end
 end
 
-# class String
-  # def to_date(format='%m-%d-%Y')
-    # Date.strptime(self, format)
-  # end
-# end
-# 
-# class Date
-  # def to_words
-    # days=(Date.today-self).to_i
-    # case
-    	# when days.zero?
-    		# "today"
-    	# when days == -1
-    		# "tomorrow"
-    	# when days < -1
-    		# "in #{days.abs} day(s)"
-    	# else
-    		# "#{days} day(s) ago"
-    # end
-  # end
-# end
-
 class NilClass
   # +nil+ is blank:
   #
