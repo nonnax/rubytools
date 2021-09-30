@@ -30,7 +30,7 @@ def data.build_df(target_row)
       # to_f ensures zeros/headers are rejected
       [label, col.to_f]
     end
-    .reject { |e| e.last<1 }
+    .reject { |e| e.last<0 }
 
   # init opening
   min, max = tmp.map(&:last).minmax
@@ -55,7 +55,7 @@ end
 
 dataframe = data.build_df(target_row)
 
-XLIMIT = 52
+XLIMIT = 55
 AsciiPlot.x_axis_limit = XLIMIT
 
 if dataframe.size.positive?
@@ -70,5 +70,5 @@ if dataframe.size.positive?
     box=box.gsub(/\-/,'|')
 	df<<title.to_s.rjust(15)[0..15]+box.uncolor	+ suff
   end
-  puts df.last(150).to_hbars(delimeter: '.')
+  puts df.last(150).to_hbars(delimeter: '  ')
 end
