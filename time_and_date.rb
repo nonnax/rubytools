@@ -144,3 +144,36 @@ end
 # expires - now               # => 864000.0 seconds
 # (expires - now).to_hours    # => 240.0 hours
 
+
+class String
+  # duplicate spec in string_ext.rb
+  def to_msec
+    h, m, s, ms = match(/(\d{2}):(\d{2}):(\d{2}).(\d{2,3})/)&.captures
+    t = ((h.to_i * 60 + m.to_i) * 60 + s.to_i) * 1000 + ms.to_i			# 0-99 ms
+  end
+  alias to_ms to_msec
+end
+
+class Numeric
+  def to_ts
+    s, ms = divmod(1000)
+    m, s = s.divmod(60)
+    h, m = m.divmod(60)
+    format('%02d:%02d:%02d.%03d', h, m, s, ms)
+  end
+  def sec_to_ms
+  	self * 1000
+  end
+end
+
+class Time
+  def to_ms
+    (to_f * 1000.0).to_i
+  end
+  alias to_msec to_ms
+  def to_ts
+    to_ms.to_ts
+  end
+end
+
+
