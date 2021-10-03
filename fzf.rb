@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+require 'json'
 
 module Enumerable
-  def fzf
-    IO.popen('fzf -m', 'w+') do |io|
+  def fzf(cmd: 'fzf -m')
+    IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a.join("\n")
       io
@@ -11,26 +12,33 @@ module Enumerable
     end
   end
 
-  def fzf_with_index
-    IO.popen('fzf -m', 'w+') do |io|
+  def fzf_with_index(cmd: 'fzf -m', &block)
+    IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a
           .map
-          .with_index { |e, i| [i, e].join("\t") }
-          .join("\n")
+          .with_index { |e, i| 
+          		e=block.call(e) if block_given? 
+
+          		[i, e.to_json].join("\t") 
+          	}
+          # .join("\n")
       # return integer indices
       io.read
         .split("\n")
         .map { |e| e.split(/\s/, 2) }
-        .map { |i, e| [i.to_i, e] }
+        .map { |i, e| [i.to_i, e]  }
     end
   end
 
-  def fzf_map
-    IO.popen('fzf -m', 'w+') do |io|
+  def fzf_map(cmd: 'fzf -m')
+    IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a
-          .map { |k, v| [k, v].join(' : ') }
+          .map { |k, v| 
+          	[k, v.split("\n").join(' ~ ')]
+          	.join(' : ') 
+          }
       io
         .read
         .split("\n")
