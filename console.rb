@@ -27,9 +27,10 @@ end
 module AnsiScreen
   module_function
 
-  def printxy(x, y, text)
+  def printxy(x, y, text = '')
     print(format("\033[%d;%dH%s", x, y, text))
   end
+  alias gotoxy printxy
 
   def clear
     print "\033[2J"
@@ -50,10 +51,14 @@ module AnsiScreen
   def hide_cursor
     print "\033[?25l"
   end
+
   def show_cursor
     print "\033[?25h"
   end
 
+  def winsize
+    $stdout.winsize
+  end
 end
 
 module Kernel

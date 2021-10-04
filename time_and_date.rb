@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'date'
 require 'chronic'
 
 class String
-	def to_date
-		Chronic.parse(self)
-	end
-	alias to_time to_date
-	def is_date?
-		not Chronic.parse(self).nil?
-	end
-	alias is_time? is_date?
+  def to_date
+    Chronic.parse(self)
+  end
+  alias to_time to_date
+  def is_date?
+    !Chronic.parse(self).nil?
+  end
+  alias is_time? is_date?
 end
 
 class Time
@@ -53,10 +55,10 @@ class Date
 end
 
 module TimeToWords
-  def to_words()
-  	timestamp = self
+  def to_words
+    timestamp = self
     minutes = ((Time.now - timestamp).abs / 60).round
-    return nil if minutes < 0
+    return nil if minutes.negative?
 
     case minutes
     when 0               then 'about a minute ago'
@@ -70,11 +72,10 @@ module TimeToWords
     else
       if minutes.abs < 182 * 1440
         # timestamp.strftime('%d-%b %a %I:%M %p')
-        timestamp.strftime('%a, %Y-%b-%e')
       else
         # timestamp.strftime('%d-%b-%Y %a %I:%M %p')
-        timestamp.strftime('%a, %Y-%b-%e')
       end
+      timestamp.strftime('%a, %Y-%b-%e')
     end
   end
 
@@ -93,10 +94,10 @@ module TimeToWords
 
     return 'today'     if (days >= 0) && (days < 1)
     return 'tomorrow'  if (days >= 1) && (days < 2)
-    return 'yesterday' if (days >= -1) && (days < 0)
+    return 'yesterday' if (days >= -1) && days.negative?
 
-    return "in #{days} days"      if (days.abs < 60) && (days > 0)
-    return "#{days.abs} days ago" if (days.abs < 60) && (days < 0)
+    return "in #{days} days"      if (days.abs < 60) && days.positive?
+    return "#{days.abs} days ago" if (days.abs < 60) && days.negative?
 
     return date.strftime('%a, %Y-%b-%e') if days.abs < 182
 
@@ -110,7 +111,7 @@ class Time
 end
 
 class Date
-	include TimeToWords
+  include TimeToWords
 end
 
 class DateTime
@@ -123,27 +124,26 @@ end
 #
 ## Helper methods for working with time units other than seconds
 # class Numeric
-	# # Convert time intervals to seconds
-	# def milliseconds; self/1000.0; end
-	# def seconds; self; end
-	# def minutes; self*60; end
-	# def hours; self*60*60; end
-	# def days; self*60*60*24; end
-	# def weeks; self*60*60*24*7; end
-# 
-	# # Convert seconds to other intervals
-	# def to_milliseconds; self*1000; end
-	# def to_seconds; self; end
-	# def to_minutes; self/60.0; end
-	# def to_hours; self/(60*60.0); end
-	# def to_days; self/(60*60*24.0); end
-	# def to_weeks; self/(60*60*24*7.0); end
+# # Convert time intervals to seconds
+# def milliseconds; self/1000.0; end
+# def seconds; self; end
+# def minutes; self*60; end
+# def hours; self*60*60; end
+# def days; self*60*60*24; end
+# def weeks; self*60*60*24*7; end
+#
+# # Convert seconds to other intervals
+# def to_milliseconds; self*1000; end
+# def to_seconds; self; end
+# def to_minutes; self/60.0; end
+# def to_hours; self/(60*60.0); end
+# def to_days; self/(60*60*24.0); end
+# def to_weeks; self/(60*60*24*7.0); end
 # end
 
 # expires = now + 10.days     # 10 days from now
 # expires - now               # => 864000.0 seconds
 # (expires - now).to_hours    # => 240.0 hours
-
 
 class String
   # duplicate spec in string_ext.rb
@@ -161,8 +161,9 @@ class Numeric
     h, m = m.divmod(60)
     format('%02d:%02d:%02d.%03d', h, m, s, ms)
   end
+
   def sec_to_ms
-  	self * 1000
+    self * 1000
   end
 end
 
@@ -175,5 +176,3 @@ class Time
     to_ms.to_ts
   end
 end
-
-

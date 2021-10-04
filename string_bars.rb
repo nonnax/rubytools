@@ -14,7 +14,9 @@ class Array
       end
     end
     to_max_width
-    map(&:reverse).transpose.to_table(delimeter: delimeter)
+    map(&:reverse)
+      .transpose
+      .to_table(delimeter: delimeter)
   end
 end
 
