@@ -1,12 +1,35 @@
+# frozen_string_literal: true
+
 class String
-	def last(n)
-		split(//).last(n).join
-	end
-	def scroll(slice: 10, repeat: 15)
-	  (self*repeat).split(//).each_cons(slice).to_a.each{|e| yield e.join }
-	  self
-	end
-	def take_cons(slice: 10, repeat: 15)
-	  (self*repeat).split(//).each_cons(slice)
-	end
+  def wrap(max_width = 20)
+    if size < max_width
+      self
+    else
+      scan(/.{1,#{max_width}}(?: |$)/)
+        .join("\n")
+    end
+  end
+
+  def first(n)
+    slice(0,n)
+  end
+
+  def last(n)
+    slice(n*-1, size)
+  end
+
+  def scroll(slice: 10, repeat: 15)
+    (self * repeat)
+      .split(//)
+      .each_cons(slice)
+      .to_a
+      .each { |e| yield e.join }
+    self
+  end
+
+  def take_cons(slice: 10, repeat: 15)
+    (self * repeat)
+      .split(//)
+      .each_cons(slice)
+  end
 end
