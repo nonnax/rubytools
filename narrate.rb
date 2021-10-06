@@ -7,7 +7,7 @@
 # Id$ nonnax 2021-10-05 14:44:14 +0800
 require 'console'
 
-maxx, maxy = $stdout.winsize
+maxx, maxy = ANSIScreen.winsize
 
 def ARGS
 	# intercepts input params either as arguments or piped str
