@@ -24,7 +24,7 @@ module Keyboard
   end
 end
 
-module AnsiScreen
+module ANSIScreen
   module_function
 
   def printxy(x, y, text = '')
@@ -57,11 +57,14 @@ module AnsiScreen
   end
 
   def winsize
-    $stdout.winsize
+    # $stdout.winsize
+		height=`tput lines`
+		width=`tput cols`
+		[height, width].map(&:to_i)
   end
 end
 
 module Kernel
   include Keyboard
-  include AnsiScreen
+  include ANSIScreen
 end
