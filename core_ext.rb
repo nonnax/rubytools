@@ -1,6 +1,6 @@
 require 'numeric_ext'
+require 'string_ext'
 require 'time_and_date'
-# require 'array_table'
 
 class String
   def wrap(max_width = 20)

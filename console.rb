@@ -36,25 +36,33 @@ module ANSIScreen
     print "\033[2J"
   end
 
-  def save
+  def cursor_save
     print "\033[s"
   end
 
-  def restore
+  def cursor_restore
     print "\033[u"
   end
 
-  def down(n)
+  def cursor_down(n)
     print "\033[#{n}A"
   end
 
-  def hide_cursor
+  def cursor_hide
     print "\033[?25l"
   end
 
-  def show_cursor
+  def cursor_show
     print "\033[?25h"
   end
+
+  def draw
+  	# controls cursor visibilty while putting output on terminal 
+  	cursor_hide
+  	yield
+  ensure
+  	cursor_show
+  end	
 
   def winsize
     # $stdout.winsize

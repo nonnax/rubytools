@@ -8,6 +8,8 @@
 require 'console'
 require 'string_ext'
 
+# maxy=`tput cols`.to_i
+# maxx=`tput lines`.to_i
 maxx, maxy = ANSIScreen.winsize
 
 def ARGS
@@ -39,19 +41,14 @@ para_size=content.paragraphs.each_slice(CHUNK_SIZE).to_a.size
 
 content.paragraphs.each_slice(CHUNK_SIZE).each_with_index do |cont, i|
 	paragraph_chunk=cont.join("\n\n")
-	puts "%d/%d. (%d)." % [i+1, para_size, paragraph_chunk.size]
+	puts "~%d/%d. (%d)." % [i+1, para_size, paragraph_chunk.size]
 	puts
 	cont.each do |para|
 		para.sentences.each do |s|
-			puts s.center(maxy)
+			puts s.lstrip.gsub(/\s{2,}/,' ')
 		end
 		puts
 	end
 	# puts paragraph_chunk
-	p mp3=Dir["*.mp3"].grep( Regexp.new("-%02d" % [i+1]))
-	IO.popen("play '#{mp3.first}' &>/dev/null"){|io| io.read}
-	# IO.popen('espeak --stdin &>/dev/null', 'w') { |io| io.puts paragraph_chunk }
-	# sleep 3
-	puts
+	puts 
 end
-

@@ -33,3 +33,22 @@ class String
       .each_cons(slice)
   end
 end
+
+module TextScanner
+  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze
+	# RE_SENTENCE = Regexp.new "^\s+[a-zA-Z\s]+[.?!]$"
+  def sentences
+    gsub!(/\n/, ' ')
+    keys = %w[“ ” ‘ ’]
+    vals = %w[" " ' ']
+    to_tr = keys.zip(vals).to_h
+    to_tr.each { |k, v| tr!(k, v) }
+
+    scan(RE_SENTENCE).map
+  end
+  def paragraphs
+  	split(/\n{2,}/).map
+  end
+end
+
+String.include(TextScanner)
