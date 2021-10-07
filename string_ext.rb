@@ -35,8 +35,9 @@ class String
 end
 
 module TextScanner
-  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze
-	# RE_SENTENCE = Regexp.new "^\s+[a-zA-Z\s]+[.?!]$"
+  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze 
+  #"
+  
   def sentences
     gsub!(/\n/, ' ')
     keys = %w[“ ” ‘ ’]
