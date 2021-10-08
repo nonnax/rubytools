@@ -19,9 +19,7 @@ class String
   end
 
   def scroll(slice: 10, repeat: 15)
-    (self * repeat)
-      .split(//)
-      .each_cons(slice)
+  	take_cons(slice: slice, repeat: repeat)
       .to_a
       .each { |e| yield e.join }
     self
