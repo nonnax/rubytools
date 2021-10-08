@@ -17,12 +17,11 @@ module Enumerable
       io
         .puts to_a
           .map
-          .with_index { |e, i| 
+          .with_index do |e, i| 
           		e=block.call(e) if block_given? 
 
           		[i, e.to_json].join("\t") 
-          	}
-          # .join("\n")
+          	end
       # return integer indices
       io.read
         .split("\n")
@@ -35,10 +34,10 @@ module Enumerable
     IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a
-          .map { |k, v| 
+          .map do |k, v| 
           	[k, v.split("\n").join(' ~ ')]
           	.join(' : ') 
-          }
+          end
       io
         .read
         .split("\n")
