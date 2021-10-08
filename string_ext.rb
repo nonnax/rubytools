@@ -11,15 +11,15 @@ class String
   end
 
   def first(n)
-    slice(0,n)
+    slice(0, n)
   end
 
   def last(n)
-    slice(n*-1, size)
+    slice(n * -1, size)
   end
 
   def scroll(slice: 10, repeat: 15)
-  	take_cons(slice: slice, repeat: repeat)
+    take_cons(slice: slice, repeat: repeat)
       .to_a
       .each { |e| yield e.join }
     self
@@ -33,9 +33,9 @@ class String
 end
 
 module TextScanner
-  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze 
-  #"
-  
+  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze
+  # "
+
   def sentences
     gsub!(/\n/, ' ')
     keys = %w[“ ” ‘ ’]
@@ -45,8 +45,9 @@ module TextScanner
 
     scan(RE_SENTENCE).map
   end
+
   def paragraphs
-  	split(/\n{2,}/).map
+    split(/\n{2,}/).map
   end
 end
 

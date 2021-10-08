@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'json'
 
 module Enumerable
@@ -16,17 +17,18 @@ module Enumerable
     IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a
-          .map
-          .with_index do |e, i| 
-          		e=block.call(e) if block_given? 
+        .map
+        .with_index{ |e, i|
+        e = block.call(e) if block_given?
 
-          		[i, e.to_json].join("\t") 
-          	end
+        [i, e.to_json].join("\t")
+       }
+       .join("\n")
       # return integer indices
       io.read
         .split("\n")
         .map { |e| e.split(/\s/, 2) }
-        .map { |i, e| [i.to_i, e]  }
+        .map { |i, e| [i.to_i, e] }
     end
   end
 
@@ -34,10 +36,11 @@ module Enumerable
     IO.popen(cmd, 'w+') do |io|
       io
         .puts to_a
-          .map do |k, v| 
-          	[k, v.split("\n").join(' ~ ')]
-          	.join(' : ') 
-          end
+        .map{ |k, v|
+        [k, v.split("\n").join(' ~ ')]
+          .join(' : ')
+      	}
+      	.join("\n")
       io
         .read
         .split("\n")

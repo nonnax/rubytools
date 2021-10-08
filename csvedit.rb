@@ -22,7 +22,7 @@ loop do
           .lines
           .map { |r| r.tr("\t", ',').gsub(/\s/, '') }
 
-  File.open(f, 'w') { |f| f.puts(res) }
+  File.open(f, 'w') { |io| io.puts(res) }
 
   f = nil
 end

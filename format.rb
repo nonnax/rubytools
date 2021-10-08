@@ -41,7 +41,7 @@ para_size=content.paragraphs.each_slice(CHUNK_SIZE).to_a.size
 
 content.paragraphs.each_slice(CHUNK_SIZE).each_with_index do |cont, i|
 	paragraph_chunk=cont.join("\n\n")
-	puts "~%d/%d. (%d)." % [i+1, para_size, paragraph_chunk.size]
+	puts "%d/%d (%d)." % [i+1, para_size, paragraph_chunk.size]
 	puts
 	cont.each do |para|
 		para.sentences.each do |s|
@@ -50,5 +50,7 @@ content.paragraphs.each_slice(CHUNK_SIZE).each_with_index do |cont, i|
 		puts
 	end
 	# puts paragraph_chunk
-	puts 
+	# puts ".~"*50
+	puts
 end
+
