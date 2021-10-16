@@ -6,10 +6,13 @@ require 'arraycsv'
 require 'array_table'
 require 'editor'
 require 'fzf'
+require 'fileutils'
 
 f = ARGV.first
 
 exit if f && !f.match(/csv$/i)
+
+FileUtils.cp(f, "#{Time.now.to_i}_#{File.basename(f)}")
 
 loop do
   f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
