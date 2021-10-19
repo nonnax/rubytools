@@ -20,7 +20,7 @@ module HashFile
     end
   end
 
-  def load(f=nil)
+  def load(f = nil)
     @jfile ||= f
     File.open(@jfile) do |f|
       replace(JSON.parse(f.read, symbolize_names: true))
@@ -38,14 +38,14 @@ module HashFile
   alias dump save
   alias open save
 
-	def symbolize_keys
-	  inject({}){|result, (key, value)|
-	    new_key = String===key ?  key.to_sym : key
-	    new_value = Hash===value ? value.symbolize_keys : value
-	    result[new_key] = new_value
-	    result
-	  }
-	end  
+  def symbolize_keys
+  	#recursively symbolize_keys
+    each_with_object({}) do |(key, value), result|
+      new_key = key.is_a?(String) ? key.to_sym : key
+      new_value = value.is_a?(Hash) ? value.symbolize_keys : value
+      result[new_key] = new_value
+    end
+  end
 end
 
 class Hash
@@ -56,18 +56,18 @@ if __FILE__ == $PROGRAM_NAME
   h = {
     title: 'hashfile.rb',
     text: 'adds load and save methods to Hash',
-    "inner":  {
-    	'inny': 'one', 
-    	'outy': 'two' 
+    "inner": {
+      'inny': 'one',
+      'outy': 'two'
     }
   }
   p h.symbolize_keys
-  
-	p h.open('save.json')
+
+  p h.open('save.json')
   p h.save('save.json')
 
-  hsh=Hash.open('save.json') do
+  hsh = Hash.open('save.json') do
     merge!(another_key: 'what is this')
   end
-	p hsh
+  p hsh
 end

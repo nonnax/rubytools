@@ -152,6 +152,9 @@ class String
     t = ((h.to_i * 60 + m.to_i) * 60 + s.to_i) * 1000 + ms.to_i			# 0-99 ms
   end
   alias to_ms to_msec
+  def sanitize
+  		gsub(/[^\w\d.]/, '_')
+  end
 end
 
 class Numeric
@@ -175,4 +178,8 @@ class Time
   def to_ts
     to_ms.to_ts
   end
+	def self.timesum
+		t=Time.now
+		[t.yday, t.hour, t.min, t.sec].sum
+	end
 end
