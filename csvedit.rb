@@ -14,18 +14,17 @@ exit if f && !f.match(/csv$/i)
 
 FileUtils.cp(f, "#{Time.now.min}_#{File.basename(f)}")
 
-loop do
   f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
 
-  break unless f
+  # break unless f
+  exit unless f
 
   data = ArrayCSV.new(f)
 
-  res = IO.editor(data.dataframe.to_table(delimeter: "\t"))
+  res = IO.editor(data.dataframe.safe_transpose.safe_transpose.to_table(delimeter: "\t"))
           .lines
           .map { |r| r.tr("\t", ',').gsub(/\s/, '') }
 
   File.open(f, 'w') { |io| io.puts(res) }
 
   f = nil
-end

@@ -1,10 +1,24 @@
 # frozen_string_literal: true
-
+# fzf interface
+#
 require 'json'
 
 module Enumerable
   def fzf(cmd: 'fzf -m')
     IO.popen(cmd, 'w+') do |io|
+      io
+        .puts to_a.join("\n")
+      io
+        .read
+        .split("\n")
+    end
+  end
+
+  def fzf_preview(preview='cat {}', cmd: 'fzf -m')
+    cmd_arr = []
+    cmd_arr << cmd
+    cmd_arr << "--preview='#{preview}'"
+    IO.popen(cmd_arr.join(' '), 'w+') do |io|
       io
         .puts to_a.join("\n")
       io

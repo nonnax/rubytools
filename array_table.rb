@@ -22,11 +22,17 @@ class Array
     end#.to_enum
   end
 
+  def pad_rows(padding:nil)
+    # pad short rows with nils; ready to transpose
+    # returns Enumerator
+    longest_row=map(&:size).max
+    dup.map do |d|
+      d += [padding] * (longest_row - d.size)
+    end.map
+  end
+
   def safe_transpose
-    # pad last with nils for transpose
-    dup.tap do |d|
-      d[-1] += [nil] * (d.first.size - d.last.size)
-    end.transpose
+    pad_rows.to_a.transpose
   end
 
   def sum_columns
