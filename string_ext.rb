@@ -51,4 +51,11 @@ module TextScanner
   end
 end
 
+module SafeFileName
+  def to_safename
+    gsub(/[^\w\.]/, '_')
+  end
+end
+
 String.include(TextScanner)
+String.include(SafeFileName)

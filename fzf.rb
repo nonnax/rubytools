@@ -14,6 +14,14 @@ module Enumerable
     end
   end
 
+  def fzf_prompt(prompt='> ')
+    fzf(cmd: "fzf -m --prompt '#{prompt}'")
+  end
+
+  def fzf_query(prompt: '> ', preview: 'echo {}')
+    fzf(cmd: "fzf -m --print-query --prompt '#{prompt}' --preview='#{preview} && {q}'")
+  end
+
   def fzf_preview(preview='cat {}', cmd: 'fzf -m')
     cmd_arr = []
     cmd_arr << cmd

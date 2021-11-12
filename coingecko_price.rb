@@ -38,8 +38,12 @@ class Numeric
     ]
   end
   symbol_codes.each do |sym|
-    define_method("to_#{sym}".gsub(/-/,'_')) do
+    define_method("#{sym}".gsub(/-/,'_')) do
       self * Coingecko.ohlc(sym)[0]
     end
+    define_method("to_#{sym}".gsub(/-/,'_')) do
+      self / Coingecko.ohlc(sym)[0]
+    end
+
   end
 end

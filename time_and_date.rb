@@ -178,8 +178,12 @@ class Time
   def to_ts
     to_ms.to_ts
   end
-	def self.timesum
+	def self.now_sum
 		t=Time.now
 		[t.yday, t.hour, t.min, t.sec].sum
+	end
+	def self.now_to_s
+		t=Time.now
+		"%04d%02d%02d%02d" % [t.yday, t.hour, t.min, t.sec]
 	end
 end
