@@ -48,10 +48,10 @@ content.paragraphs.each_slice(CHUNK_SIZE).each_with_index do |cont, i|
 		puts
 	end
 	# puts paragraph_chunk
-	p mp3=Dir["*.mp3"].grep( Regexp.new("-%02d" % [i+1]))
-	IO.popen("play '#{mp3.first}' &>/dev/null"){|io| io.read}
-	# IO.popen('espeak --stdin &>/dev/null', 'w') { |io| io.puts paragraph_chunk }
-	# sleep 3
+	# p mp3=Dir["*.mp3"].grep( Regexp.new("-%02d" % [i+1]))
+	# IO.popen("play '#{mp3.first}' &>/dev/null"){|io| io.read}
+	IO.popen('espeak --stdin &>/dev/null', 'w') { |io| io.puts paragraph_chunk }
+	sleep 3
 	puts
 end
 

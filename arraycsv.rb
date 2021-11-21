@@ -8,7 +8,7 @@ class ArrayCSV
   extend Forwardable
   attr_accessor :dataframe
 
-  def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by
+  def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
   def initialize(fname, mode='a')
     @fname=fname
@@ -41,6 +41,11 @@ class ArrayCSV
     @dataframe
   end
 
+  def save
+    # save dataframe
+    File.write(@fname, @dataframe.map(&:to_csv).join)
+  end
+  
   private
 
   def clear

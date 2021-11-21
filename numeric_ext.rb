@@ -53,7 +53,9 @@ class Numeric
   alias day days
 
   def commify
+    return if infinite?
   	n=self.abs
+  	 	
     u, d = (format('%.2f', n.to_f)).split('.')
     arr = u.to_s.reverse.split('')
     arr = arr.each_slice(3).map(&:join).join('_').reverse

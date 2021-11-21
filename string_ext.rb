@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# core_ext.rb duplicated
+# class String
+  # def wrap(max_width = 20)
+    # if length < max_width
+      # self
+    # else
+      # scan(/.{1,#{max_width}}(?: |$)/).join("\n")
+    # end
+  # end
+# end
+
 class String
   def wrap(max_width = 20)
     if size < max_width
@@ -30,6 +41,22 @@ class String
       .split(//)
       .each_cons(slice)
   end
+  
+end
+
+module QueryStringConverter
+  def to_h
+    u,q=split('?')
+    v=q
+      .split(/&/)
+      .inject({}) do |h, pair|
+        k, v=pair.split('=')
+        v=v.split(',') if v.match(/,/)
+        h[k.to_sym]=v
+        h
+      end
+    {}.merge(u=>v)
+  end
 end
 
 module TextScanner
@@ -59,3 +86,4 @@ end
 
 String.include(TextScanner)
 String.include(SafeFileName)
+String.include(QueryStringConverter)

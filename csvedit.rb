@@ -12,7 +12,7 @@ f = ARGV.first
 
 exit if f && !f.match(/csv$/i)
 
-FileUtils.cp(f, "#{Time.now.min}_#{File.basename(f)}")
+FileUtils.cp(f, "#{Time.now.yday}_#{File.basename(f)}")
 
   f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
 
