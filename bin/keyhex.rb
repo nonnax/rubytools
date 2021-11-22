@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-require 'array_table'
+require 'rubytools/array_table'
 
 def pairs
   l = ('a'..'z').to_a

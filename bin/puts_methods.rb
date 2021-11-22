@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'methods_view'
+require 'rubytools/methods_view'
 
 class_puts, is_class_methods=ARGV
 klass=eval("#{class_puts}") 

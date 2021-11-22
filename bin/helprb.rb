@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'array_table'
-require 'methods_view'
-require 'ansi_color'
-require 'fzf'
+require 'rubytools/array_table'
+require 'rubytools/methods_view'
+require 'rubytools/ansi_color'
+require 'rubytools/fzf'
 
 # class Array
   # def fzf_preview(preview = 'ri {}')

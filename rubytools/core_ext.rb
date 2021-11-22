@@ -1,18 +1,8 @@
-require 'numeric_ext'
-require 'string_ext'
-require 'hash_ext'
-require 'file_ext'
-require 'time_and_date'
-
-# class String
-  # def wrap(max_width = 20)
-    # if length < max_width
-      # self
-    # else
-      # scan(/.{1,#{max_width}}(?: |$)/).join("\n")
-    # end
-  # end
-# end
+require 'rubytools/numeric_ext'
+require 'rubytools/string_ext'
+require 'rubytools/hash_ext'
+require 'rubytools/file_ext'
+require 'rubytools/time_and_date'
 
 class NilClass
   # +nil+ is blank:

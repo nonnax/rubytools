@@ -52,7 +52,7 @@ class Node
 end
 
 
-require 'cache'
+# require 'cache'
 
 module Kernel
 	def render(**h, &block)

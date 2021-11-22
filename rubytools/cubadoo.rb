@@ -4,7 +4,7 @@
 # Id$ nonnax 2021-11-04 20:44:33 +0800
 require 'cuba'
 require 'cuba/safe'
-require 'scooby'
+require 'rubytools/scooby'
 
 Cuba.use Rack::Session::Cookie, secret: '__a_very_long_session_string__'
 Cuba.plugin Cuba::Safe

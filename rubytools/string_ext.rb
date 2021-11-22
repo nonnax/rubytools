@@ -60,7 +60,7 @@ module QueryStringConverter
 end
 
 module TextScanner
-  RE_SENTENCE = /[^.?!]+(?:[.?!])(?:[)"]?)/.freeze
+  RE_SENTENCE ||= /[^.;?!]+(?:[.;?!])(?:[)"]?)/.freeze
   # "
 
   def sentences

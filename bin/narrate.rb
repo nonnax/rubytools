@@ -5,8 +5,8 @@
 # 	uses espeak or festival
 # 
 # Id$ nonnax 2021-10-05 14:44:14 +0800
-require 'console'
-require 'string_ext'
+require 'rubytools/console_ext'
+require 'rubytools/string_ext'
 
 maxx, maxy = ANSIScreen.winsize
 

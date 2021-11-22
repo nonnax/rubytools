@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'array_table'
+require 'rubytools/array_table'
 
 module MethodsTable
   def puts_methods(**opts, &block)

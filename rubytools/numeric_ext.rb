@@ -1,32 +1,31 @@
 # frozen_string_literal: true
+require 'rubytools/ansi_color'
 
 class String
-	def is_number?
-	  # obj = obj.to_s unless obj.is_a? String
-	  not /\A[+-]?\d+(\.[\d]+)?\z/.match(self).nil?
-	end
+  def is_number?
+    # obj = obj.to_s unless obj.is_a? String
+    !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
+  end
 end
 
-require 'ansi_color'
 class String
-	def color_number
-		if self.strip.is_number? 
-			self.to_f.negative? ? self.red : self.yellow
-		else
-			self.white
-		end
-	end
+  def color_number
+    if strip.is_number?
+      to_f.negative? ? red : yellow
+    else
+      white
+    end
+  end
 end
 
 # class Object
-	# def is_number?
-	  # obj = obj.to_s unless obj.is_a? String
-	  # not /\A[+-]?\d+(\.[\d]+)?\z/.match(obj).nil?
-	# end
+# def is_number?
+# obj = obj.to_s unless obj.is_a? String
+# not /\A[+-]?\d+(\.[\d]+)?\z/.match(obj).nil?
+# end
 # end
 
 class Numeric
-
   def rates(f = 0.05, **params, &block)
     repeat = params[:size] || 3
     d = []
@@ -54,14 +53,15 @@ class Numeric
 
   def commify
     return if infinite?
-  	n=self.abs
-  	 	
+
+    n = abs
+
     u, d = (format('%.2f', n.to_f)).split('.')
     arr = u.to_s.reverse.split('')
     arr = arr.each_slice(3).map(&:join).join('_').reverse
 
     arr << '.' << d unless is_a?(Integer)
-    arr='-'+arr if self.negative?
+    arr = "-#{arr}" if negative?
     arr
   end
 end

@@ -5,11 +5,11 @@
 #   plots chronological data as vertical candlestick pattern ascii chart
 # usage: histoplot.rb <csvfile> <colnum>
 #
-require 'asciiplot'
-require 'numeric_ext'
-# require 'string_bars'
 require 'csv'
-require 'fzf'
+require 'rubytools/asciiplot'
+require 'rubytools/numeric_ext'
+# require 'string_bars'
+require 'rubytools/fzf'
 
 # f=Dir["*.*"].fzf.first
 f, targetrow=ARGV

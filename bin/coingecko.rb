@@ -2,7 +2,7 @@
 require "json"
 require "uri"
 require "net/http"
-require "cache"
+require "rubytools/cache"
 require 'excon'
 
 # TODO: Write documentation for `Coingecko`
@@ -17,7 +17,7 @@ module Coingecko
     "bitcoin-cash", 
     "litecoin", 
     # "the-graph",
-    # "aave",
+    "aave",
     "uniswap",
     "chainlink" 
     # "enjincoin",

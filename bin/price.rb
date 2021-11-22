@@ -4,7 +4,7 @@
 require 'excon'
 require 'json'
 require 'date'
-require_relative 'cache'
+require 'rubytools/cache'
 #
 # url="https://api.coingecko.com/api/v3/coins/#{coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&vs_currencies=php"
 class Hash
