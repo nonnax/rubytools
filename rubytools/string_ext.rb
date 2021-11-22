@@ -10,6 +10,7 @@
     # end
   # end
 # end
+require 'erb'
 
 class String
   def wrap(max_width = 20)
@@ -87,6 +88,13 @@ module SafeFileName
   end
 end
 
+module RenderERB
+  def render(binding_obj)
+    ERB.new(self).result(binding_obj)
+  end
+end
+
 String.include(TextScanner)
 String.include(SafeFileName)
 String.include(QueryStringConverter)
+String.include(RenderERB)
