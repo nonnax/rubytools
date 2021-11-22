@@ -60,11 +60,14 @@ module QueryStringConverter
 end
 
 module TextScanner
-  RE_SENTENCE ||= /[^.;?!]+(?:[.;?!])(?:[)"]?)/.freeze
+  RE_SENTENCE ||= /[^.;?!]+(?:[.;?!]|$)(?:[)"]?)/.freeze
   # "
 
-  def sentences
+  def joined
     gsub!(/\n/, ' ')
+  end
+  def sentences
+    gsub!(/\n{1,}/, ' ')
     keys = %w[“ ” ‘ ’]
     vals = %w[" " ' ']
     to_tr = keys.zip(vals).to_h
