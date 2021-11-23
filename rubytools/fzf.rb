@@ -26,13 +26,7 @@ module Enumerable
     cmd_arr = []
     cmd_arr << cmd
     cmd_arr << "--preview='#{preview}'"
-    IO.popen(cmd_arr.join(' '), 'w+') do |io|
-      io
-        .puts to_a.join("\n")
-      io
-        .read
-        .split("\n")
-    end
+    fzf(cmd: cmd_arr.join(' ')) 
   end
 
   def fzf_with_index(cmd: 'fzf -m', &block)
