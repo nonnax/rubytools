@@ -164,6 +164,7 @@ class Numeric
     h, m = m.divmod(60)
     format('%02d:%02d:%02d.%03d', h, m, s, ms)
   end
+  alias to_timestamp to_ts
 
   def sec_to_ms
     self * 1000

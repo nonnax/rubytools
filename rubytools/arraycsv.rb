@@ -3,6 +3,7 @@
 # csv pseudo-array 
 require 'csv'
 require 'forwardable'
+require 'rubytools/thread_ext'
 
 class ArrayCSV
   extend Forwardable
@@ -43,7 +44,9 @@ class ArrayCSV
 
   def save
     # save dataframe
-    File.write(@fname, @dataframe.map(&:to_csv).join)
+    Thread.new do
+      File.write(@fname, @dataframe.map(&:to_csv).join)
+    end.join
   end
   
   private
@@ -53,27 +56,33 @@ class ArrayCSV
   end
   
   def load
-    @dataframe=File.exists?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric]) : []
+    Thread.new do
+      @dataframe=File.exists?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric]) : []
+    end.join
   end
   alias load_data load
 
 end
 
-__END__
+if __FILE__==$PROGRAM_NAME 
+  data=ArrayCSV.new('test.csv')
+  t=Thread.new do
+    1000.times do
+      data<<[Time.now.to_s, rand(10..100), rand(90..100), rand(10..90), rand(10..100)]
+    end
+  end
 
-data=ArrayCSV.new('test.csv')
-10.times do
-  data<<[Time.now.to_s, rand(10..100), rand(90..100), rand(10..90), rand(10..100)]
+  p data.class
+  p data
+  p data.methods-Object.methods
+  p data.size
+  p 'data.values_at(-1, 1)'
+  p data.values_at(-1, 1)
+  p 'data.assoc(/24/)'
+  p data.assoc(/24/)
+  p data.dataframe.transpose
+  p data.minmax{|r| r[1] }
+  # p data.minmax # runtime error
+
+t.join
 end
-
-p data.class
-p data
-p data.methods-Object.methods
-p data.size
-p 'data.values_at(-1, 1)'
-p data.values_at(-1, 1)
-p 'data.assoc(/24/)'
-p data.assoc(/24/)
-p data.dataframe.transpose
-p data.minmax{|r| r[1] }
-# p data.minmax # runtime error
