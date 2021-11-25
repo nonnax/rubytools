@@ -4,7 +4,8 @@
 # Id$ nonnax 2021-11-04 20:44:33 +0800
 require 'cuba'
 require 'cuba/safe'
-require 'rubytools/scooby'
+require 'tagz'
+include Tagz.globally
 
 Cuba.use Rack::Session::Cookie, secret: '__a_very_long_session_string__'
 Cuba.plugin Cuba::Safe
@@ -12,19 +13,18 @@ Cuba.plugin Cuba::Safe
 Cuba.use Rack::Static, urls: ['/media', '/css']
 
 class Cuba
-  def render(use_layout: false, &block)
-    body = Scooby.dooby(&block)
+  def render(layout: false, &block)
     res.write(
-        use_layout ? _layout { body } : body
+        layout ? _layout { tagz(&block) } : tagz(&block)
       )
   end
 
   def _layout(&block)
     # to be overriden
-    Scooby.dooby do
-      html do
-        h1 { 'missing method: _layout()' }
-        div(&block)
+    tagz do
+      html_ do
+        h1_ { 'missing method: _layout(&block)' }
+        div_(&block)
       end
     end
   end
