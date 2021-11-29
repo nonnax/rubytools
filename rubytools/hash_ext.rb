@@ -4,16 +4,27 @@ require 'cgi'
 require 'uri'
 
 class Hash
-  def to_query_string
+  def to_query_string(repeat_keys: false)
+     repeat_keys ? send(:_repeat_keys) : send(:_single_keys)
+  end
+  
+  def _single_keys
     inject([]) do |a, (k, v)|
       if v.is_a?(Hash)
-        v=v.to_query_string 
+        v=v._single_keys
       elsif v.is_a?(Array)
         v=v.join(',')
       end
       a<<[k, v].join('=')
     end.join('&')
   end
+  private :_single_keys
+  
+  def _repeat_keys
+    URI.encode_www_form(self)
+  end
+  private :_repeat_keys
+  
 end
 
 class String

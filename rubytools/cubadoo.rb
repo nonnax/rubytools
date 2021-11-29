@@ -5,6 +5,8 @@
 require 'cuba'
 require 'cuba/safe'
 require 'tagz'
+require 'rubytools/cache'
+
 include Tagz.globally
 
 Cuba.use Rack::Session::Cookie, secret: '__a_very_long_session_string__'
@@ -13,11 +15,27 @@ Cuba.plugin Cuba::Safe
 Cuba.use Rack::Static, urls: ['/media', '/css']
 
 class Cuba
-  def render(layout: false, &block)
-    res.write(
-        layout ? _layout { tagz(&block) } : tagz(&block)
+  def render(**h, &block)
+    if f = h[:cache]
+      ttl = (h[:ttl] ||= 300)
+      p "fetching cache...#{ttl}"
+      Cache.cached(f, ttl: ttl) do
+        res.write(
+          h[:layout] ? _layout { tagz(&block) } : tagz(&block)
+        )
+      end
+    else
+      res.write(
+        h[:layout] ? _layout { tagz(&block) } : tagz(&block)
       )
+    end
   end
+
+  # def render(layout: false, &block)
+  # res.write(
+  # layout ? _layout { tagz(&block) } : tagz(&block)
+  # )
+  # end
 
   def _layout(&block)
     # to be overriden
