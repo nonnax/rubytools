@@ -3,7 +3,7 @@
 #
 require 'json'
 
-module Enumerable
+module FZF
   def fzf(cmd: 'fzf -m')
     IO.popen(cmd, 'w+') do |io|
       io
@@ -63,6 +63,8 @@ module Enumerable
     end
   end
 end
+
+Enumerable.include(FZF)
 
 if __FILE__ == $PROGRAM_NAME
   p Dir['*.*'].fzf

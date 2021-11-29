@@ -1,4 +1,4 @@
-#!/usr/bin/env mruby
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # simple tempfile cache
