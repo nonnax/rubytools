@@ -36,4 +36,8 @@ class Cuba
       end
     end
   end
+
+  def un(text)
+      Rack::Utils.unescape(text)
+  end  
 end
