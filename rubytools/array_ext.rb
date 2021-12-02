@@ -6,11 +6,10 @@ module ArrayPaging
     values_at(at..-1)
   end
   def window(at: 0, take: 5)
-    at=[0, at-1].max
     (
-      [min] + 
+      [first] + 
       from(at).take(take) +
-      [max]
+      [last]
     ).uniq
   end
 end
