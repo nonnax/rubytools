@@ -7,7 +7,7 @@ module ArrayPaging
   end
   def window(at: 0, take: 0)
     take=(take/2.0).floor
-    left_at=[(at-take),0].max
+    left_at=[(at-take+1),0].max
     left=slice(left_at, take) || []
     right=slice(at, take) || []
     (
