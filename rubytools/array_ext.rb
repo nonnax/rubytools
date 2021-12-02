@@ -3,12 +3,12 @@
 module ArrayPaging
   def from(at)
     at=[0, at].max
-    values_at(at..-1)
+    slice(at..-1)
   end
   def window(at: 0, take: 5)
     (
       [first] + 
-      from(at).take(take) +
+      slice(at, take) +
       [last]
     ).uniq
   end
