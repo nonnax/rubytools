@@ -5,10 +5,15 @@ module ArrayPaging
     at=[0, at].max
     slice(at..-1)
   end
-  def window(at: 0, take: 5)
+  def window(at: 0, take: 0)
+    take=(take/2.0).floor
+    left_at=[(at-take),0].max
+    left=slice(left_at, take) || []
+    right=slice(at, take) || []
     (
       [first] + 
-      slice(at, take) +
+      left + 
+      right +
       [last]
     ).uniq
   end
