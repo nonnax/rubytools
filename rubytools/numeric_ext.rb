@@ -16,6 +16,15 @@ class String
       white
     end
   end
+  def base32_to_i
+    to_i(32)
+  end
+end
+
+class Integer
+  def to_base32
+    to_s(32).rjust(6,'0')
+  end
 end
 
 # class Object
