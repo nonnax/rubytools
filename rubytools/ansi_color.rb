@@ -122,3 +122,13 @@ module Screen
           define_method(k){ color(v)}
       end
 end
+
+class String
+  def color_number
+    if strip.is_number?
+      to_f.negative? ? red : yellow
+    else
+      white
+    end
+  end
+end

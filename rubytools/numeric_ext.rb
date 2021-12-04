@@ -1,20 +1,9 @@
 # frozen_string_literal: true
-require 'rubytools/ansi_color'
 
 class String
   def is_number?
     # obj = obj.to_s unless obj.is_a? String
     !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
-  end
-end
-
-class String
-  def color_number
-    if strip.is_number?
-      to_f.negative? ? red : yellow
-    else
-      white
-    end
   end
   def base32_to_i
     to_i(32)
@@ -34,7 +23,7 @@ end
 # end
 # end
 
-class Numeric
+module NumericHelper
   def rates(f = 0.05, **params, &block)
     repeat = params[:size] || 3
     d = []
@@ -44,21 +33,6 @@ class Numeric
     end
     d.sort.uniq.map(&block)
   end
-
-  def minutes
-    self * 60
-  end
-  alias minute minutes
-
-  def hours
-    minutes * 60
-  end
-  alias hour hours
-
-  def days
-    hours * 24
-  end
-  alias day days
 
   def commify
     return if infinite?
@@ -75,6 +49,7 @@ class Numeric
   end
 end
 
+Numeric.include(NumericHelper)
 #
 ## Helper methods for working with time units other than seconds
 class Numeric
@@ -90,14 +65,17 @@ class Numeric
   def minutes
     self * 60
   end
+  alias minute minutes
 
   def hours
     self * 60 * 60
   end
+  alias hour hours
 
   def days
     self * 60 * 60 * 24
   end
+  alias day days
 
   def weeks
     self * 60 * 60 * 24 * 7
