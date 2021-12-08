@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2021-11-16 10:11:27 +0800
-require 'cgi'
 require 'uri'
 
 class Hash
@@ -10,10 +9,11 @@ class Hash
   
   def _single_keys
     inject([]) do |a, (k, v)|
-      if v.is_a?(Hash)
-        v=v._single_keys
-      elsif v.is_a?(Array)
-        v=v.join(',')
+      case v
+        when Hash
+          v=v._single_keys
+        when Array
+          v=v.join(',')
       end
       a<<[k, v].join('=')
     end.join('&')
@@ -25,10 +25,4 @@ class Hash
   end
   private :_repeat_keys
   
-end
-
-class String
-  def query_string_to_h
-    CGI.parse(URI.parse(self).query).transform_keys(&:to_sym)
-  end
 end

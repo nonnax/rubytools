@@ -70,7 +70,7 @@ class Array
     #
     if align_method
       prep = prep.map.with_index do |r, i|
-        r.map! { |e| e.strip.send(align_method, column_width[i]) } if selected_columns.include?(i)
+        r.map! { |e| selected_columns.include?(i) ? e.strip.send(align_method, column_width[i]) : e } 
         r
       end
     end

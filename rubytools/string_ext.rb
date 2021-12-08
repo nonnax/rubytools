@@ -2,15 +2,17 @@
 
 # core_ext.rb duplicated
 # class String
-  # def wrap(max_width = 20)
-    # if length < max_width
-      # self
-    # else
-      # scan(/.{1,#{max_width}}(?: |$)/).join("\n")
-    # end
-  # end
+# def wrap(max_width = 20)
+# if length < max_width
+# self
+# else
+# scan(/.{1,#{max_width}}(?: |$)/).join("\n")
+# end
+# end
 # end
 require 'erb'
+require 'base64'
+require 'cgi'
 
 class String
   def wrap(max_width = 20)
@@ -42,21 +44,11 @@ class String
       .split(//)
       .each_cons(slice)
   end
-  
 end
-
+# 
 module QueryStringConverter
-  def to_h
-    u,q=split('?')
-    v=q
-      .split(/&/)
-      .inject({}) do |h, pair|
-        k, v=pair.split('=')
-        v=v.split(',') if v.match(/,/)
-        h[k.to_sym]=v
-        h
-      end
-    {}.merge(u=>v)
+  def query_string_to_h
+    CGI.parse(URI.parse(self).query).transform_keys(&:to_sym)
   end
 end
 
@@ -64,9 +56,10 @@ module TextScanner
   RE_SENTENCE ||= /[^.;?!]+(?:[.;?!]|$)(?:[)"]?)/.freeze
   # "
 
-  def joined
+  def join!
     gsub!(/\n/, ' ')
   end
+
   def sentences
     gsub!(/\n{1,}/, ' ')
     keys = %w[“ ” ‘ ’]
@@ -84,7 +77,7 @@ end
 
 module SafeFileName
   def to_safename
-    gsub(/[^\w\.]/, '_')
+    gsub(/[^\w.]/, '_')
   end
 end
 
@@ -92,9 +85,25 @@ module RenderERB
   def render(binding_obj)
     ERB.new(self).result(binding_obj)
   end
+  alias result render
+end
+
+module StringBase64
+  def encode64
+    Base64.encode64(self)
+  end
+
+  def decode64
+    Base64.decode64(self)
+  end
+
+  def base64?
+    encode64.decode64 == self
+  end
 end
 
 String.include(TextScanner)
 String.include(SafeFileName)
 String.include(QueryStringConverter)
 String.include(RenderERB)
+String.include(StringBase64)
