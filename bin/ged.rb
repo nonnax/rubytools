@@ -17,10 +17,12 @@ def edit_and_commit(f)
   res = File.read(f)
   res = yield(res)
   File.write(f, res)
-  IO.popen("git add #{f}", &:read)
-  message="update: #{f}"
-  IO.popen("git commit -m '#{message}'", &:read)
-  puts IO.popen('git log --oneline', &:read)
+
+  f_base=File.basename(f)
+
+  message="update: #{f_base}"
+  IO.popen("git add #{f_base} && git commit -m '#{message}' && git log --oneline", &:read)
+
 rescue StandardError => e
   puts e
 end
