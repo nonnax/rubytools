@@ -27,7 +27,7 @@ def edit_and_commit(f)
 rescue StandardError => e
   puts e
 ensure 
-  p IO.popen("git log --oneline", &:read)
+  puts IO.popen("git log --oneline | wc -l", &:read)
 end
 
 f = ARGV.first
