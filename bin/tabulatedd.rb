@@ -5,6 +5,13 @@
 # reads a -- (double-dash) delimeted list from STDIN
 # only the last double-dash within a line is selected
 require 'rubytools/array_table'
+require 'optparse'
+
+OptionParser.new do |opt|
+  opt.banner=<<~___ 
+  tabulatedd, pretty-formats a double-dash (--) separated list. 
+  ___
+end.parse!
 
 lines=$stdin.read.split("\n")
 

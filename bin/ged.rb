@@ -18,7 +18,7 @@ def edit_and_commit(f)
   res = yield(res)
   File.write(f, res)
   IO.popen("git add #{f}", &:read)
-  message="update #{Time.now}"
+  message="update: #{f}"
   IO.popen("git commit -m '#{message}'", &:read)
   puts IO.popen('git log --oneline', &:read)
 rescue StandardError => e
