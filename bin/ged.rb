@@ -23,11 +23,10 @@ def edit_and_commit(f)
   message="update: #{f_base}"
   IO.popen("git add #{f_base} && git commit -m '#{message}'", &:read)
   
-
 rescue StandardError => e
   puts e
 ensure 
-  puts IO.popen("git log --oneline | wc -l", &:read)
+  puts IO.popen("git log --oneline | head ", &:read)
 end
 
 f = ARGV.first
