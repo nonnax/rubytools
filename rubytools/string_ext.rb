@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # core_ext.rb duplicated
@@ -44,6 +45,12 @@ class String
       .split(//)
       .each_cons(slice)
   end
+
+  def gsub_match(*a, &block)
+    # a more ruby-ish gsub which yields the matched data to the block
+    gsub(*a){ block.call(Regexp.last_match.to_a) if block }
+  end
+  
 end
 # 
 module QueryStringConverter
@@ -98,7 +105,7 @@ module StringBase64
   end
 
   def base64?
-    encode64.decode64 == self
+    Base64.encode64(Base64.decode64(self)).strip == self.strip && (self.size % 4).positive?
   end
 end
 
