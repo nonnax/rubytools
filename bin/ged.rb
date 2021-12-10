@@ -21,7 +21,7 @@ def edit_and_commit(f)
   f_base=File.basename(f)
 
   message="update: #{f_base}"
-  puts IO.popen("git add #{f_base} && git commit -m '#{message}' && git log --oneline", &:read)
+  IO.popen("git add #{f_base} && git commit -m '#{message}' && git log --oneline | cat", &:read)
 
 rescue StandardError => e
   puts e
