@@ -20,9 +20,14 @@ f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
 exit unless f
 
 data = ArrayCSV.new(f)
+text=data
+    .dataframe
+    .safe_transpose
+    .safe_transpose
+    .to_table(delimeter: "\t")
 
-res = IO.editor(data.dataframe.safe_transpose.safe_transpose.to_table(delimeter: "\t"))
+res = IO.editor(text)
         .lines
-        .map { |r| r.tr("\t", ',').gsub(/\s/, '') }
+        .map { |r| r.tr("\t", ',') }
 
 File.open(f, 'w') { |io| io.puts(res) }
