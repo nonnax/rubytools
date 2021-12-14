@@ -2,15 +2,16 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-10-08 15:40:15 +0800
-require 'rubytools/arraycsv'
-require 'rubytools/array_table'
-require 'rubytools/editor'
-require 'rubytools/fzf'
+require 'rubytools'
+require 'array_table'
+require 'editor'
+require 'fzf'
+require 'string_ext'
 require 'fileutils'
 
 f = ARGV.first
 
-exit if f && !f.match(/csv$/i)
+exit unless f.text_file? && f.match(/csv$/i)
 
 FileUtils.cp(f, "#{Time.now.yday}_#{File.basename(f)}")
 
