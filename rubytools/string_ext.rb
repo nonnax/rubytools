@@ -14,6 +14,25 @@
 require 'erb'
 require 'base64'
 require 'cgi'
+require 'ruby-filemagic'
+
+class String
+
+  def text_file?
+    begin
+      fm = FileMagic.new(FileMagic::MAGIC_MIME)
+      fm.file(self) =~ /^text\//
+    ensure
+      fm.close
+    end
+  end
+
+  def binary_file?
+    !text?
+  end
+
+end
+
 
 class String
   def wrap(max_width = 20)
