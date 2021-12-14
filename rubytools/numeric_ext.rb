@@ -17,12 +17,11 @@ class Integer
   end
 end
 
-# class Object
-# def is_number?
-# obj = obj.to_s unless obj.is_a? String
-# not /\A[+-]?\d+(\.[\d]+)?\z/.match(obj).nil?
-# end
-# end
+class Object
+  def is_number?
+    to_s.is_number?
+  end
+end
 
 module NumericHelper
   def rates(f = 0.05, **params, &block)
