@@ -12,8 +12,8 @@ class String
 end
 
 class Integer
-  def to_base32
-    to_s(32).rjust(6,'0')
+  def to_base32(padding: 6)
+    to_s(32).rjust(padding, '0')
   end
 end
 
@@ -55,12 +55,13 @@ Numeric.include(NumericHelper)
 class Numeric
   # Convert time intervals to seconds
   def milliseconds
-    self / 1000.0
+    self * 1000.0
   end
 
   def seconds
     self
   end
+  alias second seconds
 
   def minutes
     self * 60
@@ -80,6 +81,7 @@ class Numeric
   def weeks
     self * 60 * 60 * 24 * 7
   end
+  alias week weeks
 
   # Convert seconds to other intervals
   def to_milliseconds
