@@ -6,11 +6,9 @@ require 'json'
 module FZF
   def fzf(cmd: 'fzf -m')
     IO.popen(cmd, 'w+') do |io|
-      io
-        .puts to_a.join("\n")
-      io
-        .read
-        .split("\n")
+      io.puts to_a.join("\n")
+      io.close_write
+      io.readlines(chomp: true)
     end
   end
 
@@ -41,8 +39,7 @@ module FZF
               }
         	.join("\n")
       io
-        .read
-        .split("\n")
+        .readlines(chomp: true)
         .map { |e| e.split(/\s/, 2) }
         .map { |i, e| [i.to_i, e] }
       # return integer indices
@@ -56,8 +53,7 @@ module FZF
           .map { |k, v| [k, v.split("\n").join(' ~ ')].join(' : ') }
         	.join("\n")
       io
-        .read
-        .split("\n")
+        .readlines(chomp: true)
         .map { |h| h.split(/\s?:\s?/, 2) }
         .map { |i, e| [i.to_sym, e] }
     end
