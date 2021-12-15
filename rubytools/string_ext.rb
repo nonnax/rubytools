@@ -79,7 +79,7 @@ module QueryStringConverter
 end
 
 module TextScanner
-  RE_SENTENCE ||= /[^.;?!]+(?:[.;?!]|$)(?:[)"]?)/.freeze
+  RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)\'"]?)/.freeze
   # "
 
   def join!
