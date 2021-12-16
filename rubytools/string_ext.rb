@@ -99,6 +99,10 @@ module TextScanner
   def paragraphs
     split(/\n{2,}/).map
   end
+
+  def sentences_split(arg=/\n/)
+    gsub(/([\.\?\!]+)(?=[^'"])\s*/){|m| "#{m.strip}\n" }.split(arg) #'
+  end
 end
 
 
