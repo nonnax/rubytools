@@ -7,7 +7,7 @@
 #
 require 'csv'
 require 'rubytools'
-require 'asciiplot'
+require 'ascii_plot'
 require 'numeric_ext'
 require 'fzf'
 
