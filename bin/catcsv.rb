@@ -3,10 +3,10 @@
 
 # Id$ nonnax 2021-09-27 01:40:36 +0800
 require 'rubytools'
-require 'rubytools/arraycsv'
-require 'rubytools/array_table'
-require 'rubytools/numeric_ext'
-require 'rubytools/fzf'
+require 'arraycsv'
+require 'array_table'
+require 'numeric_ext'
+require 'fzf'
 
 
 csvstr = $stdin.read
