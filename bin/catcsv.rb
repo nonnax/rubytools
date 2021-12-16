@@ -3,7 +3,7 @@
 
 # Id$ nonnax 2021-09-27 01:40:36 +0800
 require 'rubytools'
-require 'arraycsv'
+require 'array_csv'
 require 'array_table'
 require 'numeric_ext'
 require 'fzf'
