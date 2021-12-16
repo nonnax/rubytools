@@ -21,8 +21,7 @@ module Coingecko
     "chainlink",
     "enjincoin",
     "compound-coin",
-    "basic-attention-token"
-    ]
+    "basic-attention-token"]
     list=[]
 
     # url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=php&ids=#{coins.join(',')}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h,7d,14d,30d,90d"
@@ -35,6 +34,7 @@ module Coingecko
       list<< coin.values_at(*keys).join(',')
     end 
     list.prepend(keys.map(&:to_s).map{|e| e.gsub(/change_percentage/, 'delta').gsub(/in_currency/,'php')}.join(','))
+    list
   end
   
 end
@@ -43,5 +43,4 @@ res=Cache.cached('coingecko', ttl: 30) do
   Coingecko.get
 end
 
-# p Coingecko.get
 puts res
