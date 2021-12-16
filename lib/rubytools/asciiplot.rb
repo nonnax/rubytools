@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-08-22 20:38:32 +0800
-require_relative '../rubytools/string_bars'
+require 'rubytools/string_bars'
 
 class String
   # color helper for drawing candlestick patterns on a Unix/Linux terminal
