@@ -17,8 +17,7 @@ require 'cgi'
 require 'ruby-filemagic'
 
 class String
-
-  def text_file?
+  def is_text_file?
     begin
       fm = FileMagic.new(FileMagic::MAGIC_MIME)
       fm.file(self) =~ /^text\//
@@ -26,13 +25,13 @@ class String
       fm.close
     end
   end
+  alias text_file? is_text_file?
 
-  def binary_file?
+  def is_binary_file?
     !text?
   end
-
+  alias binary_file? is_binary_file?
 end
-
 
 class String
   def wrap(max_width = 20)
@@ -79,8 +78,7 @@ module QueryStringConverter
 end
 
 module TextScanner
-  RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)\'"]?)/.freeze
-  #'
+  RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)\'"]?)/.freeze  #'
 
   def join!
     gsub!(/\n/, ' ')
@@ -101,7 +99,7 @@ module TextScanner
   end
 
   def sentences_split(arg=/\n/)
-    gsub(/([\.\?\!]+)(?=[^'"])\s*/){|m| "#{m.strip}\n" }.split(arg) #'
+    gsub(/([\.\?\!]+)(?=[^'"])/){|m| "#{m.strip}\n" }.split(arg) #'
   end
 end
 
