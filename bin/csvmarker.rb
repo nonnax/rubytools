@@ -2,11 +2,11 @@
 # frozen_string_literal: true
 
 # require 'text-table'
-require 'rubytools/numeric_ext'
-require 'rubytools/arraycsv'
-require 'rubytools/time_and_date_ext'
-require 'rubytools/array_table'
-require 'rubytools/ansi_color'
+require_relative '../lib/rubytools/numeric_ext'
+require_relative '../lib/rubytools/arraycsv'
+require_relative '../lib/rubytools/time_and_date_ext'
+require_relative '../lib/rubytools/array_table'
+require_relative '../lib/rubytools/ansi_color'
 
 files = ARGV
 
