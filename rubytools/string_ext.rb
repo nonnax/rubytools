@@ -80,7 +80,7 @@ end
 
 module TextScanner
   RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)\'"]?)/.freeze
-  # "
+  #'
 
   def join!
     gsub!(/\n/, ' ')
@@ -101,11 +101,6 @@ module TextScanner
   end
 end
 
-module SafeFileName
-  def to_safename
-    gsub(/[^\w.]/, '_')
-  end
-end
 
 module RenderERB
   def render(binding_obj)
@@ -129,7 +124,6 @@ module StringBase64
 end
 
 String.include(TextScanner)
-String.include(SafeFileName)
 String.include(QueryStringConverter)
 String.include(RenderERB)
 String.include(StringBase64)
