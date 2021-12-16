@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 require 'date'
@@ -188,3 +189,11 @@ class Time
 		"%04d%02d%02d%02d" % [t.yday, t.hour, t.min, t.sec]
 	end
 end
+
+module Strftime
+  def as_time
+    Time.now.strftime(self)
+  end
+end
+
+String.include(Strftime)
