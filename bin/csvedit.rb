@@ -4,7 +4,7 @@
 # Id$ nonnax 2021-10-08 15:40:15 +0800
 require 'rubytools'
 require 'array_table'
-require 'arraycsv'
+require 'array_csv'
 require 'editor'
 require 'fzf'
 require 'string_ext'
