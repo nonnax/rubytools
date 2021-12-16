@@ -5,7 +5,7 @@
 require 'cuba'
 require 'cuba/safe'
 require 'tagz'
-require_relative '../rubytools/cache'
+require_relative 'rubytools/cache'
 
 include Tagz.globally
 
