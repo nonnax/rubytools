@@ -35,7 +35,7 @@ console.rb
 csvedit.rb
 csview.rb
 csvmarker.rb
-ged.rb
+ged
 gitadd.rb
 hashfile.rb
 helprb.rb
