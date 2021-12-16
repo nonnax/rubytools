@@ -4,7 +4,7 @@
 # require 'text-table'
 require 'rubytools'
 require 'numeric_ext'
-require 'arraycsv'
+require 'array_csv'
 require 'time_and_date_ext'
 require 'array_table'
 require 'ansi_color'
