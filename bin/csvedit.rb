@@ -2,12 +2,11 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-10-08 15:40:15 +0800
-require 'rubytools'
-require 'array_table'
-require 'arraycsv'
-require 'editor'
-require 'fzf'
-require 'string_ext'
+require_relative '../lib/rubytools/array_table'
+require_relative '../lib/rubytools/arraycsv'
+require_relative '../lib/rubytools/editor'
+require_relative '../lib/rubytools/fzf'
+require_relative '../lib/rubytools/string_ext'
 require 'fileutils'
 
 f = ARGV.first
