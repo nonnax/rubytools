@@ -2,7 +2,7 @@
 require "json"
 require "uri"
 require "net/http"
-require_relative "../lib/rubytools/cache"
+require "rubytools/cache"
 require 'excon'
 
 module Coingecko
