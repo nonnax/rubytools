@@ -3,7 +3,7 @@
 # csv pseudo-array 
 require 'csv'
 require 'forwardable'
-require_relative '../rubytools/thread_ext'
+require 'rubytools/thread_ext'
 
 class ArrayCSV
   extend Forwardable
