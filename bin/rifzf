@@ -20,7 +20,7 @@ class Class
   def method_info
     instance_methods
       .sort
-      .fzf_preview("ri #{name}.{}")
+      .fzf_preview("ri -f markdown #{name}.{} | bat -l md --color=always")
       .first
   end
 end
@@ -33,7 +33,7 @@ loop do
              .sort
              .map(&:to_s)
              .map(&:yellow)
-             .fzf_preview('puts_methods.rb {}')
+             .fzf_preview('puts_methods.rb {} && ri -f markdown {} | bat -l md --color=always')
              .first
 
   break unless selected
