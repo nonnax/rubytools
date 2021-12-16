@@ -13,21 +13,21 @@ class Array
     end.to_enum
   end
 
-  def row_padding(with: nil)
-    # yields evenly padded rows
-    # [[1, 2, 3], [1], [1, 2]].row_padding(with: 0) == [[1, 2, 3], [1, 0, 0], [1, 2, 0]]
-    max_size=map(&:size).max 
-    map do |e|
-      e += [with] * (max_size - e.size)
-    end#.to_enum
-  end
+  # def row_padding(with: nil)
+    # # yields evenly padded rows
+    # # [[1, 2, 3], [1], [1, 2]].row_padding(with: 0) == [[1, 2, 3], [1, 0, 0], [1, 2, 0]]
+    # max_size=map(&:size).max
+    # map do |e|
+      # e += [with] * (max_size - e.size)
+    # end#.to_enum
+  # end
 
   def pad_rows(padding:nil)
     # pad short rows with nils; ready to transpose
     # returns Enumerator
-    longest_row=map(&:size).max
+    max_size=map(&:size).max
     dup.map do |d|
-      d += [padding] * (longest_row - d.size)
+      d += [padding] * (max_size - d.size)
     end.map
   end
 
@@ -36,9 +36,9 @@ class Array
   end
 
   def sum_columns
-  	transpose.map do |col|
-  		col<<col.map{|e| e.nil? ? 0 : e}.sum rescue [0]*col.size
-  	end.transpose
+    transpose.map do |col|
+      col<<col.map{|e| e.nil? ? 0 : e}.sum rescue [0]*col.size
+    end.transpose
   end
 
   def to_table(df = self, **h, &block)
@@ -47,7 +47,6 @@ class Array
     unless (align_keys & h.keys).empty?
       align_method, selected_columns = h.select { |k, _| align_keys.include?(k) }.to_a.first
     end
-
     # column widths
     column_width = {}
     df.first.size.times { |i| column_width[i] = 0 }
@@ -56,13 +55,11 @@ class Array
     df.dup.transpose.each_with_index do |e, i|
       column_width[i] = e.map(&:to_s).map(&:size).max
     end
-
     # all table items become strings
     # column widths are adjusted to max widths
     prep = df.transpose.map.with_index do |r, i|
       r.map(&:to_s).map { |e| e.to_s.rjust(column_width[i]) }
     end
-
     # adjust specific cols selected
     # selected_columns=(0..df.first.size)
     # align_method = :center
@@ -75,12 +72,11 @@ class Array
       end
     end
 
-		
     prep.transpose.map do |r|
-    	if block_given?
-    		block.call(r) 
-    	else
-      	r.join(delimeter)
+      if block_given?
+        block.call(r) 
+      else
+        r.join(delimeter)
       end
     end #.join("\n")
   end
