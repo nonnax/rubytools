@@ -3,7 +3,10 @@
 
 class File
   def self.splitname(f)
-    basename(f).split('.')
+    [File.basename(f, '.*'), File.extname(f)]
+  end
+  def self.filename_succ(f)
+    f.filename_succ
   end
 end
 
@@ -17,8 +20,7 @@ module NumberedFile
   RE_END_DIGIT=/\d+$/
   UNDERSCORE='_'
   def filename_succ
-    basename = File.basename(self, '.*')
-    ext = File.extname(self)
+    basename, ext = File.splitname(self)
     out = nil
     bn=basename.dup
     loop do
@@ -32,13 +34,6 @@ module NumberedFile
   end
 end
 
-module SafeFileName
-  def to_safename
-    gsub(/[^\w\.]/, '_')
-  end
-end
-
-String.include(SafeFileName)
 String.include(SafeFileName)
 String.include(NumberedFile)
 
