@@ -14,15 +14,17 @@ module SafeFileName
 end
 
 module NumberedFile
+  RE_END_DIGIT=/\d+$/
+  UNDERSCORE='_'
   def filename_succ
     basename = File.basename(self, '.*')
     ext = File.extname(self)
     out = nil
     bn=basename.dup
     loop do
-      bn = bn.match(/\d+$/) ? bn.succ : "#{bn}_001"
-      n=bn.match(/\d+$/).to_s.to_i.to_s
-      bn.gsub!(/\d+$/, n.rjust(3, '0'))      
+      bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
+      n=bn.match(RE_END_DIGIT).to_s.to_i.to_s
+      bn.gsub!(/#{UNDERSCORE}?#{RE_END_DIGIT}/, "#{UNDERSCORE}#{n.rjust(3, '0')}")      
       out = "#{bn}#{ext}"
       break unless File.exist?(out)
     end
