@@ -9,7 +9,6 @@ require 'csv'
 require 'rubytools'
 require 'asciiplot'
 require 'numeric_ext'
-# require 'string_bars'
 require 'fzf'
 
 # f=Dir["*.*"].fzf.first
