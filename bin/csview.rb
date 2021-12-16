@@ -2,11 +2,12 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-09-27 01:40:36 +0800
-require_relative '../lib/rubytools/arraycsv'
-require_relative '../lib/rubytools/array_table'
-require_relative '../lib/rubytools/numeric_ext'
-require_relative '../lib/rubytools/fzf'
-require_relative '../lib/rubytools/pipe_argv'
+require 'rubytools'
+require 'arraycsv'
+require 'array_table'
+require 'numeric_ext'
+require 'fzf'
+require 'pipe_argv'
 require 'tempfile'
 
 path=ARGV.first
