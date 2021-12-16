@@ -3,10 +3,11 @@
 
 require 'rubytools/array_table'
 require 'rubytools/methods_view'
+require 'rubytools/ansi_color'
 
 class Array
   def fzf_preview(preview = 'ri {}')
-    IO.popen("fzf -m --preview='#{preview}'", 'w+') do |io|
+    IO.popen("fzf -m --preview='#{preview}' --ansi", 'w+') do |io|
       io.puts to_a.join("\n")
       io
         .read
