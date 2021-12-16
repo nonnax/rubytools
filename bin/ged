@@ -6,8 +6,8 @@ require 'rubytools'
 require 'editor'
 require 'string_ext'
 require 'optparse'
-
-exit unless ARGV.first.text_file?
+f=ARGV.first
+exit unless f.text_file? || f.match(/json|yaml$/)
 
 @options = {}
 OptionParser.new do |opt|
