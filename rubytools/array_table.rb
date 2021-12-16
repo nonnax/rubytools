@@ -4,12 +4,12 @@
 # Id$ nonnax 2021-09-18 17:23:18 +0800
 
 class Array
-  def safe_each_slice(n)
-    # yields evenly sliced sub-arrays; padded with nils
-    each_slice(n)
-      .to_a
-      .tap do |d|
-      d[-1] += [nil] * (d.first.size - d.last.size)
+  def safe_each_slice(n, padding: nil)
+    # yields evenly sliced sub-arrays; padded with <padding>
+    arr=each_slice(n).to_a
+    max_size=arr.map(&:size).max
+    arr.map do |d|      
+        d += [padding] * (max_size-d.size)
     end.to_enum
   end
 
