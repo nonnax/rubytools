@@ -2,10 +2,10 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-09-27 01:40:36 +0800
-require 'rubytools/arraycsv'
-require 'rubytools/array_table'
-require 'rubytools/numeric_ext'
-require 'rubytools/fzf'
+require_relative '../lib/rubytools/arraycsv'
+require_relative '../lib/rubytools/array_table'
+require_relative '../lib/rubytools/numeric_ext'
+require_relative '../lib/rubytools/fzf'
 
 
 csvstr = $stdin.read

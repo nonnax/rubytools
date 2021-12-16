@@ -1,8 +1,8 @@
-require 'rubytools/numeric_ext'
-require 'rubytools/string_ext'
-require 'rubytools/hash_ext'
-require 'rubytools/file_ext'
-require 'rubytools/time_and_date_ext'
+require_relative '../rubytools/numeric_ext'
+require_relative '../rubytools/string_ext'
+require_relative '../rubytools/hash_ext'
+require_relative '../rubytools/file_ext'
+require_relative '../rubytools/time_and_date_ext'
 
 class NilClass
   # +nil+ is blank:

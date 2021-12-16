@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'rubytools/array_table'
-require 'rubytools/ansi_color'
+require_relative '../rubytools/array_table'
+require_relative '../rubytools/ansi_color'
 
 class Array
   def to_hbars(delimeter: ' ')
