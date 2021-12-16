@@ -2,9 +2,8 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-12-10 00:38:03 +0800
-require 'rubytools'
-require 'editor'
-require 'string_ext'
+require_relative '../lib/rubytools/editor'
+require_relative '../lib/rubytools/string_ext'
 require 'optparse'
 
 exit unless ARGV.first.text_file?
