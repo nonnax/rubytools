@@ -5,7 +5,6 @@ require "net/http"
 require "rubytools/cache"
 require 'excon'
 
-# TODO: Write documentation for `Coingecko`
 module Coingecko
   VERSION = "0.1.0"
   # not found
@@ -32,14 +31,14 @@ module Coingecko
     keys=%i[id current_price high_24h low_24h price_change_percentage_24h price_change_percentage_30d]
 
     data.each do |coin|
-      list<< coin.values_at(*keys).join(",")
+      list<< coin.values_at(*keys).compact.join(",")
     end 
-    list.join("\n")
+    list
   end
   
 end
 
-res=Cache.cached('coingecko', ttl: 60) do
+res=Cache.cached('coingecko', ttl: 30) do
   Coingecko.get
 end
 
