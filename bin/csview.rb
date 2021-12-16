@@ -6,10 +6,18 @@ require 'rubytools/arraycsv'
 require 'rubytools/array_table'
 require 'rubytools/numeric_ext'
 require 'rubytools/fzf'
+require 'rubytools/input_argv'
+require 'tempfile'
 
-fs = ARGV
+path = ARGV.first
 
-fs.first == '-fzf' && fs = Dir['*.*'].fzf
+# fs.first == '-fzf' && fs = Dir['*.*'].fzf
+unless path
+  fs=Tempfile.new 
+  fs.puts $stdin.read
+  fs.rewind
+  path=fs.path
+end
 
 def view_as_table(f)
   data = ArrayCSV.new(f)
@@ -29,6 +37,4 @@ def view_as_table(f)
   puts table
 end
 
-fs.each do |f|
-  view_as_table(f)
-end
+view_as_table(path)
