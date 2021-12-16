@@ -32,14 +32,14 @@ module Coingecko
     keys=%i[id current_price high_24h low_24h price_change_percentage_24h price_change_percentage_30d]
 
     data.each do |coin|
-      list<< coin.values_at(*keys).join(" ")
+      list<< coin.values_at(*keys).join(",")
     end 
     list.join("\n")
   end
   
 end
 
-res=Cache.cached('coingecko', ttl: 120) do
+res=Cache.cached('coingecko', ttl: 60) do
   Coingecko.get
 end
 
