@@ -10,9 +10,8 @@ Gem::Specification.new do |s|
   s.summary = "rubytools - common use libraries and bins"
   s.authors = ["xxanon"]
   s.email = "ironald@gmail.com"
-  s.files = files
-  s.files = `git ls-files`.split("\n") - %w[.gitignore .travis.yml]
-  s.executables += bins
+  s.files = `git ls-files`.split("\n") - %w[bin]
+  s.executables += `git ls-files bin`.split("\n").map{|e| File.basename(e)}
   s.homepage = "https://github.com/nonnax/rubytools.git"
   s.license = "GPL-3.0"
 end
