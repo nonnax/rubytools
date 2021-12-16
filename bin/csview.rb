@@ -6,14 +6,13 @@ require 'rubytools/arraycsv'
 require 'rubytools/array_table'
 require 'rubytools/numeric_ext'
 require 'rubytools/fzf'
-require 'rubytools/input_argv'
+require 'rubytools/pipe_argv'
 require 'tempfile'
 
-path = ARGV.first
+path=ARGV.first
 
-# fs.first == '-fzf' && fs = Dir['*.*'].fzf
 unless path
-  fs=Tempfile.new 
+  fs=Tempfile.new
   fs.puts $stdin.read
   fs.rewind
   path=fs.path
