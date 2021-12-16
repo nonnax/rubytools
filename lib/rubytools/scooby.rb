@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 # Markamini-inspired markup-builder
-require_relative '../rubytools/thread_ext'
+require 'rubytools/thread_ext'
 
 class Scooby < BasicObject
   def initialize
