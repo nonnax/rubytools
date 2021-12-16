@@ -6,7 +6,7 @@ require 'json'
 require 'date'
 require 'rubytools/cache'
 #
-# url="https:/api.coingecko.com/api/v3/coins/#{coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&vs_currencies=php"
+# url="https://api.coingecko.com/api/v3/coins/#{coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&vs_currencies=php"
 class Hash
   def to_params
     inject([]) { |a, (h, k)| a << "#{h}=#{k}" }.join('&')
@@ -31,7 +31,7 @@ def help
 end
 
 def get_price_history(coin, date = '30-07-2021')
-  url = "https:/api.coingecko.com/api/v3/coins/#{coin}/history?date=#{date}"
+  url = "https://api.coingecko.com/api/v3/coins/#{coin}/history?date=#{date}"
   response = Excon.get(
     url
     #
@@ -49,7 +49,7 @@ def get_price(*coins)
   coins.map do |coin|
     url = []
 
-    url << "https:/api.coingecko.com/api/v3/coins/#{coin}"
+    url << "https://api.coingecko.com/api/v3/coins/#{coin}"
 
     url << {
       localization: false,
