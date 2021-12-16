@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 require 'rubytools'
 require 'numeric_ext'
 require 'string_ext'
