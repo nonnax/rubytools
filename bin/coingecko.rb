@@ -15,13 +15,13 @@ module Coingecko
     "ripple", 
     "bitcoin-cash", 
     "litecoin", 
-    # "the-graph",
+    "the-graph",
     "aave",
     "uniswap",
-    "chainlink" 
-    # "enjincoin",
-    # "compound-coin",
-    # "basic-attention-token"
+    "chainlink",
+    "enjincoin",
+    "compound-coin",
+    "basic-attention-token"
     ]
     list=[]
 
