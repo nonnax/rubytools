@@ -8,6 +8,14 @@ module XXHSum
       io.read
     end.split(/\s+/).first
   end
+  def xxh32sum()
+    IO.popen("xxh32sum", "w+") do |io| 
+      io.puts self
+      io.close_write 
+      io.read
+    end.split(/\s+/).first
+  end
+
 end
 
 String.include(XXHSum)
