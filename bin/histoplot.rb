@@ -6,10 +6,11 @@
 # usage: histoplot.rb <csvfile> <colnum>
 #
 require 'csv'
-require 'rubytools/asciiplot'
-require 'rubytools/numeric_ext'
+require 'rubytools'
+require 'asciiplot'
+require 'numeric_ext'
 # require 'string_bars'
-require 'rubytools/fzf'
+require 'fzf'
 
 # f=Dir["*.*"].fzf.first
 f, targetrow=ARGV
