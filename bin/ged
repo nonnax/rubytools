@@ -36,5 +36,5 @@ end
 f = ARGV.first
 
 edit_and_commit(f) do |text|
-  IO.editor(text, with: 'tempfile')
+  IO.editor(text, tempfile: true)
 end
