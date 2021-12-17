@@ -35,18 +35,23 @@ ARGS() do |arg|
     end
   end
 
-CHUNK_SIZE=1
-para_size=content.paragraphs.each_slice(CHUNK_SIZE).to_a.size
+start-=1
+start=[0, start].max
 
-content.paragraphs.each_slice(CHUNK_SIZE).each_with_index do |cont, i|
+CHUNK_SIZE=3
+para_size=content.paragraphs.each_slice(CHUNK_SIZE).to_a.size
+paragraphs=content.paragraphs.each_slice(CHUNK_SIZE).to_a[start..-1]
+
+paragraphs.each_with_index do |cont, i|
   puts paragraph_chunk=cont.join("\n\n")
-  puts "%d/%d. (%d)." % [i+1, para_size, paragraph_chunk.size]
   puts
-  p mp3=Dir["*.mp3"].grep( Regexp.new("-%02d" % [i+1]))
-  puts "play '#{mp3.first}' &>/dev/null"
-  IO.popen("mpv --loop-playlist=no --loop-file=no '#{mp3.first}' &>/dev/null"){|io| io.read}
-  IO.popen('espeak --stdin &>/dev/null', 'w') { |io| io.puts paragraph_chunk }
-  sleep 3
+  mp3=Dir["*.mp3"].grep( Regexp.new("-%02d" % [start+i+1])).first
+  puts "%d/%d. (%d) %s" % [start+i+1, para_size, paragraph_chunk.size, mp3]
+  
+  # IO.popen("mpv -vo null --loop-playlist=no --loop-file=no --no-resume-playback '#{mp3.first}'"){|io| io.read}
+  IO.popen("mpv --loop-playlist=no --loop-file=no --no-resume-playback '#{mp3}' &>/dev/null"){|io| io.read}
+  # IO.popen('espeak --stdin &>/dev/null', 'w') { |io| io.puts paragraph_chunk }
+  sleep 0.5
   puts
 end
 
