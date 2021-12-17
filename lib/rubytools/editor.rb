@@ -3,6 +3,12 @@
 require 'tempfile'
 class IO
   class << self
+    def editor(text="", editor: ENV['EDITOR'], tempfile: false)
+      use = tempfile ? :_tempfile : :_buffer
+      send use, text, editor
+    end
+    
+    private
     def _buffer(text, editor)    
       IO.popen(editor, 'w+') do |io|
         io.puts text
@@ -17,10 +23,6 @@ class IO
         cmd=[editor, f.path].join(' ')
         IO.popen(cmd, &:read)
       end
-    end
-    def editor(text="", editor: ENV['EDITOR'], tempfile: false)
-      use = tempfile ? :_tempfile : :_buffer
-      send use, text, editor
     end
   end
 end
