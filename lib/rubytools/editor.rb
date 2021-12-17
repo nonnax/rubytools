@@ -3,14 +3,14 @@
 require 'tempfile'
 class IO
   class << self
-    def buffer(text, editor)    
+    def _buffer(text, editor)    
       IO.popen(editor, 'w+') do |io|
         io.puts text
         io.close_write
         io.read
       end  
     end
-    def tempfile(text, editor)
+    def _tempfile(text, editor)
       Tempfile.create('internal') do |f|
         f.puts text
         f.rewind
@@ -18,8 +18,9 @@ class IO
         IO.popen(cmd, &:read)
       end
     end
-    def editor(text="", editor: ENV['EDITOR'], with: :buffer)
-      send with, text, editor
+    def editor(text="", editor: ENV['EDITOR'], tempfile: false)
+      use = tempfile ? :_tempfile : :_buffer
+      send use, text, editor
     end
   end
 end
