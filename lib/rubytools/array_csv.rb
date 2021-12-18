@@ -18,7 +18,7 @@ class ArrayCSV
   end
   
   def self.parse(fname)
-    new.load(fname, 'r',  autosave: false).dataframe.dup
+    new(fname, 'r',  autosave: false).load.dataframe.dup
   end
   
   def self.open(fname, mode='a+', autosave: false, &block)
