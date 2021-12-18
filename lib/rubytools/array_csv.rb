@@ -15,10 +15,11 @@ class ArrayCSV
     @autosave=autosave
     clear if mode.match(/^w/)
     load
+    self
   end
   
   def self.parse(fname)
-    new(fname, 'r',  autosave: false).load.dataframe.dup
+     new(fname, 'r',  autosave: false).dataframe
   end
   
   def self.open(fname, mode='a+', autosave: false, &block)
@@ -30,13 +31,14 @@ class ArrayCSV
 
   def dataframe
     yield(@dataframe) if block_given?
-    @dataframe
     save if @autosave
+    @dataframe
   end
   
   def prepend(*a)
     @dataframe.prepend(*a)
     save if @autosave
+    self
   end
   
   def <<(*a)
@@ -80,7 +82,6 @@ class ArrayCSV
     @dataframe.send m, *a, **h, &block
   end
 
-  private
 
   def clear
     File.exists?(@fname) && File.open(@fname, 'w'){|f|f.print ""}
@@ -90,6 +91,7 @@ class ArrayCSV
     Thread.new do
       @dataframe=File.exists?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric]) : []
     end.join
+    self
   end
   alias load_data load
 
