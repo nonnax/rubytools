@@ -16,7 +16,11 @@ class ArrayCSV
     clear if mode.match(/^w/)
     load
   end
-
+  
+  def self.parse(fname)
+    new.load(fname, 'r',  autosave: false).dataframe.dup
+  end
+  
   def self.open(fname, mode='a+', autosave: false, &block)
     obj=new(fname, mode, autosave: autosave)
     obj.instance_eval{ block.call(obj)}
