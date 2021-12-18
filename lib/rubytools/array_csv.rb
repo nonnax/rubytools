@@ -7,7 +7,7 @@ require 'rubytools/thread_ext'
 
 class ArrayCSV
   extend Forwardable
-
+  attr_writer :dataframe
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
   def initialize(fname, mode='a+', autosave: true)
