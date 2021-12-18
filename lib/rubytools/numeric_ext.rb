@@ -99,12 +99,13 @@ module NumericFormatter
     arr = "-#{arr}" if negative?
     arr
   end
-  def to_s
-    self.commify
+  def to_s(*a)
+    a.empty? ? self.commify : super(*a)
   end
 end
 
 Numeric.include(NumericHelper)
+Numeric.prepend(NumericFormatter)
 Float.prepend(NumericFormatter)
 Integer.prepend(NumericFormatter)
 
