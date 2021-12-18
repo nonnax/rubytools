@@ -25,7 +25,8 @@ end
 
 #
 ## Helper methods for working with time units other than seconds
-class Numeric
+module NumericHelper
+
   # Convert time intervals to seconds
   def milliseconds
     self / 1000.0
@@ -82,9 +83,9 @@ class Numeric
   end
 end
 
+module NumericFormatter
 # special
 
-module NumericHelper
   def commify
     return if infinite?
 
@@ -98,6 +99,13 @@ module NumericHelper
     arr = "-#{arr}" if negative?
     arr
   end
+  def to_s
+    self.commify
+  end
 end
 
 Numeric.include(NumericHelper)
+Float.prepend(NumericFormatter)
+Integer.prepend(NumericFormatter)
+
+
