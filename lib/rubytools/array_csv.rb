@@ -31,8 +31,8 @@ class ArrayCSV
     self
   end
   
-  def <<(data)
-      @dataframe << data.dup
+  def <<(*a)
+      @dataframe << a.dup
       save if @autosave
       self
   end
