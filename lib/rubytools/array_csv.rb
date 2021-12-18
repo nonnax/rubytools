@@ -7,7 +7,7 @@ require 'rubytools/thread_ext'
 
 class ArrayCSV
   extend Forwardable
-  attr_accessor :dataframe
+  # attr_accessor :dataframe
 
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
@@ -18,23 +18,27 @@ class ArrayCSV
     load
   end
 
-  def self.open(fname, mode='a', &block)
-    obj=new(fname, mode, autosave: false)
+  def self.open(fname, mode='a', autosave: false, &block)
+    obj=new(fname, mode, autosave: autosave)
     obj.instance_exec(obj, &block)
     obj.save
     obj.to_a
   end
 
+  def dataframe
+    yield @dataframe if block_given?
+    @dataframe
+    save if @autosave
+  end
+  
   def prepend(*a)
     @dataframe.prepend(*a)
     save if @autosave
-    self
   end
   
   def <<(*a)
-      @dataframe << a.dup.flatten
-      save if @autosave
-      self
+    @dataframe << a.dup.flatten
+    save if @autosave
   end
   alias append <<
   
@@ -56,12 +60,17 @@ class ArrayCSV
     @dataframe
   end
 
+  def to_s
+    @dataframe.inspect
+  end
+
   def save
     # save dataframe
     return if @dataframe.compact.empty?
     Thread.new do
       File.write(@fname, @dataframe.map(&:to_csv).join)
     end.join
+    self
   end
 
   def method_missing(m, *a, **h, &block)
@@ -71,7 +80,7 @@ class ArrayCSV
   private
 
   def clear
-  	File.exists?(@fname) && File.open(@fname, 'w'){|f|f.print ""}
+    File.exists?(@fname) && File.open(@fname, 'w'){|f|f.print ""}
   end
   
   def load
