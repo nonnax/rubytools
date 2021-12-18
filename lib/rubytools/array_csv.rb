@@ -19,7 +19,7 @@ class ArrayCSV
 
   def self.open(fname, mode='a+', autosave: false, &block)
     obj=new(fname, mode, autosave: autosave)
-    obj.instance_exec(obj, &block)
+    obj.instance_eval{ block.call(obj)}
     obj.save
     obj.to_a
   end
