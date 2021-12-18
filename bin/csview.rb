@@ -6,8 +6,7 @@ require 'rubytools'
 require 'array_csv'
 require 'array_table'
 require 'numeric_ext'
-require 'fzf'
-require 'pipe_argv'
+require 'ansi_color'
 require 'tempfile'
 
 path=ARGV.first
@@ -22,19 +21,9 @@ end
 def view_as_table(f)
   data = ArrayCSV.new(f)
 
-  normalized_df = data.dataframe.map do |r|
-    r.map do |e|
-      if e.to_s.is_number?
-        e.to_f.commify
-      else
-        e
-      end
-    end
-  end
-
-  table = normalized_df.to_table(delimeter: '  ')
-
-  puts table
+  data
+    .to_table(delimeter: '  ')
+    .each_with_index{|r, i| puts i.even? ? r : r.magenta}  
 end
 
 view_as_table(path)
