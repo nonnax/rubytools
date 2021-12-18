@@ -7,7 +7,6 @@ require 'rubytools/thread_ext'
 
 class ArrayCSV
   extend Forwardable
-  # attr_accessor :dataframe
 
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
@@ -26,7 +25,7 @@ class ArrayCSV
   end
 
   def dataframe
-    yield @dataframe if block_given?
+    yield(@dataframe) if block_given?
     @dataframe
     save if @autosave
   end
@@ -60,7 +59,7 @@ class ArrayCSV
     @dataframe
   end
 
-  def to_s
+  def inspect
     @dataframe.inspect
   end
 
