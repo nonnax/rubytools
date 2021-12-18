@@ -19,7 +19,7 @@ unless path
 end
 
 def view_as_table(f)
-  data = ArrayCSV.new(f)
+  data = ArrayCSV.parse(f)
 
   data
     .to_table(delimeter: '  ')
