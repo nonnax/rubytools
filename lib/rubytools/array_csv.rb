@@ -32,7 +32,7 @@ class ArrayCSV
   end
   
   def <<(*a)
-      @dataframe << a.dup
+      @dataframe << a.dup.flatten
       save if @autosave
       self
   end
