@@ -11,7 +11,7 @@ class ArrayCSV
 
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
-  def initialize(fname, mode='a', autosave: false)
+  def initialize(fname, mode='a+', autosave: false)
     @fname=fname
     @autosave=autosave
     clear if mode.match(/^w/)
@@ -58,6 +58,7 @@ class ArrayCSV
 
   def save
     # save dataframe
+    return if @dataframe.compact.empty?
     Thread.new do
       File.write(@fname, @dataframe.map(&:to_csv).join)
     end.join
