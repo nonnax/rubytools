@@ -11,19 +11,33 @@ class ArrayCSV
 
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
-  def initialize(fname, mode='a')
+  def initialize(fname, mode='a', autosave: false)
     @fname=fname
-    clear if mode =~ /^w/
+    @autosave=autosave
+    clear if mode.match(/^w/)
     load
-  end  
+  end
+
+  def self.open(fname, mode='a', &block)
+    obj=new(fname, mode)
+    obj.instance_exec(obj, &block)
+    obj.save
+    obj.to_a
+  end
+
+  def prepend(*a)
+    @dataframe.prepend(*a)
+    save if @autosave
+    self
+  end
   
   def <<(data)
-      CSV.open(@fname, 'a' ){|row| row<<data }
       @dataframe << data.dup
+      save if @autosave
       self
   end
   alias append <<
-
+  
   def minmax
     #yield to get column target
     @dataframe.map{|e| yield(e) }.minmax
@@ -48,7 +62,11 @@ class ArrayCSV
       File.write(@fname, @dataframe.map(&:to_csv).join)
     end.join
   end
-  
+
+  def method_missing(m, *a, **h, &block)
+    @dataframe.send m, *a, **h, &block
+  end  
+
   private
 
   def clear
@@ -77,9 +95,9 @@ if __FILE__==$PROGRAM_NAME
   p data.methods-Object.methods
   p data.size
   p 'data.values_at(-1, 1)'
-  p data.values_at(-1, 1)
+  p data.values_at(-1, 1).size
   p 'data.assoc(/24/)'
-  p data.assoc(/24/)
+  p data.assoc(/24/).size
   p data.dataframe.transpose
   p data.minmax{|r| r[1] }
   # p data.minmax # runtime error
