@@ -78,7 +78,7 @@ class ArrayCSV
 
   def method_missing(m, *a, **h, &block)
     @dataframe.send m, *a, **h, &block
-  end  
+  end
 
   private
 
