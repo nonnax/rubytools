@@ -5,28 +5,14 @@
 require 'rubytools'
 require 'array_csv'
 require 'array_table'
+require 'ansi_color'
 require 'numeric_ext'
-require 'fzf'
-
-
-csvstr = $stdin.read
 
 def view_as_table(s)
-  data = CSV.parse(s)
-
-  normalized_df = data.map do |r|
-    r.map do |e|
-      if e.to_s.is_number?
-        e.to_f.commify
-      else
-        e
-      end
-    end
-  end
-
-  table = normalized_df.to_table(delimeter: '  ')
-
-  puts table
+  data=CSV.parse(s, converters: :numeric)
+  data
+    .to_table(delimeter: '  ')
+    .each_with_index{|r, i| puts i.even? ? r : r.magenta}
 end
 
-view_as_table(csvstr)
+view_as_table($stdin.read)
