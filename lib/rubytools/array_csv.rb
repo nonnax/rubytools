@@ -11,7 +11,7 @@ class ArrayCSV
 
   def_delegators :@dataframe, :[], :size, :first, :last, :empty?, :map, :each, :sort_by, :reverse, :sort
   
-  def initialize(fname, mode='a+', autosave: false)
+  def initialize(fname, mode='a+', autosave: true)
     @fname=fname
     @autosave=autosave
     clear if mode.match(/^w/)
@@ -19,7 +19,7 @@ class ArrayCSV
   end
 
   def self.open(fname, mode='a', &block)
-    obj=new(fname, mode)
+    obj=new(fname, mode, autosave: false)
     obj.instance_exec(obj, &block)
     obj.save
     obj.to_a
