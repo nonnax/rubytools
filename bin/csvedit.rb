@@ -22,14 +22,27 @@ f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
 exit unless f
 
 data = ArrayCSV.new(f)
-text=data
-    .dataframe
-    .safe_transpose
-    .safe_transpose
-    .to_table(delimeter: "\t")
+text =
+  data
+  .dataframe
+  .safe_transpose
+  .safe_transpose
+  .to_table(delimeter: ', ')
 
-res = IO.editor(text)
-        .lines
-        .map { |r| r.tr("\t", ',') }
+res =
+  [].tap do |arr|
+    IO.editor(text)
+      .lines
+      .map do |r|
+        csv =
+          r
+          .gsub(/\s,/, ',')
+          .gsub(/\s{2,}/, ' ')
+          .lstrip
+        arr << CSV.parse(csv).flatten
+      end
+  end
 
-File.open(f, 'w') { |io| io.puts(res) }
+ArrayCSV.open(f, 'w') do |csv|
+  csv.dataframe = res
+end
