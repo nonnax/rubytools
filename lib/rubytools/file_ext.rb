@@ -17,8 +17,8 @@ module SafeFileName
 end
 
 module NumberedFile
-  RE_END_DIGIT=/\d+$/
   UNDERSCORE='_'
+  RE_END_DIGIT=/#{UNDERSCORE}\d+$/
   def filename_succ
     basename, ext = File.splitname(self)
     out = nil
