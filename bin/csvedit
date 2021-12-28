@@ -8,13 +8,14 @@ require 'array_csv'
 require 'editor'
 require 'fzf'
 require 'string_ext'
+require 'file_ext'
 require 'fileutils'
 
 f = ARGV.first
 
 exit unless f.text_file? && f.match(/csv$/i)
-
-FileUtils.cp(f, "#{Time.now.yday}_#{File.basename(f)}")
+f=File.basename(f)
+FileUtils.cp(f, f.filename_succ)
 
 f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
 
