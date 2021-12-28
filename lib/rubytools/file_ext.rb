@@ -25,8 +25,9 @@ module NumberedFile
     bn=basename.dup
     loop do
       bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
-      n=bn.match(RE_END_DIGIT).to_s.to_i.to_s
-      bn.gsub!(/#{UNDERSCORE}?#{RE_END_DIGIT}/, "#{UNDERSCORE}#{n.rjust(3, '0')}")      
+      n=bn.match(RE_END_DIGIT).to_s.to_i
+      n=[1, n].max
+      bn.gsub!(/#{UNDERSCORE}?#{RE_END_DIGIT}/, "#{UNDERSCORE}#{n.to_s.rjust(3, '0')}")
       out = "#{bn}#{ext}"
       break unless File.exist?(out)
     end
@@ -34,6 +35,6 @@ module NumberedFile
   end
 end
 
-String.include(SafeFileName)
 String.include(NumberedFile)
+String.include(SafeFileName)
 
