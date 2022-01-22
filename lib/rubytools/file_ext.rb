@@ -5,6 +5,10 @@ class File
   def self.splitname(f)
     [File.basename(f, '.*'), File.extname(f)]
   end
+  def self.splitpath(f)
+    f_basename = File.basename(f)
+    [File.expand_path(f).gsub(f_basename, ''), f_basename]  
+  end
   def self.filename_succ(f)
     f.filename_succ
   end
@@ -25,9 +29,6 @@ module NumberedFile
     bn=basename.dup
     loop do
       bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
-      n=bn.match(RE_END_DIGIT).to_s.to_i
-      n=[1, n].max
-      bn.gsub!(/#{UNDERSCORE}?#{RE_END_DIGIT}/, "#{UNDERSCORE}#{n.to_s.rjust(3, '0')}")
       out = "#{bn}#{ext}"
       break unless File.exist?(out)
     end
