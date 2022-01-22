@@ -89,7 +89,7 @@ class ArrayCSV
   
   def load
     Thread.new do
-      @dataframe=File.exists?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric]) : []
+      @dataframe=File.exists?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric date]) : []
     end.join
     self
   end

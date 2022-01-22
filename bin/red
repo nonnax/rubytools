@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2021-12-28 20:29:25 +0800
+
+exit unless ARGV.size>1
+
+regex=ARGV.shift
+search,replace = regex.split('/')
+
+ARGF.each do |l|
+  print [ARGF.filename, ARGF.file.lineno].join(':')
+  p l.gsub(/#{search}/, replace)
+end

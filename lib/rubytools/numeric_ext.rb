@@ -84,7 +84,7 @@ module NumericHelper
 end
 
 module NumericFormatter
-# special
+# auto print formatting for numbers
 
   def commify
     return if infinite?

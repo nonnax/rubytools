@@ -15,9 +15,13 @@ end.parse!
 
 lines=$stdin.read.split("\n")
 
-puts lines.map{|e| 
+puts lines
+  .map{|e| 
      if e.match(/--/)
-      e.reverse.split(/\s*--\s*/,2).map(&:reverse)
+      e
+      .reverse
+      .split(/\s*--\s*/,2)
+      .map(&:reverse)
      else
       ["", e]
      end
