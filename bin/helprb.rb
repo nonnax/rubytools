@@ -2,28 +2,20 @@
 # frozen_string_literal: true
 
 require 'rubytools'
-require 'array_table'
 require 'methods_view'
 require 'ansi_color'
 require 'fzf'
 
-# class Array
-  # def fzf_preview(preview = 'ri {}')
-    # IO.popen("fzf -m --ansi --preview='#{preview}'", 'w+') do |io|
-      # io.puts to_a.join("\n")
-      # io.read.split
-    # end
+# class Object
+  # def method_info
+    # test_type = respond_to?(:instance_methods) ? :instance_methods : :methods
+    # send(test_type)
+      # .sort
+      # .fzf_preview("ri --format=markdown {} | bat -l markdown --color=always")
+      # .first
   # end
 # end
 
-class Class
-  def method_info
-    instance_methods
-      .sort
-      .fzf_preview("ri --format=markdown #{name}.{} | bat -l markdown --color=always", cmd: 'fzf --ansi')
-      .first
-  end
-end
 loop do
   data = []
 
@@ -37,5 +29,8 @@ loop do
 
   break unless selected
 
-  eval(selected.to_s).method_info # (:instance_methods)
+  m=IO.popen("ri --format=markdown #{selected.to_s} | bat -p -l markdown --color=always | fzf", &:read)
+  obj_method=[selected,m.strip].join('.')
+  IO.popen("ri --format=markdown #{obj_method} | bat -p -l markdown --color=always | fzf", &:read)
+  
 end
