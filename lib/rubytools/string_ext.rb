@@ -14,24 +14,24 @@
 require 'erb'
 require 'base64'
 require 'cgi'
-require 'ruby-filemagic'
-
-class String
-  def is_text_file?
-    begin
-      fm = FileMagic.new(FileMagic::MAGIC_MIME)
-      fm.file(self) =~ /^text\//
-    ensure
-      fm.close
-    end
-  end
-  alias text_file? is_text_file?
-
-  def is_binary_file?
-    !text?
-  end
-  alias binary_file? is_binary_file?
-end
+# require 'ruby-filemagic'
+# 
+# class String
+  # def is_text_file?
+    # begin
+      # fm = FileMagic.new(FileMagic::MAGIC_MIME)
+      # fm.file(self) =~ /^text\//
+    # ensure
+      # fm.close
+    # end
+  # end
+  # alias text_file? is_text_file?
+# 
+  # def is_binary_file?
+    # !text?
+  # end
+  # alias binary_file? is_binary_file?
+# end
 
 class String
   def wrap(max_width = 20)
