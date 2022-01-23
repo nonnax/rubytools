@@ -1,5 +1,25 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2021-10-31 21:26:17 +0800
+require 'ruby-filemagic'
+require 'fileutils'
+
+class String
+  def is_text_file?
+    # returns true/false
+    begin
+      fm = FileMagic.new(FileMagic::MAGIC_MIME)
+      !(fm.file(self).match /^text\//).nil? 
+    ensure
+      fm.close
+    end
+  end
+  alias text_file? is_text_file?
+
+  def is_binary_file?
+    !text?
+  end
+  alias binary_file? is_binary_file?
+end
 
 class File
   def self.splitname(f)
@@ -12,11 +32,15 @@ class File
   def self.filename_succ(f)
     f.filename_succ
   end
+  def self.backup(f)
+    f_=basename(f)
+    FileUtils.cp(f_, f_.filename_succ)
+  end
 end
 
 module SafeFileName
   def to_safename
-    gsub(/[^\w\.]/, '_')
+    gsub(/[^\w\.]+/, '_')
   end
 end
 
@@ -38,4 +62,3 @@ end
 
 String.include(NumberedFile)
 String.include(SafeFileName)
-
