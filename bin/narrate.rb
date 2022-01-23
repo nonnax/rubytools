@@ -45,17 +45,15 @@ start -= 1
 start = [0, start].max
 
 CHUNK_SIZE = 3
-para_size =
+
+paragraph_array =
   content
   .paragraphs
   .each_slice(CHUNK_SIZE)
   .to_a
-  .size
-paragraphs =
-  content
-  .paragraphs
-  .each_slice(CHUNK_SIZE)
-  .to_a[start..-1]
+
+para_size  = paragraph_array.size
+paragraphs = paragraph_array[start..-1]
 
 paragraphs.each_with_index do |cont, i|
   puts paragraph_chunk = cont.join("\n\n")
