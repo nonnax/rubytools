@@ -13,13 +13,15 @@ require 'fileutils'
 
 f = ARGV.first
 
-exit unless f.text_file? && f.match(/csv$/i)
+exit unless f.text_file? && f.end_with?(".csv")
 f=File.basename(f)
 FileUtils.cp(f, f.filename_succ)
 
-f ||= Dir['*.csv'].fzf(cmd: 'fzf --preview="csview {}"').first
+f ||= 
+Dir['*.csv']
+    .fzf(cmd: 'fzf --preview="csview {}"')
+    .first
 
-# break unless f
 exit unless f
 
 data = ArrayCSV.new(f)
@@ -32,7 +34,7 @@ text =
 
 res =
   [].tap do |arr|
-    IO.editor(text)
+    IO.editor(text, tempfile: true)
       .lines
       .map do |r|
         csv =
