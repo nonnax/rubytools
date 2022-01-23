@@ -5,13 +5,9 @@ require 'excon'
 require 'json'
 require 'date'
 require 'rubytools/cache'
+require 'rubytools/hash_ext'
 #
 # url="https://api.coingecko.com/api/v3/coins/#{coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&vs_currencies=php"
-class Hash
-  def to_params
-    inject([]) { |a, (h, k)| a << "#{h}=#{k}" }.join('&')
-  end
-end
 
 def help
   coins = %w[bitcoin
@@ -58,15 +54,10 @@ def get_price(*coins)
       community_data: false,
       developer_data: false,
       vs_currencies: :php
-    }.to_params
+    }.to_query_string
 
     url = url.join('?')
-    response = Excon.get(
-      url
-      # headers: {
-      # 'x-rapidapi-key' => RAPIDAPI_KEY
-      # }
-    )
+    response = Excon.get(url)
 
     data = JSON.parse(response.body)
     current_price =
