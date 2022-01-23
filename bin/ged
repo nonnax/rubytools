@@ -5,7 +5,9 @@
 require 'rubytools'
 require 'editor'
 require 'string_ext'
+require 'file_ext'
 require 'optparse'
+
 f=ARGV.first
 exit unless f.text_file? || f.match(/json|yaml$/)
 
