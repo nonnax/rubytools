@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rubytools/fzf'
+require 'ansi_color'
+
+loop do
+  data = []
+
+  selected = IO
+             .popen('ri -l'){|io| io.readlines(chomp: true) }
+             .map.with_index{|e, i| i%2==0 ? e.magenta : e }
+             .fzf_preview('ri -a -f markdown {} | bat -l markdown --color=always')
+             .first
+
+  break unless selected
+
+  m = IO.popen("ri --format=markdown #{selected} | bat -p -l markdown --color=always | fzf", &:read)
+  obj_method = [selected, m.strip].join('.')
+  IO.popen("ri --format=markdown #{obj_method} | bat -p -l markdown --color=always | fzf", &:read)
+end
