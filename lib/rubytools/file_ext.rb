@@ -26,15 +26,16 @@ class File
     [File.basename(f, '.*'), File.extname(f)]
   end
   def self.splitpath(f)
-    f_basename = File.basename(f)
+    f_basename = basename(f)
     [File.expand_path(f).gsub(f_basename, ''), f_basename]  
   end
   def self.filename_succ(f)
     f.filename_succ
   end
   def self.backup(f)
-    f_=basename(f)
-    FileUtils.cp(f_, f_.filename_succ)
+    path, f_ = splitpath(f)
+    p [f, File.join(path, f_.filename_succ)]
+    FileUtils.cp( f, File.join(path, f_.filename_succ) )
   end
 end
 

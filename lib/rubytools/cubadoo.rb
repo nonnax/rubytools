@@ -9,7 +9,7 @@ require 'rubytools/cache'
 
 include Tagz.globally
 
-Cuba.use Rack::Session::Cookie, secret: '__a_very_very_lo0Ong_sess1on_str1ng__'
+Cuba.use Rack::Session::Cookie, secret: '__a_very_Very_lo0Ong_sess1on_str1ng__'
 Cuba.plugin Cuba::Safe
 
 Cuba.use Rack::Static, urls: ['/media', '/css']

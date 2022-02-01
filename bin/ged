@@ -14,8 +14,7 @@ exit unless f.text_file? || f.match(/json|yaml$/)
 @options = {}
 OptionParser.new do |opt|
   opt.banner = <<~___
-    ged is a git repo aware editor.
-    note: auto commits with a timestamp
+    ged is a git repo aware editor; with auto commit
   ___
 end.parse!(into: @options)
 

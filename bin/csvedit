@@ -6,16 +6,15 @@ require 'rubytools'
 require 'array_table'
 require 'array_csv'
 require 'editor'
-require 'fzf'
-require 'string_ext'
+# require 'fzf'
+# require 'string_ext'
 require 'file_ext'
 require 'fileutils'
 
 f = ARGV.first
-
-exit unless f.text_file? && f.end_with?(".csv")
+exit unless f.end_with?(".csv")
 f=File.basename(f)
-FileUtils.cp(f, f.filename_succ)
+File.backup(f)
 
 f ||= 
 Dir['*.csv']

@@ -5,6 +5,16 @@ require 'csv'
 require 'forwardable'
 require 'rubytools/thread_ext'
 
+class Array
+  def to_csv
+    str = ''
+    CSV.generate(str) do |csv|
+      csv << self
+    end
+    str
+  end
+end
+
 class ArrayCSV
   extend Forwardable
   attr_writer :dataframe
@@ -117,5 +127,5 @@ if __FILE__==$PROGRAM_NAME
   p data.minmax{|r| r[1] }
   # p data.minmax # runtime error
 
-t.join
+  t.join
 end
