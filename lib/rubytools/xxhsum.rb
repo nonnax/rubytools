@@ -2,7 +2,8 @@
 # Id$ nonnax 2021-11-30 00:16:10 +0800
 module XXHSum
   def xxhsum(h: 64)
-    IO.popen("xxhsum -H#{h}", "w+") do |io| 
+    # IO.popen("xxhsum -H#{h}", "w+") do |io|
+    IO.popen("xxhsum", "w+") do |io| 
       io.puts self 
       io.close_write 
       io.read

@@ -197,3 +197,25 @@ module Strftime
 end
 
 String.include(Strftime)
+
+
+module TimeSlice
+  
+  def timeslice(repeat)
+    max_ts = self
+    
+    repeat &&= repeat.to_i
+
+    size = max_ts.to_ms / repeat
+
+    xtimes = []
+    repeat.times { |x| xtimes << x * size }
+    xtimes << max_ts.to_ms
+
+    xtimes.each_cons(2).map do |x| 
+        x.map(&:to_ts) 
+    end
+  end
+end
+
+String.include(TimeSlice)
