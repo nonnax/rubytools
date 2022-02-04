@@ -4,9 +4,9 @@
 exit unless ARGV.size>1
 
 regex=ARGV.shift
-search,replace = regex.split('/')
+search, replace = regex.split('/')
 
 ARGF.each do |l|
-  print [ARGF.filename, ARGF.file.lineno].join(':')
-  p l.gsub(/#{search}/, replace)
+  p f=ARGF.filename if ARGF.file.lineno==1
+  puts l.gsub(/#{search}/, replace)
 end
