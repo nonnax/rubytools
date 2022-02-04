@@ -1,42 +1,19 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
-require 'rubytools'
-require 'array_table'
-require 'methods_view'
-require 'ansi_color'
+# Id$ nonnax 2022-02-03 22:53:28 +0800
+require 'rubytools/fzf'
 
-class Array
-  def fzf_preview(preview = 'ri {}')
-    IO.popen("fzf -m --preview='#{preview}' --ansi", 'w+') do |io|
-      io.puts to_a.join("\n")
-      io
-        .read
-        .split
-    end
-  end
-end
+qq=ARGV.first
 
-class Class
-  def method_info
-    instance_methods
-      .sort
-      .fzf_preview("ri -f markdown #{name}.{} | bat -l md --color=always")
-      .first
-  end
-end
+classes = IO.popen(['ri', '-l'], &:readlines).map(&:chomp)
+classes = classes.grep(/#{qq}/i) if qq
+
+fzf_cmd={cmd: "fzf --print-query  --preview='ri -f markdown {} | bat -l md -p --color=always'"}
 
 loop do
-  data = []
-
-  selected = Object
-             .constants
-             .sort
-             .map(&:to_s)
-             .map(&:yellow)
-             .fzf_preview('puts_methods.rb {} && ri -f markdown {} | bat -l md --color=always')
-             .first
-
-  break unless selected
-  klass=Object.module_eval(selected.to_s, __FILE__, __LINE__)
-  klass.method_info 
+    selected = classes.fzf(**fzf_cmd).last
+    break unless selected
+    IO.popen(['ri', selected+'.'], &:readlines)
+        .map(&:chomp)
+        .values_at(2..-1)
+        .fzf(**fzf_cmd)
 end
