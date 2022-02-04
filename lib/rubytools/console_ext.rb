@@ -64,6 +64,7 @@ class IO
     ensure
       cursor_show
     end
+    alias quiet quiet_draw
 
     def winsize
       # $stdout.winsize
