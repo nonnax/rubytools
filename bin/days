@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-02-05 11:29:14 +0800
+require 'rubytools/time_and_date_ext'
+require 'optparse'
+
+ndays = ARGV.first 
+ndays = ndays.to_i
+ndays = ndays.zero? ? 29 : ndays-1 
+
+today ||= DateTime.now
+
+opt={}
+
+OptionParser.new do |o|
+  o.on('-fDATESTART', '--from=DATESTART')
+  o.on('-tDATESTOP', '--to=DATESTOP')
+end.parse!(into: opt)
+
+from = opt[:from]
+from = from&.to_date&.to_datetime || DateTime.now
+
+range=from ? (from..(from+ndays)) : ((DateTime.now-ndays)..from)
+to = opt[:to]
+
+range=(from..to.to_date.to_datetime) if to
+
+range.each do |i|
+  puts i
+  i=i.succ
+end
