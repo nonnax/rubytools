@@ -9,7 +9,7 @@ require 'file_ext'
 require 'optparse'
 
 f=ARGV.first
-exit unless f.text_file? || f.match(/json|yaml$/)
+# exit unless f && f.match(/json|yaml$/)
 
 @options = {}
 OptionParser.new do |opt|

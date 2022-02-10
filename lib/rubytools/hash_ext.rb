@@ -2,7 +2,7 @@
 # Id$ nonnax 2021-11-16 10:11:27 +0800
 require 'uri'
 
-class Hash
+module QueryStringHelper
   def to_query_string(repeat_keys: false)
      repeat_keys ? send(:_repeat_keys) : send(:_single_keys)
   end
@@ -26,3 +26,12 @@ class Hash
   private :_repeat_keys
   
 end
+
+module PrintFormatter
+  def format(fmt_str)
+    Kernel.format(fmt_str, self)
+  end
+end
+
+Hash.include(QueryStringHelper)
+Hash.include(PrintFormatter)
