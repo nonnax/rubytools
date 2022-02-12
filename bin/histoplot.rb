@@ -70,5 +70,5 @@ if dataframe.size.positive?
     box=box.gsub(/\-/,'|')
 	df<<title.to_s.rjust(15)[0..15]+box.uncolor	+ suff
   end
-  puts df.last(150).to_hbars(delimeter: '  ')
+  puts df.last(150).reverse.to_hbars(delimeter: '  ')
 end
