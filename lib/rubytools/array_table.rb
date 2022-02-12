@@ -82,6 +82,22 @@ class Array
   end
 end
 
+require 'csv'
+require 'ansi_color'
+# require 'numeric_ext'
+
+class String
+  def view_as_table(col_sep: ",")
+    s = self
+    data=CSV.parse(s, converters: :numeric, col_sep:)
+    data
+      .pad_rows
+      .to_a    
+      .to_table(delimeter: '  ')
+      .each_with_index{|r, i| puts i.even? ? r : r.magenta}
+  end
+end
+
 if __FILE__ == $PROGRAM_NAME
   # require 'numeric_ext'
   df = []
