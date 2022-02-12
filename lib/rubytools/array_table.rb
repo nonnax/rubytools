@@ -3,33 +3,22 @@
 
 # Id$ nonnax 2021-09-18 17:23:18 +0800
 
+# df = [] 
+#
+# 10.times do
+#   df << Array.new(5) { rand(100_000).to_f }
+# end
+# 
+# renders a dataframe into table
+#
+# puts df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
+# or
+# df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
+#   puts row.reverse
+# end
+#
+
 class Array
-  def safe_each_slice(n, padding: nil)
-    # yields evenly sliced sub-arrays; padded with <padding>
-    arr=each_slice(n).to_a
-    max_size=arr.map(&:size).max
-    arr.map do |d|      
-        d += [padding] * (max_size-d.size)
-    end.to_enum
-  end
-
-  # def row_padding(with: nil)
-    # # yields evenly padded rows
-    # # [[1, 2, 3], [1], [1, 2]].row_padding(with: 0) == [[1, 2, 3], [1, 0, 0], [1, 2, 0]]
-    # max_size=map(&:size).max
-    # map do |e|
-      # e += [with] * (max_size - e.size)
-    # end#.to_enum
-  # end
-
-  def pad_rows(padding:nil)
-    # pad short rows with nils; ready to transpose
-    # returns Enumerator
-    max_size=map(&:size).max
-    dup.map do |d|
-      d += [padding] * (max_size - d.size)
-    end.map
-  end
 
   def safe_transpose
     pad_rows.to_a.transpose
@@ -42,6 +31,7 @@ class Array
   end
 
   def to_table(df = self, **h, &block)
+    # renders a dataframe into table
     align_keys = %i[ljust rjust center]
     delimeter = h[:delimeter] || ' | '
     unless (align_keys & h.keys).empty?
@@ -80,6 +70,27 @@ class Array
       end
     end #.join("\n")
   end
+
+  #helper methods
+
+  def each_slice_safe(n, padding: nil)
+    # returns equally sliced rows
+    # padded with <padding>
+    # returns an Enumerator
+    arr=each_slice(n).to_a
+    arr.pad_rows(padding:)
+  end
+
+  def pad_rows(padding:nil)
+    # returns equally resized rows
+    # returns an Enumerator
+    max_size=map(&:size).max
+    dup.map do |d|
+      d + [padding] * (max_size - d.size)
+    end.map
+  end
+  alias auto_resize_rows pad_rows
+
 end
 
 require 'csv'
