@@ -83,18 +83,14 @@ class Array
 end
 
 require 'csv'
-require 'ansi_color'
-# require 'numeric_ext'
 
 class String
-  def view_as_table(col_sep: ",")
-    s = self
-    data=CSV.parse(s, converters: :numeric, col_sep:)
+  def view_as_table(delimeter:'  ' , col_sep: ",")
+    data=CSV.parse(self, converters: :numeric, col_sep:)
     data
       .pad_rows
       .to_a    
-      .to_table(delimeter: '  ')
-      .each_with_index{|r, i| puts i.even? ? r : r.magenta}
+      .to_table(delimeter:)
   end
 end
 
