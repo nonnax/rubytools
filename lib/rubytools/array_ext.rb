@@ -6,6 +6,7 @@ module ArrayPaging
     slice(at..-1)
   end
   def window(at: 0, take: 0)
+    # return slice from at: to take:
     take=(take/2.0).floor
     left_at=[(at-take+1),0].max
     left=slice(left_at, take) || []
