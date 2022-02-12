@@ -9,16 +9,18 @@
 #   df << Array.new(5) { rand(100_000).to_f }
 # end
 # 
-# renders a dataframe into table
+# renders a dataframe into table (String)
 #
 # puts df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
-# or
+#
+# a block yields an array of rendered elements (String) 
+#
 # df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
 #   puts row.reverse
 # end
 #
 
-class Array
+module ArrayTable
 
   def safe_transpose
     pad_rows.to_a.transpose
@@ -92,6 +94,9 @@ class Array
   alias auto_resize_rows pad_rows
 
 end
+
+Enumerable.include(ArrayTable)
+# Enumerable.include(ArrayTable)
 
 require 'csv'
 
