@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# require 'rubytools/asciiplot'
+require 'rubytools/fzf'
+require 'rubytools/core_ext'
+require 'rubytools/array_table'
+require 'rubytools/coingecko_price'
+
+def date(s)
+  Chronic.parse(s)
+end
+
+def gain(v, rate)
+  [v, v * rate.to_f, '%2.2f%%' % rate.to_f].join(' ')
+end
+
+class Numeric
+  def gain(rate)
+    [self, self * rate.to_f, '%2.2f%%' % rate.to_f].join(' ')
+  end
+
+  def r(n = 4)
+    d = []
+    (0..n).each do |i|
+      d << self * (i * 0.05 + 1)
+      d << self / (i * 0.05 + 1)
+    end
+    d.sort.uniq.map { |e| '%.2f' % e }.join(', ')
+  end
+
+  def exchange(*more)
+    keys = %w[bitcoin-cash chainlink litecoin ripple] + more.map(&:to_s)
+    tmp = Array.new(4) { nil }
+    
+    rates = keys.zip(tmp).to_h
+    rates.dup.each do |k, _v|
+      r = Coingecko.ohlc(k)[1]
+      rates[k] = [self / r, r.commify]
+    end
+    
+    data = []
+    rates.inject(data) do |h, (k, v)|
+      h << [k, v].flatten
+    end
+    puts data.sort_by(&:first).to_table
+  end
+end
+
+args=ARGV.dup
+ARGV.clear
+res = eval(ARGF.read)
+p args.first*res if args.first
