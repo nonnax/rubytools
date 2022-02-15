@@ -18,7 +18,7 @@ ARGF.each_line(chomp: true) do |l|
   begin
     puts eval(l)
   rescue=>e
-    p res = l.is_date? ? eval("date '#{l}'") : [e, res]
+    puts res = l.is_date? ? eval("date '#{l}'") : e.backtrace.last
   end
 end
 
