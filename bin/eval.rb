@@ -6,7 +6,7 @@ require 'rubytools/numeric_ext'
 
 class String
   def to_date
-    Chronic.parse(self)
+    Chronic.parse(self).to_s
   end
 end
 
@@ -19,9 +19,11 @@ end
 
 ARGF.each_line(chomp: true) do |l|
   begin
-    puts eval(l)
+    res= eval(l)
   rescue=>e
-    puts res = l.is_date? ? eval("'#{l}'.to_date") : e.backtrace.last
+    res = l.is_date? ? eval("'#{l}'.to_date") : e.backtrace.last
+  ensure
+    puts res
   end
 end
 
