@@ -1,37 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# core_ext.rb duplicated
-# class String
-# def wrap(max_width = 20)
-# if length < max_width
-# self
-# else
-# scan(/.{1,#{max_width}}(?: |$)/).join("\n")
-# end
-# end
-# end
 require 'erb'
 require 'base64'
 require 'cgi'
-# require 'ruby-filemagic'
-# 
-# class String
-  # def is_text_file?
-    # begin
-      # fm = FileMagic.new(FileMagic::MAGIC_MIME)
-      # fm.file(self) =~ /^text\//
-    # ensure
-      # fm.close
-    # end
-  # end
-  # alias text_file? is_text_file?
-# 
-  # def is_binary_file?
-    # !text?
-  # end
-  # alias binary_file? is_binary_file?
-# end
 
 class String
   def wrap(max_width = 20)
@@ -66,7 +38,10 @@ class String
 
   def gsub_match(*a, &block)
     # a more ruby-ish gsub which yields the matched data to the block
-    gsub(*a){ block.call(Regexp.last_match.to_a) if block }
+    gsub(*a){ |m|
+        p m.class
+        block.call(m, Regexp.last_match) if block 
+      }
   end
   
 end
