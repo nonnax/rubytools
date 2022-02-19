@@ -6,6 +6,7 @@ class String
     # obj = obj.to_s unless obj.is_a? String
     !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
   end
+
   def base32_to_i
     to_i(32)
   end
@@ -26,7 +27,6 @@ end
 #
 ## Helper methods for working with time units other than seconds
 module NumericHelper
-
   # Convert time intervals to seconds
   def milliseconds
     self / 1000.0
@@ -84,7 +84,7 @@ module NumericHelper
 end
 
 module NumericFormatter
-# auto print formatting for numbers
+  # auto print formatting for numbers
 
   def commify
     return if infinite?
@@ -99,8 +99,9 @@ module NumericFormatter
     arr = "-#{arr}" if negative?
     arr
   end
+
   def to_s(*a)
-    a.empty? ? self.commify : super(*a)
+    a.empty? ? commify : super(*a)
   end
 end
 
@@ -108,5 +109,3 @@ Numeric.include(NumericHelper)
 Numeric.prepend(NumericFormatter)
 Float.prepend(NumericFormatter)
 Integer.prepend(NumericFormatter)
-
-

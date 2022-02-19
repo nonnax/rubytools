@@ -6,16 +6,6 @@ require 'methods_view'
 require 'ansi_color'
 require 'fzf'
 
-# class Object
-  # def method_info
-    # test_type = respond_to?(:instance_methods) ? :instance_methods : :methods
-    # send(test_type)
-      # .sort
-      # .fzf_preview("ri --format=markdown {} | bat -l markdown --color=always")
-      # .first
-  # end
-# end
-
 loop do
   data = []
 
@@ -29,8 +19,7 @@ loop do
 
   break unless selected
 
-  m=IO.popen("ri --format=markdown #{selected.to_s} | bat -p -l markdown --color=always | fzf", &:read)
-  obj_method=[selected,m.strip].join('.')
+  m = IO.popen("ri --format=markdown #{selected} | bat -p -l markdown --color=always | fzf", &:read)
+  obj_method = [selected, m.strip].join('.')
   IO.popen("ri --format=markdown #{obj_method} | bat -p -l markdown --color=always | fzf", &:read)
-  
 end

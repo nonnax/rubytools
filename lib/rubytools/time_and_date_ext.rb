@@ -9,6 +9,7 @@ class String
     Chronic.parse(self)
   end
   alias to_time to_date
+
   def is_date?
     !Chronic.parse(self).nil?
   end
@@ -50,8 +51,16 @@ class Date
   def to_time(dest, method)
     # Convert a fraction of a day to a number of microseconds
     usec = (dest.sec_fraction * 60 * 60 * 24 * (10**6)).to_i
-    Time.send(method, dest.year, dest.month, dest.day, dest.hour, dest.min,
-              dest.sec, usec)
+    Time.send(
+      method,
+      dest.year,
+      dest.month,
+      dest.day,
+      dest.hour,
+      dest.min,
+      dest.sec,
+      usec
+    )
   end
 end
 
@@ -154,7 +163,7 @@ class String
   end
   alias to_ms to_msec
   def sanitize
-  		gsub(/[^\w\d.]/, '_')
+    gsub(/[^\w\d.]/, '_')
   end
 end
 
@@ -180,14 +189,16 @@ class Time
   def to_ts
     to_ms.to_ts
   end
-	def self.now_sum
-		t=Time.now
-		[t.yday, t.hour, t.min, t.sec].sum
-	end
-	def self.now_to_s
-		t=Time.now
-		"%04d%02d%02d%02d" % [t.yday, t.hour, t.min, t.sec]
-	end
+
+  def self.now_sum
+    t = Time.now
+    [t.yday, t.hour, t.min, t.sec].sum
+  end
+
+  def self.now_to_s
+    t = Time.now
+    format('%04d%02d%02d%02d', t.yday, t.hour, t.min, t.sec)
+  end
 end
 
 module Strftime
@@ -198,22 +209,21 @@ end
 
 String.include(Strftime)
 
-
 module TimeSlice
-  
   def timeslice(repeat)
-    max_ts = self
-    
+    max_ts = to_ms
+
     repeat &&= repeat.to_i
+    slice_size = max_ts / repeat
 
-    size = max_ts.to_ms / repeat
+    xtimes =
+      repeat
+      .times
+      .map { |x| x * slice_size }
+    xtimes << max_ts
 
-    xtimes = []
-    repeat.times { |x| xtimes << x * size }
-    xtimes << max_ts.to_ms
-
-    xtimes.each_cons(2).map do |x| 
-        x.map(&:to_ts) 
+    xtimes.each_cons(2).map do |x|
+      x.map(&:to_ts)
     end
   end
 end

@@ -9,13 +9,13 @@ require 'numeric_ext'
 require 'ansi_color'
 require 'tempfile'
 
-path=ARGV.first
+path = ARGV.first
 
 unless path
-  fs=Tempfile.new
+  fs = Tempfile.new
   fs.puts $stdin.read
   fs.rewind
-  path=fs.path
+  path = fs.path
 end
 
 def view_as_table(f)
@@ -23,7 +23,7 @@ def view_as_table(f)
 
   data
     .to_table(delimeter: '  ')
-    .each_with_index{|r, i| puts i.even? ? r : r.magenta}  
+    .each_with_index { |r, i| puts i.even? ? r : r.magenta }
 end
 
 view_as_table(path)

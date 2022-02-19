@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 # Id$ nonnax 2021-09-10 11:50:27 +0800
 # histoplot.rb
 #   plots chronological data as vertical candlestick pattern ascii chart
@@ -12,10 +13,10 @@ require 'numeric_ext'
 require 'fzf'
 
 # f=Dir["*.*"].fzf.first
-f, targetrow=ARGV
+f, targetrow = ARGV
 
 # fzf enabled
-f=='fzf' && f=Dir['*.*'].fzf.first
+f == 'fzf' && f = Dir['*.*'].fzf.first
 
 # f, targetrow = ARGV
 target_row = targetrow ? targetrow.to_i : 2
@@ -30,7 +31,7 @@ def data.build_df(target_row)
       # to_f ensures zeros/headers are rejected
       [label, col.to_f]
     end
-    .reject { |e| e.last<0 }
+    .reject { |e| e.last.negative? }
 
   # init opening
   min, max = tmp.map(&:last).minmax
@@ -59,16 +60,16 @@ XLIMIT = 55
 AsciiPlot.x_axis_limit = XLIMIT
 
 if dataframe.size.positive?
-   i=0
-  df=[]
+  i = 0
+  df = []
   dataframe.plot_df do |box, row|
     title = row[:title]
     min = row[:open]
     max = row[:close]
     rate = format('%.2f %%', (max / min - 1) * 100)
-    suff=min<max ? ' ' : '-' 
-    box=box.gsub(/\-/,'|')
-	df<<title.to_s.rjust(15)[0..15]+box.uncolor	+ suff
+    suff = min < max ? ' ' : '-'
+    box = box.gsub(/-/, '|')
+    df << title.to_s.rjust(15)[0..15] + box.uncolor	+ suff
   end
   puts df.last(150).reverse.to_hbars(delimeter: '  ')
 end

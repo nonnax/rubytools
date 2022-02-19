@@ -20,10 +20,10 @@ module MethodsTable
 
     return if data.empty?
 
-		# pad with nils for transpose 
-    data = data.tap { |d| 
-    		d[-1] += [nil] * (d.first.size - d.last.size) 
-    	}.transpose
+    # pad with nils for transpose
+    data = data.tap do |d|
+      d[-1] += [nil] * (d.first.size - d.last.size)
+    end.transpose
     puts data.to_table(ljust: (0..data.first.size), delimeter: '   ')
   end
 end

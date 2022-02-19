@@ -38,14 +38,13 @@ class String
 
   def gsub_match(*a, &block)
     # a more ruby-ish gsub which yields the matched data to the block
-    gsub(*a){ |m|
-        p m.class
-        block.call(m, Regexp.last_match) if block 
-      }
+    gsub(*a) do |m|
+      p m.class
+      block&.call(m, Regexp.last_match)
+    end
   end
-  
 end
-# 
+
 module QueryStringConverter
   def query_string_to_h
     CGI.parse(URI.parse(self).query).transform_keys(&:to_sym)
@@ -53,7 +52,7 @@ module QueryStringConverter
 end
 
 module TextScanner
-  RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)\'"]?)/.freeze  #'
+  RE_SENTENCE ||= /\b[^.;?!]+(?:[.;?!]|$)(?:[)'"]?)/.freeze # '
 
   def join!
     gsub!(/\n/, ' ')
@@ -73,11 +72,10 @@ module TextScanner
     split(/\n{2,}/).map
   end
 
-  def sentences_split(arg=/\n/)
-    gsub(/([\.\?\!]+)(?=[^'"])/){|m| "#{m.strip}\n" }.split(arg) #'
+  def sentences_split(arg = /\n/)
+    gsub(/([.?!]+)(?=[^'"])/) { |m| "#{m.strip}\n" }.split(arg) # '
   end
 end
-
 
 module RenderERB
   def render(binding_obj)
@@ -96,7 +94,7 @@ module StringBase64
   end
 
   def base64?
-    Base64.encode64(Base64.decode64(self)).strip == self.strip && (self.size % 4).positive?
+    Base64.encode64(Base64.decode64(self)).strip == strip && (size % 4).positive?
   end
 end
 

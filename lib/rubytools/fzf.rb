@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 # fzf interface
 #
 require 'json'
@@ -13,7 +14,7 @@ module FZF
     end
   end
 
-  def fzf_prompt(prompt='> ')
+  def fzf_prompt(prompt = '> ')
     fzf(cmd: "fzf -m --prompt '#{prompt}'")
   end
 
@@ -21,11 +22,11 @@ module FZF
     fzf(cmd: "fzf -m --print-query --prompt '#{prompt}' --preview='#{preview} && {q}'")
   end
 
-  def fzf_preview(preview='cat {}', cmd: 'fzf -m')
+  def fzf_preview(preview = 'cat {}', cmd: 'fzf -m')
     cmd_arr = []
     cmd_arr << cmd
     cmd_arr << "--preview='#{preview}'"
-    fzf(cmd: cmd_arr.join(' ')) 
+    fzf(cmd: cmd_arr.join(' '))
   end
 
   def fzf_with_index(cmd: 'fzf -m', &block)
@@ -38,7 +39,7 @@ module FZF
 
                 [i, e.to_json].join("\t")
               }
-        	.join("\n")
+        .join("\n")
       io
         .readlines(chomp: true)
         .map { |e| e.split(/\s/, 2) }
@@ -52,7 +53,7 @@ module FZF
       io
         .puts to_a
           .map { |k, v| [k, v.split("\n").join(' ~ ')].join(' : ') }
-        	.join("\n")
+        .join("\n")
       io
         .readlines(chomp: true)
         .map { |h| h.split(/\s?:\s?/, 2) }

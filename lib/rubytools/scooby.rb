@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # Markamini-inspired markup-builder
 require 'rubytools/thread_ext'
 
@@ -8,7 +9,7 @@ class Scooby < BasicObject
   end
 
   def self.dooby(&block)
-     new.instance_eval(&block).to_s     # toplevel @node.to_s
+    new.instance_eval(&block).to_s # toplevel @node.to_s
   end
 
   def method_missing(tag, opts = {}, &block)
@@ -51,21 +52,20 @@ class Node
   end
 end
 
-
 # require 'cache'
 
 module Kernel
-	def render(**h, &block)
-		if f=h[:cache]
-			ttl=(h[:ttl] ||= 300)
-			p "fetching cache...#{ttl}"
-			Cache.cached(f, ttl: ttl) do
-				Scooby.dooby(&block)
-			end
-		else
-			Scooby.dooby(&block)
-		end
-	end
+  def render(**h, &block)
+    if f = h[:cache]
+      ttl = (h[:ttl] ||= 300)
+      p "fetching cache...#{ttl}"
+      Cache.cached(f, ttl: ttl) do
+        Scooby.dooby(&block)
+      end
+    else
+      Scooby.dooby(&block)
+    end
+  end
 end
 
 __END__

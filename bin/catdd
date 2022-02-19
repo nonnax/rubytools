@@ -1,7 +1,18 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 # Id$ nonnax 2021-09-27 01:40:36 +0800
-# catdd, pretty-formats a double-dash (--) separated list.
+# catdd, pretty-prints a double-dash (--) separated list.
+# only the last double-dash within a line is selected
+
+require 'rubytools/array_table'
+require 'optparse'
+
+OptionParser.new do |opt|
+  opt.banner = <<~___
+    #{__FILE__}, pretty-prints a double-dash (--) separated list.#{' '}
+  ___
+end.parse!
+
 
 require 'rubytools/array_table'
 require 'rubytools/numeric_ext'

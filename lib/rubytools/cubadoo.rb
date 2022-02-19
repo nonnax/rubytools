@@ -21,9 +21,9 @@ class Cuba
     if f = h[:cache]
       ttl = (h[:ttl] ||= 300)
       p "fetching cache...#{ttl}"
-      Cache.cached(f, ttl: ttl){ res.write rendered }
+      Cache.cached(f, ttl: ttl) { res.write rendered }
     else
-      res.write rendered 
+      res.write rendered
     end
   end
 
@@ -38,6 +38,6 @@ class Cuba
   end
 
   def un(text)
-      Rack::Utils.unescape(text)
-  end  
+    Rack::Utils.unescape(text)
+  end
 end

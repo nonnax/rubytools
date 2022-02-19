@@ -39,7 +39,7 @@ module HashFile
   alias open save
 
   def symbolize_keys
-  	#recursively symbolize_keys
+    # recursively symbolize_keys
     each_with_object({}) do |(key, value), result|
       new_key = key.is_a?(String) ? key.to_sym : key
       new_value = value.is_a?(Hash) ? value.symbolize_keys : value

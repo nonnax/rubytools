@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 require 'rubytools'
 require 'numeric_ext'
 require 'string_ext'
@@ -67,7 +68,7 @@ class String
   end
 end
 
-class Numeric #:nodoc:
+class Numeric # :nodoc:
   # No number is blank:
   #
   # 1.blank? # => false

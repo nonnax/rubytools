@@ -59,12 +59,11 @@ paragraphs.each_with_index do |cont, i|
   puts paragraph_chunk = cont.join("\n\n")
   puts
   mp3 = Dir['*.mp3'].grep(Regexp.new(format('-%02d', start + i + 1))).first
-  puts format('%<start>s/%<para_size>s . (%<paragraph_chunk_size>s) %<mp3>s', 
-        start: start + i + 1, 
-        para_size: para_size, 
-        paragraph_chunk_size: 
-        paragraph_chunk.size, mp3:mp3
-        )
+  puts format('%<start>s/%<para_size>s . (%<paragraph_chunk_size>s) %<mp3>s',
+              start: start + i + 1,
+              para_size: para_size,
+              paragraph_chunk_size:
+              paragraph_chunk.size, mp3: mp3)
 
   # IO.popen("mpv -vo null --loop-playlist=no --loop-file=no --no-resume-playback '#{mp3.first}'"){|io| io.read}
   IO.popen("mpv --loop-playlist=no --loop-file=no --no-resume-playback '#{mp3}' &>/dev/null", &:read)
