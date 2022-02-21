@@ -20,7 +20,7 @@ module XXHSum
 
   def xxhash(seed: 0, bit64: false)
     message = bit64 ? :xxh64 : :xxh32
-    XXhash.send(message, self, seed)
+    XXhash.send(message, self, seed).to_s(36)
   end
   
 end
