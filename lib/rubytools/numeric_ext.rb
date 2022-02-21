@@ -10,6 +10,11 @@ class String
   def base32_to_i
     to_i(32)
   end
+
+  def as_number
+    self.scan(/[+-.\d]+/).first
+  end
+
 end
 
 class Integer

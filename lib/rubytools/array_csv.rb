@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 # Id$ nonnax 2021-09-10 17:39:07 +0800
 # csv pseudo-array

@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 # Id$ nonnax 2021-10-19 14:15:56 +0800
 require 'rubytools/fzf'

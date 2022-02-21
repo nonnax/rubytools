@@ -11,11 +11,11 @@
 # 
 # renders a dataframe into string formatted table
 #
-# puts df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
+# puts df.to_table(delimiter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
 #
 # a block yields arrays of rendered string elements 
 #
-# df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
+# df.to_table(delimiter: ' / ',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
 #   puts row.reverse
 # end
 #
@@ -35,16 +35,16 @@ module ArrayTable
   def to_table(df = self, **h, &block)
     # renders a dataframe into table
     # align_method keys = :center, :ljust, :rjust
-    # puts df.to_table(delimeter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
+    # puts df.to_table(delimiter: ' / ',	rjust: [0, 1, 2], ljust: (3..5))
     # ...
     # or
     # ...
-    # df.to_table(delimeter: '/',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
+    # df.to_table(delimiter: '/',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
     #   puts row.reverse
     # end
 
     align_keys = %i[ljust rjust center]
-    delimeter = h[:delimeter] || ' | '
+    delimiter = h[:delimiter] || ' | '
     unless (align_keys & h.keys).empty?
       align_method, selected_columns = h.select { |k, _| align_keys.include?(k) }.to_a.first
     end
@@ -80,7 +80,7 @@ module ArrayTable
       if block_given?
         block.call(r) 
       else
-        r.join(delimeter)
+        r.join(delimiter)
       end
     end
   # rescue => e
@@ -116,11 +116,11 @@ Enumerable.include(ArrayTable)
 require 'csv'
 
 class String
-  def view_as_table(delimeter:'  ' , col_sep: ",")
+  def view_as_table(delimiter:'  ' , col_sep: ",")
     data=CSV.parse(self, converters: :numeric, col_sep:)
     data
       .pad_rows
-      .to_table(delimeter:)
+      .to_table(delimiter:)
   end
 end
 
@@ -136,9 +136,9 @@ if __FILE__ == $PROGRAM_NAME
     df << Array.new(5) { rand(100_000).to_f }
   end
 
-  puts df.to_table(rjust: (0..df.first.size), delimeter: ' ' * 3)
+  puts df.to_table(rjust: (0..df.first.size), delimiter: ' ' * 3)
 
   # puts '-'*100
   #
-  puts df.to_table(delimeter: ' / ',	rjust: [0, 1, 2])
+  puts df.to_table(delimiter: ' / ',	rjust: [0, 1, 2])
 end
