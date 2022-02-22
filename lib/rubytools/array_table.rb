@@ -19,11 +19,13 @@
 #   puts row.reverse
 # end
 #
+# delimeter: or shortcut delim: 
+#
 
 module ArrayTable
 
   def safe_transpose
-    pad_rows.to_a.transpose
+    pad_rows.transpose
   end
 
   def sum_columns
@@ -39,12 +41,12 @@ module ArrayTable
     # ...
     # or
     # ...
-    # df.to_table(delimiter: '/',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
+    # df.to_table(delim: '/',	rjust: [0, 1, 2], ljust: (3..5)) do |row|
     #   puts row.reverse
     # end
 
     align_keys = %i[ljust rjust center]
-    delimiter = h[:delimiter] || ' | '
+    delimiter = h[:delimiter] || h[:delim] || ' | '
     unless (align_keys & h.keys).empty?
       align_method, selected_columns = h.select { |k, _| align_keys.include?(k) }.to_a.first
     end
@@ -54,13 +56,14 @@ module ArrayTable
     df.first.size.times { |i| column_width[i] = 0 }
 
     # detect max width to become fixed column widths
-    df.dup.transpose.each_with_index do |e, i|
+    df.safe_transpose.each_with_index do |e, i|
       column_width[i] = e.map(&:to_s).map(&:size).max
     end
 
     # all table items become strings
     # column widths are adjusted to max widths
-    prep = df.transpose.map.with_index do |r, i|
+    # short rows are padded/filled
+    prep = df.safe_transpose.map.with_index do |r, i|
       r.map(&:to_s).map { |e| e.to_s.rjust(column_width[i]) }
     end
     
@@ -119,7 +122,6 @@ class String
   def view_as_table(delimiter:'  ' , col_sep: ",")
     data=CSV.parse(self, converters: :numeric, col_sep:)
     data
-      .pad_rows
       .to_table(delimiter:)
   end
 end
@@ -128,17 +130,21 @@ if __FILE__ == $PROGRAM_NAME
   # require 'numeric_ext'
   df = []
 
-  10.times do
+  5.times do
     df << Array.new(5) { '#' * rand(10) }
   end
 
-  10.times do
+  5.times do
     df << Array.new(5) { rand(100_000).to_f }
   end
 
-  puts df.to_table(rjust: (0..df.first.size), delimiter: ' ' * 3)
+  puts '# df.to_table'
+  puts df.to_table
+  
+  puts '# df.to_table(ljust: (1..df.first.size), delimiter:" " * 3)'
+  puts df.to_table(ljust: (1..df.first.size), delimiter: ' ' * 3)
 
-  # puts '-'*100
-  #
-  puts df.to_table(delimiter: ' / ',	rjust: [0, 1, 2])
+  puts '# df.to_table(delim: " / ",	ljust: [0, 1, 2])'
+  puts '# delimeter: or shortcut delim:' 
+  puts df.to_table(delimiter: ' / ',	ljust: [0, 1, 2])
 end
