@@ -29,4 +29,23 @@ module ArrayPaging
   end
 end
 
+module Enumerable
+  # arr = (1..99).to_a
+  # pager = arr.each_page(3) #returns an enumerator of sliced arr indexes
+  # 
+  # arr.values_at(*pager.to_a[1])
+  #
+  # pages = pager.to_a 
+  # arr.values_at(*pages[0])
+  # 
+  # num_pages = pager.size
+  # 
+  # arr.values_at(*pager.next) #used as a generator
+  # 
+  def each_page(n=1, &)
+    size.times.each_slice(n, &)
+  end
+end
+
 Array.include(ArrayPaging)
+ 
