@@ -29,6 +29,7 @@ module ArrayOfHashes
 end
 
 Array.include(ArrayOfHashes)
+
 # 
 if __FILE__==$0 then
   dbase = [
