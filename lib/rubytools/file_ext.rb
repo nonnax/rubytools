@@ -42,8 +42,7 @@ class File
 
   def self.backup(f)
     path, f_ = splitpath(f)
-    p [f, File.join(path, f_.filename_succ)]
-    FileUtils.cp(f, File.join(path, f_.filename_succ))
+    FileUtils.cp(f, File.join(path, f_.filename_succ)) rescue nil
   end
 end
 
