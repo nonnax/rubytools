@@ -23,7 +23,7 @@
 #
 
 module ArrayTable
-
+  
   def safe_transpose
     pad_rows.transpose
   end
@@ -46,7 +46,9 @@ module ArrayTable
     # end
 
     align_keys = %i[ljust rjust center]
+
     delimiter = h[:delimiter] || h[:delim] || ' | '
+
     unless (align_keys & h.keys).empty?
       align_method, selected_columns = h.select { |k, _| align_keys.include?(k) }.to_a.first
     end
@@ -81,13 +83,17 @@ module ArrayTable
 
     prep.transpose.map do |r|
       if block_given?
-        block.call(r) 
+        block.call(r, delimiter) 
       else
         r.join(delimiter)
       end
     end
   # rescue => e
     # p e
+  end
+
+  def render
+    each{|e| puts e }
   end
 
   #helper methods
@@ -138,13 +144,17 @@ if __FILE__ == $PROGRAM_NAME
     df << Array.new(5) { rand(100_000).to_f }
   end
 
-  puts '# df.to_table'
+  puts 'puts df.to_table'
   puts df.to_table
-  
-  puts '# df.to_table(ljust: (1..df.first.size), delimiter:" " * 3)'
-  puts df.to_table(ljust: (1..df.first.size), delimiter: ' ' * 3)
-
-  puts '# df.to_table(delim: " / ",	ljust: [0, 1, 2])'
-  puts '# delimeter: or shortcut delim:' 
-  puts df.to_table(delimiter: ' / ',	ljust: [0, 1, 2])
+  puts
+  puts 'df.to_table(ljust: (1..df.first.size), delimiter:" " * 3).render'
+  df.to_table(ljust: (1..df.first.size), delimiter: ' ' * 3).render
+  puts
+  puts 'df.to_table(delim: " / ", ljust: [0, 1, 2]){|row| p row }'
+  puts 'a block returns rows of rendered elements'
+  puts '# delimeter: or delim: <shortcut>' 
+  puts
+  df.to_table(delimiter: ' / ',	ljust: [0, 1, 2]) do |row, delim|
+    p row
+  end
 end
