@@ -86,7 +86,7 @@ if __FILE__==$0 then
 
   p 'dbase.query(username: /no/)'
   p dbase.query(username: /no/)
-  p 'dbase.grep_hash(username: '\bna', age: 18, all?: true)'
+  p "dbase.grep_hash(username: '\bna', age: 18, all?: true)"
   p dbase.grep_hash(username: '\bna', age: 18, all?: true)
   # all?:|any?: only key presence significant. any value is valid
   p dbase.grep_hash(username: '\bna', age: 18, all?: 'yes')
