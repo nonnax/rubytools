@@ -23,6 +23,23 @@ class Integer
   end
 end
 
+module CollectionPager
+  def pages_of(n)
+    self
+    .times
+    .each_slice(n)
+    .map.with_index do |pgs, pg|
+      [pg, pgs]
+    end
+    .to_h
+  end
+end
+
+
+# pages=50.pages_of(6)
+# p pages[0]
+# p pages[6]
+
 class Object
   def is_number?
     to_s.is_number?
@@ -114,3 +131,6 @@ Numeric.include(NumericHelper)
 Numeric.prepend(NumericFormatter)
 Float.prepend(NumericFormatter)
 Integer.prepend(NumericFormatter)
+Integer.include(CollectionPager)
+
+
