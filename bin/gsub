@@ -21,7 +21,6 @@ begin
   re=Regexp.new(re,true)
 
   ARGF.each_line(chomp: true) do |l|  
-    # puts [l, l.gsub( re, sub )].join("\t")
     puts l.gsub( re, sub )
   end
 rescue => e
