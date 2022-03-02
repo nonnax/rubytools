@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-03-02 18:55:06 +0800
+# shell regexp tool
+#
+# gsub.rb 'regexp' 'subs' *file
+# or from stdin
+# ls | gsub.rb 'regexp' 'subs'
+#
+re, sub = ARGV.shift(2)
+
+doc=<<~___
+    usage:
+      gsub.rb 'regexp' 'subs' *file
+      or
+      ls | gsub.rb 'regexp' 'subs'
+    ___
+    
+begin
+  fail unless [re, sub].all?
+
+  re=Regexp.new(re,true)
+
+  ARGF.each_line(chomp: true) do |l|  
+    # puts [l, l.gsub( re, sub )].join("\t")
+    puts l.gsub( re, sub )
+  end
+rescue => e
+  p e
+  puts doc
+end
