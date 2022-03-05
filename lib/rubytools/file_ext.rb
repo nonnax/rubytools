@@ -23,11 +23,16 @@ class String
 end
 
 class File
+  def self.File(file)
+    file=file.to_path if file.respond_to?:to_path
+    file=file.to_str
+  end
   def self.splitname(f)
     [File.basename(f, '.*'), File.extname(f)]
   end
 
   def self.splitpath(f)
+    f=f.to_path&.to_str if f.respond_to?:to_path
     f_basename = basename(f)
     [File.expand_path(f).gsub(f_basename, ''), f_basename]
   end

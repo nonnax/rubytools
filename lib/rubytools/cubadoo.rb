@@ -9,10 +9,14 @@ require 'rubytools/cache'
 
 include Tagz.globally
 
-Cuba.use Rack::Session::Cookie, secret: '__a_very_Very_lo0Ong_sess1on_str1ng__'
-Cuba.plugin Cuba::Safe
+Cuba.use Rack::Static,
+    urls: %w[/css /images /js /media],
+    root: 'public'
 
-Cuba.use Rack::Static, urls: ['/media', '/css']
+Cuba.use Rack::Session::Cookie, 
+    secret: '__a_very_Very_lo0Ong_sess1on_str1ng__'
+
+Cuba.plugin Cuba::Safe
 
 class Cuba
   def render(**h, &block)
@@ -21,7 +25,8 @@ class Cuba
     if f = h[:cache]
       ttl = (h[:ttl] ||= 300)
       p "fetching cache...#{ttl}"
-      Cache.cached(f, ttl: ttl) { res.write rendered }
+      content=Cache.cached(f, ttl: ttl) { rendered }
+      res.write content
     else
       res.write rendered
     end
