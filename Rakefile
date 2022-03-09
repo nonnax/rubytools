@@ -1,8 +1,13 @@
 #!/usr/bin/env ruby
 task default: %w[build]
 
+desc "Bundle install dependencies"
+task :bundle do
+  sh "bundle install"
+end
+
 desc "Build the rubytools.gem file"
-task :build do
+task build: %w[bundle] do
   sh "gem build rubytools.gemspec"
 end
 
