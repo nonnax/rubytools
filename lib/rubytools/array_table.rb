@@ -126,7 +126,7 @@ require 'csv'
 
 class String
   def view_as_table(delimiter:'  ' , col_sep: ",")
-    data=CSV.parse(self, converters: :numeric, col_sep:)
+    data=CSV.parse(self, converters: :numeric, col_sep: col_sep)
     data
       .to_table(delimiter:)
   end
