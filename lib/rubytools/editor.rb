@@ -9,7 +9,6 @@ class IO
       use = tempfile ? :_tempfile : :_buffer
       send use, text, editor
     end
-
     private
 
     def _buffer(text, editor)
@@ -30,3 +29,13 @@ class IO
     end
   end
 end
+
+module FileEditor
+    def edit(filepath, editor: ENV['EDITOR'])
+      IO
+       .popen([editor, filepath], &:read)
+       .then{ |text| File.write filepath, text } 
+    end
+end
+
+File.extend(FileEditor)
