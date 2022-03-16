@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2021-11-23 12:45:47 +0800
 require 'rubytools/editor'
+
 tmp='/tmp/eval.rb'
-File.write tmp, "#!/usr/bin/env ruby" unless File.exist?(tmp)
-code=IO.editor(File.read(tmp))
-File.write tmp, code
-eval(code)
+
+File
+.edit( tmp )
+.then{ |code| eval code }
+

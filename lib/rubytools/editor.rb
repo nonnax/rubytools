@@ -34,7 +34,9 @@ module FileEditor
     def edit(filepath, editor: ENV['EDITOR'])
       IO
        .popen([editor, filepath], &:read)
-       .then{ |text| File.write filepath, text } 
+       .then{ |e| 
+          e.tap{ |text| File.write filepath, text }
+        }
     end
 end
 
