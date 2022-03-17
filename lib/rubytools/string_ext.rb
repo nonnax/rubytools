@@ -98,7 +98,19 @@ module StringBase64
   end
 end
 
+module StringXOR
+  def xor(key)
+    dup
+    .tap{ |text|
+      text
+      .length
+      .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }    
+    }
+  end
+end
+
 String.include(TextScanner)
 String.include(QueryStringConverter)
 String.include(RenderERB)
 String.include(StringBase64)
+String.include(StringXOR)
