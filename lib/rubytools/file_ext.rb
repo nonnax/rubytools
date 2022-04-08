@@ -4,6 +4,7 @@
 # Id$ nonnax 2021-10-31 21:26:17 +0800
 require 'ruby-filemagic'
 require 'fileutils'
+require 'pathname'
 
 class String
   def is_text_file?
@@ -51,6 +52,16 @@ class File
   end
 end
 
+module PathnameExt
+  def backup
+    path, f_ = split(f)
+    FileUtils.cp(f, File.join(path, f_.filename_succ)) rescue nil
+  end
+  def filename_succ
+    Pathname.new(self.basename.filename_succ)
+  end
+end
+
 module SafeFileName
   def to_safename
     gsub(/[^\w.]+/, '_')
@@ -61,7 +72,7 @@ module NumberedFile
   UNDERSCORE = '_'
   RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
   def filename_succ
-    basename, ext = File.splitname(self)
+    basename, ext = Pathname.new(self).split
     out = nil
     bn = basename.dup
     loop do
