@@ -72,12 +72,12 @@ module NumberedFile
   UNDERSCORE = '_'
   RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
   def filename_succ
-    basename, ext = Pathname.new(self).split
+    basename, _, ext = self.rpartition('.')
     out = nil
-    bn = basename.dup
+    bn=basename.empty? ? ext : basename
     loop do
       bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
-      out = "#{bn}#{ext}"
+      out = basename.empty? ? bn : [bn, ext].join('.')
       break unless File.exist?(out)
     end
     out
