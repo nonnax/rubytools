@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 require 'erb'
+require 'pathname'
 
 desc = ARGV.join(' ')
 gemname= Dir.pwd.rpartition('/').last
 desc ||= gemname
-puts ERB.new( DATA.read).result(binding)
+puts ERB.new( Pathname(__FILE__).read.split(/__END__\s*$/,2).last).result(binding)
 
 __END__
 Gem::Specification.new do |s|
