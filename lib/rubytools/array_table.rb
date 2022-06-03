@@ -7,7 +7,7 @@ class Table < SimpleDelegator
   def template    
     s=<<~___
       <% self.to_a.each do |e| %>
-        <%= e.map{|f| f.to_s.rjust(padding)}.join(' '*padding) %>
+        <%= e.map{|f| f.to_s.rjust(padding)} %>
       <% end %>
     ___
   end
