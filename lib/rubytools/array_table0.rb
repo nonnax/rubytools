@@ -6,7 +6,7 @@ require 'delegate'
 class Table < SimpleDelegator
   def template    
     s=<<~___
-      <% self.to_a.each do |e| %>
+      <% Array(self).each do |e| %>
         <%= e.map{|f| f.to_s.send(justify, padding)}.join(delimiter) %>
       <% end %>
     ___
