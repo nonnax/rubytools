@@ -25,9 +25,10 @@ class String
 end
 
 print "#{n}\t#{a}\t"
+
 # s=n.compute(a)
 # x, sec=s.split(/\./)
 # sec="%02d" % [(sec.to_i/1000.to_f)*100]
 # print s, "\t", [x, sec].join('.'), "\n"
 
-p n.compute(a).join(' | ')
+print n.compute(a).join(' | ')
