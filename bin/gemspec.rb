@@ -4,6 +4,7 @@ require 'pathname'
 
 desc = ARGV.join(' ')
 gemname= Dir.pwd.rpartition('/').last
+repo_name = 'nonnax'
 desc ||= gemname
 puts ERB.new( Pathname(__FILE__).read.split(/__END__\s*$/,2).last).result(binding)
 
@@ -21,7 +22,7 @@ Gem::Specification.new do |s|
   s.license = "GPL-3.0"
 end
 
----------cut-----------
+# ---------cut-----------
 # Gemfile
 
 source "https://rubygems.org"
@@ -32,4 +33,24 @@ git_source(:github) do |repo_name|
 end
 
 
-# gem '<%= gemname%>', :github => 'nonnax/<%= gemname%>'
+# gem '<%= gemname %>', :github => 'nonnax/<%= gemname%>'
+
+# Rakefile
+# ---------cut-----------
+
+task default: %w[build]
+
+desc "Bundle install dependencies"
+task :bundle do
+  sh "bundle install"
+end
+
+desc "Build the <%= gemname %>.gem file"
+task build: %w[bundle] do
+  sh "gem build <%= gemname %>.gemspec"
+end
+
+desc "install <%= gemname %>-x.x.x.gem"
+task install: %w[build] do
+  sh "sudo gem install $(ls <%= gemname %>-*.gem)"
+end
