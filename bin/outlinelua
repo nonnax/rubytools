@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-08-21 00:16:42
+require 'rubytools/ansi_color'
+argv=ARGV.dup
+ARGF
+.readlines(chomp:true)
+.each_with_index do |l, i|
+  if [/^\s*(function)\s/,].any?{|r| r.match?(l)}
+    loc=[argv, i.succ, l.index(/f/).succ].join(":")
+    puts [loc, l.gsub(/(\s*function)(?:\s)/,'\1 '.blue)].join("\t")
+  end
+end

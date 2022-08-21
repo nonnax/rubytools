@@ -5,8 +5,8 @@
 require 'ruby-xxhash'
 
 module XXHSum
-  def xxhsum(h: 64)
-    IO.popen('xxhsum', 'w+') do |io|
+  def xxhsum(bits: 64)
+    IO.popen(['xxhsum', '-b', bits], 'w+') do |io|
       io.puts self
       io.close_write
       io.read
