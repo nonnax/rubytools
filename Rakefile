@@ -7,11 +7,11 @@ task :bundle do
 end
 
 desc "Build the rubytools.gem file"
-task build: %w[bundle] do
+task :build do
   sh "gem build rubytools.gemspec"
 end
 
 desc "install rubytools-x.x.x.gem"
-task install: %w[build] do
+task :install do
   sh "sudo gem install $(ls rubytools-*.gem)"
 end

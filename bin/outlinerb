@@ -7,6 +7,6 @@ ARGF
 .each_with_index do |l, i|
   if [/^\s*(def|class)\s/,].any?{|r| r.match?(l)}
     loc=[argv, i.succ, l.index(/d|c/).succ].join(":")
-    puts [loc, l.gsub(/(\s*def|class)(?:\s)/,'\1 '.blue)].join("\t")
+    puts [loc, l.gsub(/^(\s*def|class)(?:\s)/,'\1 '.blue)].join("\t")
   end
 end

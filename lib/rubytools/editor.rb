@@ -31,12 +31,9 @@ class IO
 end
 
 module FileEditor
-    def edit(filepath, editor: 'micro')
-      IO
-       .popen([editor, filepath], &:read)
-       .then{ |e| 
-          e.tap{ |text| File.write filepath, text }
-        }
+    def edit(filepath, editor: ENV['EDITOR'])
+       system(editor, filepath)
+       File.read filepath
     end
 end
 
