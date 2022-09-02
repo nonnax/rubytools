@@ -5,7 +5,7 @@
 require 'tempfile'
 class IO
   class << self
-    def editor(text = '', editor: ENV['EDITOR'], tempfile: false)
+    def editor(text = '', editor: 'micro', tempfile: false)
       use = tempfile ? :_tempfile : :_buffer
       send use, text, editor
     end
@@ -31,7 +31,7 @@ class IO
 end
 
 module FileEditor
-    def edit(filepath, editor: ENV['EDITOR'])
+    def edit(filepath, editor: 'micro')
       IO
        .popen([editor, filepath], &:read)
        .then{ |e| 
