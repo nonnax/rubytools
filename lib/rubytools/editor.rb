@@ -32,6 +32,7 @@ end
 
 module FileEditor
     def edit(filepath, editor: ENV['EDITOR'])
+       File.write filepath, '' unless File.exist?(filepath)
        system(editor, filepath)
        File.read filepath
     end

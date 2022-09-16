@@ -2,6 +2,7 @@
 # Id$ nonnax 2022-08-21 00:16:42
 require 'rubytools/ansi_color'
 argv=ARGV.dup
+argv=ARGV.pop if argv.empty?
 ARGF
 .readlines(chomp:true)
 .each_with_index do |l, i|
