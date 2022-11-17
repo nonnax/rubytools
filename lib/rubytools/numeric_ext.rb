@@ -1,28 +1,34 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-class String
-  def is_number?
-    # obj = obj.to_s unless obj.is_a? String
-    !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
+module NumericExt
+  refine String do
+    def is_number?
+      # obj = obj.to_s unless obj.is_a? String
+      !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
+    end
+
+    def base32_to_i
+      to_i(32)
+    end
+
+    def as_number
+      self.scan(/[+-.\d]+/).first
+    end
+
   end
 
-  def base32_to_i
-    to_i(32)
+  refine Integer do
+    def to_base32(padding: 6)
+      to_s(32).rjust(padding, '0')
+    end
   end
-
-  def as_number
-    self.scan(/[+-.\d]+/).first
+  refine Object do
+    def is_number?
+      to_s.is_number?
+    end
   end
-
 end
-
-class Integer
-  def to_base32(padding: 6)
-    to_s(32).rjust(padding, '0')
-  end
-end
-
 module CollectionPager
   def pages_of(n)
     self
@@ -39,12 +45,6 @@ end
 # pages=50.pages_of(6)
 # p pages[0]
 # p pages[6]
-
-class Object
-  def is_number?
-    to_s.is_number?
-  end
-end
 
 #
 ## Helper methods for working with time units other than seconds

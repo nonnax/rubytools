@@ -4,6 +4,7 @@ require 'sqlite3'
 # require 'json'
 
 class HashDBM
+  include Enumerable
   attr :db, :table
 
   def initialize(name='store.sqlite3', table:'store', &block)
@@ -41,12 +42,16 @@ class HashDBM
     @db.execute("INSERT OR REPLACE INTO #{table} (key, value) VALUES ( ?, ? )", k.to_s, Marshal.dump(v))
   end
 
+  def each(&block)
+    keys.each{|k| block.call(k, self[k])}
+  end
+
   def keys
     sql = "SELECT key FROM #{table}"
     @db.execute(sql).flatten
   end
 
-  def select(*keylist)
+  def at(*keylist)
     # select all.
     # optionally filtering using `keylist` of string keys
     load=Marshal.method(:load)

@@ -13,5 +13,5 @@ end
 
 desc "install rubytools-x.x.x.gem"
 task :install do
-  sh "sudo gem install $(ls rubytools-*.gem)"
+  sh "gem install $(ls rubytools-*.gem)"
 end
