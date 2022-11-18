@@ -2,6 +2,7 @@
 # Id$ nonnax 2022-11-17 10:00:17
 # delegator class for file object supporting read and write intefaces
 require_relative 'marshal'
+require_relative 'msgpack'
 require_relative 'yaml'
 require_relative 'textfile'
 
