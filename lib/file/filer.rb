@@ -2,14 +2,16 @@
 # Id$ nonnax 2022-11-17 10:00:17
 # delegator class for file object supporting read and write intefaces
 require_relative 'marshal'
-require_relative 'msgpack'
 require_relative 'yaml'
 require_relative 'textfile'
+require_relative 'msgpack'
+require 'forwardable'
 
-# sort-of an error handler for nil results
+# pseudo error handler for nil results
 class Object
   def or(&block)
-    block.call(self)
+    # similar to tap
+    instance_exec(self, &block)
   end
 end
 class NilClass
@@ -19,21 +21,13 @@ class NilClass
 end
 
 class Filer
+  extend Forwardable
+  def_delegators :@strategy, :read, :write, :path
+
   def initialize(strategy)
     @strategy=strategy
   end
-  def read(&block)
-  # run default block on exception
-    @strategy.read(&block)
-  rescue
-    nil
-  end
-  def write(obj)
-    @strategy.write(obj)
-  end
-  def path
-    @strategy.path
-  end
+
   def self.read(strategy, &block)
     new(strategy).read(&block)
   end
