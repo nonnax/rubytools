@@ -3,7 +3,7 @@
 class FileImporter
   # embed `afile` with @import '<afile>' directive
   RE_IMPORT = /
-    @import\s*(\W)([\w.\/]+)\1
+    @import\s*(\W)([\w\.\/]+)\1
   /xm
   # any pair of non-word delimeters must match
   # @import 'file'
