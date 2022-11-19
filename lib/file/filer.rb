@@ -5,8 +5,6 @@ require_relative 'marshal'
 require_relative 'yaml'
 require_relative 'textfile'
 require_relative 'msgpack'
-require_relative 'msgpack'
-require 'rubytools/nil_or_block'
 require 'forwardable'
 
 class Filer
