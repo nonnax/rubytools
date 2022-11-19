@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-11-19 14:11:22
-module NilOrBlock
+module NilClassExt
  # sort-of a nil exception handler block for NilClass
  refine Object do
    # discard block if Object != NilClass
