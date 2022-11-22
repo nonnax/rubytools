@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-11-15 16:24:21
+# fimport : file import, parse a file containing `@import('filespec')` tags and merges them
+# usage: fimport <file>
+require 'file/file_importer'
+
+ARGV[0]
+.then{|f| File.read(f)}
+.then{|doc| FileImporter.parse(doc)}
+.then(&method(:puts))

@@ -7,11 +7,17 @@ module NilClassExt
    def or(&block)
      self
    end
+   def and(&block)
+    block.call(self)
+   end
  end
 
  refine NilClass do
    def or(&block)
-     block.call
+    block.call
+   end
+   def and(&block)
+     self
    end
  end
 end

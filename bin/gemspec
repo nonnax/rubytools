@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Id$ nonnax 2022-02-03 14:48:50 +0800
+# gemspec <gem-name>
+gem_name = ARGV.first
+date = Time.now.strftime('%Y-%m-%d')
+out_f = "#{gem_name}.gemspec"
+gem_spec = <<~___
+  lib = File.expand_path('lib', __FILE__)
+  $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+  Gem::Specification.new do |s|
+    s.name = '#{gem_name}'
+    s.version = '0.0.1'
+    s.date = '#{date}'
+    s.summary = "project: #{gem_name}"
+    s.authors = ["xxanon"]
+    s.email = "ironald@gmail.com"
+    s.files = `git ls-files`.split(/\\n/) - %w[bin misc]
+    s.executables += `git ls-files bin`.split(/\\n/).map{|e| File.basename(e)}
+    s.homepage = "https://github.com/nonnax/#{gem_name}.git"
+    s.license = "GPL-3.0"
+  end
+___
+
+File.write(out_f, gem_spec)
+IO.popen("lf_select #{out_f}")
