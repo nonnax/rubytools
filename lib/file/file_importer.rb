@@ -3,7 +3,7 @@
 class FileImporter
   # embed `afile` with @import '<afile>' directive
   RE_IMPORT = /
-    @import\s*(\W)([\w\.\/]+)\1
+    @import\s*(\W)([\w.\/]+)\1
   /xm
   # any pair of non-word delimeters must match
   # @import 'file'
@@ -17,6 +17,8 @@ class FileImporter
   def gsub_imports(_text)
     _text.gsub(RE_IMPORT){ File.read(File.join(@dir, Regexp.last_match[2])) }
          .then{|text| text.match?(RE_IMPORT) ? gsub_imports(text) : text }
+  rescue=>e
+    puts [e.to_s.split.last, "not found"].join(' ')
   end
 
   def self.parse(text, dir: './')
