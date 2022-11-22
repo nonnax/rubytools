@@ -12,6 +12,6 @@ task :build do
 end
 
 desc "install rubytools-x.x.x.gem"
-task :install do
+task install: [:build]  do
   sh "gem install $(ls rubytools-*.gem)"
 end

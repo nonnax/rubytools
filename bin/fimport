@@ -4,7 +4,13 @@
 # usage: fimport <file>
 require 'file/file_importer'
 
+begin
 ARGV[0]
 .then{|f| File.read(f)}
 .then{|doc| FileImporter.parse(doc)}
 .then(&method(:puts))
+rescue
+  puts 'fimport: parses files with `@import("file")` tags'
+  puts 'usage: fimport <file>'
+  exit
+end
