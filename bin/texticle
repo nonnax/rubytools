@@ -6,5 +6,10 @@ f,full=ARGV
 mod = full ? 'texticle/texticle' : 'texticle/texticle_one'
 require mod
 
-fail 'file not found. usage: texticle.rb <file>' unless f
-Texticle.render(f).then(&method(:puts))
+unless f
+  puts "file not found."
+  puts "usage: #{File.basename(__FILE__)} <file> <any-optional-flag>"
+  puts "<any-optional-flag> allows string interpolation"
+else
+  Texticle.render(f).then(&method(:puts))
+end
