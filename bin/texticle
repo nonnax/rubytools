@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2022-11-23 12:45:54
+$LOAD_PATH<<'./lib'
+
+f,full=ARGV
+mod = full ? 'texticle/texticle' : 'texticle/texticle_one'
+require mod
+
+fail 'file not found. usage: texticle.rb <file>' unless f
+Texticle.render(f).then(&method(:puts))
