@@ -23,11 +23,48 @@ class String
   alias binary_file? is_binary_file?
 end
 
+
+module SafeFileName
+  def to_safename
+    gsub(/[^\w.]+/, '_')
+  end
+end
+
+module NumberedFile
+  UNDERSCORE = '_'
+  RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
+
+  def get_next_name(bn, ext)
+    out=nil
+    loop do
+      bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
+      out = [bn, ext].join('.')
+      break unless File.exist?(out)
+    end
+    out
+  end
+
+  def filename_succ(f)
+    basename, _, ext = f.rpartition('.')
+    out = nil
+    bn=basename.empty? ? ext : basename # check dot-files
+    get_next_name(bn, ext)
+  end
+  alias to_safe_filename filename_succ
+end
+
+# String.include(NumberedFile)
+String.include(SafeFileName)
+
+
 class File
+  extend NumberedFile
+
   def self.File(file)
     file=file.to_path if file.respond_to?:to_path
     file=file.to_str
   end
+
   def self.splitname(f)
     [File.basename(f, '.*'), File.extname(f)]
   end
@@ -38,8 +75,14 @@ class File
     [File.expand_path(f).gsub(f_basename, ''), f_basename]
   end
 
-  def self.filename_succ(f)
-    f.filename_succ
+  # def self.filename_succ(f)
+   # # method from String.include(NumberedFile)
+#
+    # f.filename_succ
+  # end
+
+  def self.age(f, attribute: :mtime) # :mtime, :atime, :ctime
+    Time.now-File.send(attribute, f)
   end
 
   class << self
@@ -58,32 +101,6 @@ module PathnameExt
     FileUtils.cp(f, File.join(path, f_.filename_succ)) rescue nil
   end
   def filename_succ
-    Pathname.new(self.basename.filename_succ)
+    Pathname.new(File.filename_succ(self.basename))
   end
 end
-
-module SafeFileName
-  def to_safename
-    gsub(/[^\w.]+/, '_')
-  end
-end
-
-module NumberedFile
-  UNDERSCORE = '_'
-  RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
-  def filename_succ
-    basename, _, ext = self.rpartition('.')
-    out = nil
-    bn=basename.empty? ? ext : basename
-    loop do
-      bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
-      out = basename.empty? ? bn : [bn, ext].join('.')
-      break unless File.exist?(out)
-    end
-    out
-  end
-  alias to_safe_filename filename_succ
-end
-
-String.include(NumberedFile)
-String.include(SafeFileName)

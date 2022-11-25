@@ -3,10 +3,11 @@
 require 'file/file_importer'
 
 module Texticle
- def self.render(f, io_handler: File.method(:read))
-  io_handler.(f)
-  .then{|s| FileImporter.parse(s) } #.tap{|s| puts s}
-  .then{|s| Texticle.parse(s) }
-  .then{|s| s.join }
- end
+  module_function
+   def self.render(f, io_handler: File.method(:read), &block)
+    io_handler.(f)
+    .then{|s| FileImporter.parse(s) } #.tap{|s| puts s}
+    .then{|s| Texticle.parse(s, &block) }
+    .then{|s| s.join }
+   end
 end
