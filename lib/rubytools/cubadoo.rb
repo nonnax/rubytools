@@ -5,7 +5,9 @@
 require 'cuba'
 require 'cuba/safe'
 require 'tagz'
+require 'rack/session'
 require 'rubytools/cache'
+require 'digest'
 
 include Tagz.globally
 
@@ -13,8 +15,8 @@ Cuba.use Rack::Static,
     urls: %w[/css /images /js /media],
     root: 'public'
 
-Cuba.use Rack::Session::Cookie, 
-    secret: '__a_very_Very_lo0Ong_sess1on_str1ng__'
+Cuba.use Rack::Session::Cookie,
+    secret: Digest::SHA256.hexdigest( '__a_very_Very_lo0Ong_sess1on_str1ng__')
 
 Cuba.plugin Cuba::Safe
 
