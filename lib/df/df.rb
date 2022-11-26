@@ -31,7 +31,7 @@ class DF
     @rows = [] # Array.new(rowsize) { nil }
     @row_size = rowsize
     @truncate = truncate
-    update(block.call)
+    update(block.call) if block
   end
 
   def check_size(row)
@@ -51,6 +51,7 @@ class DF
     df.each do |row|
       @rows << check_size(row) if @truncate
     end
+    self
   end
 
   def <<(row)
@@ -69,16 +70,20 @@ class DF
   end
 
   def diff(another, &block)
-    b = another.dup
-    to_a.map.with_index do |r, i|
+    b = another.to_a
+    v=to_a.map.with_index do |r, i|
       r.map.with_index do |v, j|
-        block.call(v, b[i][j]) ? "[#{v}]" : v
+        cond = block ? block.call(v, b[i][j]) : v!=b[i][j]
+        cond ? v : "_#{v}"
       end
     end
+    DF.new(v.first.size){v}
   end
 
   def to_s(**params, &block)
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
+    fixed_width=params.fetch(:width, nil)
+    col_widths.map!{ fixed_width } if fixed_width
     @rows.dup.map do |r|
       just = params[:ljust] ? :ljust : :rjust
       # apply formatting to each element
