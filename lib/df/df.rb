@@ -25,10 +25,13 @@ class DF
   # first row determines the size
   attr_accessor :rows
 
-  def initialize(rowsize = 0, truncate: true)
+  alias to_a rows
+
+  def initialize(rowsize = 0, truncate: true, &block)
     @rows = [] #Array.new(rowsize) { nil }
     @row_size = rowsize
     @truncate = truncate
+    update(block.call()) if block
   end
 
   def check_size(row)
@@ -40,6 +43,13 @@ class DF
       row[0..@row_size - 1]
     else
       row
+    end
+  end
+
+  def update(df)
+    @rows.clear
+    df.each do |row|
+      @rows<<check_size(row) if @truncate
     end
   end
 
@@ -58,7 +68,7 @@ class DF
     df
   end
 
-  def to_s(**params)
+  def to_s(**params, &block)
     col_widths=@rows.dup.transpose.map{|r| r.map(&:to_s).map(&:size).max}
     @rows.dup.map do |r|
       just=params[:ljust] ? :ljust : :rjust
@@ -68,6 +78,7 @@ class DF
        .join(params.fetch(:delimiter, '  '))
     end
     .join("\n")
+    .tap { |s| block.call(s) if block }
   end
 end
 
