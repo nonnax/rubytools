@@ -59,15 +59,17 @@ class DF
   end
 
   def to_s(**params)
-    # @rows.to_table(**params)
-    @rows.map do |r|
-      just=params.fetch(:rjust, nil) ? :rjust : :ljust
-      v=params.fetch(just, 1)
+    col_widths=@rows.dup.transpose.map{|r| r.map(&:to_s).map(&:size).max}
+    @rows.dup.map do |r|
+      just=params[:ljust] ? :ljust : :rjust
       # apply formatting to each element
       r.map(&:to_s)
-       .map{|s| s.send(just, v)}
+       .map.with_index{|s, i| s.send(just, col_widths[i])}
        .join(params.fetch(:delimiter, '  '))
     end
     .join("\n")
   end
 end
+
+# require 'rubytools/numeric_ext'
+# using NumericExt
