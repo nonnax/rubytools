@@ -75,11 +75,9 @@ class File
     [File.expand_path(f).gsub(f_basename, ''), f_basename]
   end
 
-  # def self.filename_succ(f)
-   # # method from String.include(NumberedFile)
-#
-    # f.filename_succ
-  # end
+  def self.append(path, str)
+    File.open(path, 'a+'){|f| f.puts str}
+  end
 
   def self.age(f, attribute: :mtime) # :mtime, :atime, :ctime
     Time.now-File.send(attribute, f)
