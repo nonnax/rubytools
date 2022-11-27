@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2022-11-17 17:49:10
-$LOAD_PATH << '.'
-
 require 'forwardable'
 require 'delegate'
 
@@ -30,7 +28,7 @@ class DF
   def initialize(cols: nil, &block)
     @rows = []
     @cols = cols
-    update(block.call) if block
+    update(block&.call)
   end
 
   def check_size(row)
@@ -47,60 +45,62 @@ class DF
   end
 
   def update(df, cols: nil)
+    return self unless df
     # widest df column determines the column size unless <cols> is defined
 
     @rows.clear
     @cols = cols if cols
     @cols = df.map(&:size).max unless @cols
-    df.each do |row|
-      @rows << check_size(row)
-    end
+    df.each {|row| self << row }
     self
   end
 
   def <<(row)
     row = check_size(row)
-    raise "Different size: row array size should be #{@cols}" unless [row.size, @cols].uniq.size == 1
+    raise "Different column size: should be #{@cols}" unless [row.size, @cols].uniq.size == 1
 
     @rows << row
   end
 
   def transpose
-    df = DF.new(cols: @rows.transpose.first.size)
-    @rows.transpose.each do |r|
-      df << r
-    end
-    df
+    DF.new { @rows.transpose }
   end
 
   def diff(another, prefix: '\\', &block)
     b = another.to_a
-    v = to_a.map.with_index do |r, i|
-      r.map.with_index do |v, j|
-        bv = b[i][j]
-        cond = block ? block.call(v, bv) : v != bv
-        cond ? "#{prefix}#{v}" : v
+    DF.new {
+      self
+      .to_a
+      .map
+      .with_index do |r, i|
+        r.map.with_index do |v, j|
+          bv = b[i][j]
+          cond = block&.call(v, bv) || v != bv
+          cond ? "#{prefix}#{v}" : v
+        end
       end
-    end
-    DF.new { v }
+    }
   end
 
   def to_s(**params, &block)
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
     fixed_width = params.fetch(:width, nil)
     col_widths.map! { fixed_width } if fixed_width
-    @rows.dup.map do |r|
+    @rows
+    .dup
+    .map do |r|
       just = params[:ljust] ? :ljust : :rjust
       # apply formatting to each element
       r.map(&:to_s)
        .map.with_index { |s, i| s.send(just, col_widths[i]) }
        .join(params.fetch(:separator, '  '))
-    end
-         .join("\n")
-         .tap { |s| block&.call(s) }
+     end
+    .join("\n")
+    .tap { |s| block&.call(s) }
   end
 end
 
+# converts a compatible array into a DF object
 class ArrayDF < SimpleDelegator
   def to_df(cols: nil)
     DF.new(cols:) { self }
@@ -112,5 +112,6 @@ class ArrayDF < SimpleDelegator
            .then { |df| df.transpose}
   end
 end
+
 # require 'rubytools/numeric_ext'
 # using NumericExt
