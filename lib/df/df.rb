@@ -5,6 +5,7 @@
 $LOAD_PATH << '.'
 
 require 'forwardable'
+require 'delegate'
 
 class DF
   # dataframe
@@ -22,68 +23,72 @@ class DF
 
   extend Forwardable
   def_delegators :@rows, :each, :map, :values_at, :first, :last
-  # first row determines the size
   attr_accessor :rows
 
   alias to_a rows
 
-  def initialize(rowsize = 0, truncate: true, &block)
-    @rows = [] # Array.new(rowsize) { nil }
-    @row_size = rowsize
-    @truncate = truncate
+  def initialize(cols: nil, &block)
+    @rows = []
+    @cols = cols
     update(block.call) if block
   end
 
   def check_size(row)
-    diff = @row_size - row.size
-    if diff.positive? # pad with nils if @row_size is bigger
+    # return row unless @truncate
+    diff = @cols - row.size
+    if diff.positive? # pad with nils if @cols is bigger
       row + ([nil] * diff)
     elsif diff.negative?
-      # truncate rightmost row items if @row_size is smaller
-      row[0..@row_size - 1]
+      # truncate rightmost row items if @cols is smaller
+      row[0..@cols - 1]
     else
       row
     end
   end
 
-  def update(df)
+  def update(df, cols: nil)
+    # widest df column determines the column size unless <cols> is defined
+
     @rows.clear
+    @cols = cols if cols
+    @cols = df.map(&:size).max unless @cols
     df.each do |row|
-      @rows << check_size(row) if @truncate
+      @rows << check_size(row)
     end
     self
   end
 
   def <<(row)
-    row = check_size(row) if @truncate
-    raise "Different size: row array size should be #{@row_size}" unless [row.size, @row_size].uniq.size == 1
+    row = check_size(row)
+    raise "Different size: row array size should be #{@cols}" unless [row.size, @cols].uniq.size == 1
 
     @rows << row
   end
 
   def transpose
-    df = DF.new(@rows.transpose.first.size)
+    df = DF.new(cols: @rows.transpose.first.size)
     @rows.transpose.each do |r|
       df << r
     end
     df
   end
 
-  def diff(another, &block)
+  def diff(another, prefix: '\\', &block)
     b = another.to_a
-    v=to_a.map.with_index do |r, i|
+    v = to_a.map.with_index do |r, i|
       r.map.with_index do |v, j|
-        cond = block ? block.call(v, b[i][j]) : v!=b[i][j]
-        cond ? v : "_#{v}"
+        bv = b[i][j]
+        cond = block ? block.call(v, bv) : v != bv
+        cond ? "#{prefix}#{v}" : v
       end
     end
-    DF.new(v.first.size){v}
+    DF.new { v }
   end
 
   def to_s(**params, &block)
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
-    fixed_width=params.fetch(:width, nil)
-    col_widths.map!{ fixed_width } if fixed_width
+    fixed_width = params.fetch(:width, nil)
+    col_widths.map! { fixed_width } if fixed_width
     @rows.dup.map do |r|
       just = params[:ljust] ? :ljust : :rjust
       # apply formatting to each element
@@ -96,5 +101,16 @@ class DF
   end
 end
 
+class ArrayDF < SimpleDelegator
+  def to_df(cols: nil)
+    DF.new(cols:) { self }
+  end
+
+  def rotate_left
+    ArrayDF.new(self).to_df # auto-fill
+           .then { |df| ArrayDF.new(df.to_a.map(&:reverse)).to_df }
+           .then { |df| df.transpose}
+  end
+end
 # require 'rubytools/numeric_ext'
 # using NumericExt
