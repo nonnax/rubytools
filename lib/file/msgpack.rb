@@ -4,13 +4,8 @@ require_relative 'serializer'
 require 'msgpack'
 
 class MessagePackFile < Serializer
-  def read(&block)
-  # run default block on exception
-
+  def read
     MessagePack.unpack(File.read(@path))
-  rescue => e
-    puts e
-    block.call(self)
   end
   def write(obj)
     File.write @path, MessagePack.pack(obj)

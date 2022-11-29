@@ -18,7 +18,11 @@ class Filer
   end
 
   def read(&block)
-    @strategy.read || block&.call
+  # run default block on exception
+    @strategy.read
+  rescue=>e
+    puts e
+    block&.call
   end
 
   def write(obj)
@@ -26,8 +30,6 @@ class Filer
   end
 
   def self.load(strategy, &block)
-    # create and write a default value with a block, nil value otherwise
-    # `load` returns a Filer object and the initial value
     new(strategy).then{|o|
       [o, o.read{ o.write block&.call(o)}]
     }

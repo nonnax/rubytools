@@ -3,13 +3,8 @@
 require_relative 'serializer'
 
 class TextFile < Serializer
-  def read(&block)
-  # run default block on exception
-
+  def read
     File.read(@path)
-  rescue => e
-    puts e
-    block.call(self)
   end
   def write(obj)
     File.write @path, obj

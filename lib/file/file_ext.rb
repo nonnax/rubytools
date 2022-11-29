@@ -5,6 +5,7 @@
 require 'ruby-filemagic'
 require 'fileutils'
 require 'pathname'
+require 'file/file_importer'
 
 class String
   def is_text_file?
@@ -31,13 +32,13 @@ module SafeFileName
 end
 
 module NumberedFile
-  UNDERSCORE = '_'
+  UNDERSCORE = '-'
   RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
 
   def get_next_name(bn, ext)
     out=nil
     loop do
-      bn = bn.match(RE_END_DIGIT) ? bn.succ : "#{bn}_001"
+      bn = bn.match?(RE_END_DIGIT) ? bn.succ : "#{bn}-001"
       out = [bn, ext].join('.')
       break unless File.exist?(out)
     end
@@ -51,6 +52,12 @@ module NumberedFile
     get_next_name(bn, ext)
   end
   alias to_safe_filename filename_succ
+
+  def filename_next(f)
+    fname = f.match?(RE_END_DIGIT)? f : "#{f}-001"
+    File.exist?(fname) ? filename_next(fname.succ) : fname
+  end
+
 end
 
 # String.include(NumberedFile)

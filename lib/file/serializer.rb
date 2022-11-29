@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-11-17 10:00:17
-# abstract parent class
 class Serializer
   attr :path
   def initialize(f)
