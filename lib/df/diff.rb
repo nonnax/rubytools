@@ -14,7 +14,10 @@ class DF
     self
   end
 
-  def diff(another, width:1, color: 'yellow', &block)
+  def diff(another, **params, &block)
+    width=params.fetch(:width, 1)
+    color=params.fetch(:color, 'yellow')
+
     str_just=->x{ x.to_s.send(:rjust, width) }
     b = another.to_a
     v = to_a.map.with_index do |r, i|
@@ -25,5 +28,13 @@ class DF
       end
     end
     DF.new { v }
+  end
+
+  def to_s(**params, &block)
+    width=params.fetch(:width, 1)
+    color=params.fetch(:color, 'white')
+    separator=params.fetch(:separator, ' ')
+    str_just=->x{ x.to_s.send(:rjust, width).send(color) }
+    @rows.map{|r| r.map(&str_just).join(separator)}.join("\n")
   end
 end
