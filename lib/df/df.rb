@@ -84,11 +84,15 @@ class DF
   end
 
   def to_s(**params, &block)
+    view_rows=@rows.dup
+
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
     fixed_width = params.fetch(:width, nil)
+    header = params.fetch(:header, nil)
+    view_rows.prepend(view_rows.first.size.times.map.to_a) if header
     col_widths.map! { fixed_width } if fixed_width
-    @rows
-    .dup
+
+    view_rows
     .map do |r|
       just = params[:ljust] ? :ljust : :rjust
       # apply formatting to each element
@@ -105,14 +109,14 @@ class DF
  def rc(row, col, index_by: 1)
    # row, col = [row, col].map{|e| e-1} if index_by.positive?
    row, col = [row.clamp(0, rows.size-1), col.clamp(0, rows.first.size-1)]
-   rows[row][col]
+   rows[row][col].dup
  end
- def [](*cols, fn)
+ def [](*cols, &block)
    # select columns and apply a function on them
    # return a new DF result
    DF.new do
     rows.map.with_index do |r, i|
-      [r, fn.call(*cols.map{|col| rc(i, col)})].flatten
+      [r, block.call(*cols.map{|col| rc(i, col)})].flatten
     end
    end
  end
