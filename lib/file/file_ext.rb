@@ -87,6 +87,7 @@ class File
   end
 
   def self.age(f, attribute: :mtime) # :mtime, :atime, :ctime
+    return 999_999_999 unless File.exist?(f)
     Time.now-File.send(attribute, f)
   end
 
