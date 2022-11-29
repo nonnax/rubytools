@@ -3,16 +3,6 @@
 require 'rubytools/ansi_color'
 
 class DF
-  def update(df, cols: nil)
-    return self unless df
-    # widest df column determines the column size unless <cols> is defined
-
-    @rows.clear
-    @cols = cols if cols
-    @cols = df.map(&:size).max unless @cols
-    df.each {|row| self << row.map(&:to_s).map(&:cyan) }
-    self
-  end
 
   def diff(another, **params, &block)
     width=params.fetch(:width, 1)

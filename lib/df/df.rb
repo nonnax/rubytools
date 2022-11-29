@@ -66,7 +66,8 @@ class DF
     DF.new { @rows.transpose }
   end
 
-  def diff(another, prefix: '\\', &block)
+  def diff(another, **params, &block)
+    prefix=params.fetch(:prefix, '\\')
     b = another.to_a
     DF.new {
       self
@@ -98,6 +99,23 @@ class DF
     .join("\n")
     .tap { |s| block&.call(s) }
   end
+end
+
+class DF
+ def rc(row, col, index_by: 1)
+   # row, col = [row, col].map{|e| e-1} if index_by.positive?
+   row, col = [row.clamp(0, rows.size-1), col.clamp(0, rows.first.size-1)]
+   rows[row][col]
+ end
+ def [](*cols, fn)
+   # select columns and apply a function on them
+   # return a new DF result
+   DF.new do
+    rows.map.with_index do |r, i|
+      [r, fn.call(*cols.map{|col| rc(i, col)})].flatten
+    end
+   end
+ end
 end
 
 # converts a compatible array into a DF object
