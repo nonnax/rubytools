@@ -4,6 +4,7 @@
 require_relative 'marshal'
 require_relative 'yaml'
 require_relative 'json'
+require_relative 'csv'
 require_relative 'textfile'
 require_relative 'msgpack'
 require_relative 'msgpack'
