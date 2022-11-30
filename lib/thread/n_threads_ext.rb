@@ -25,7 +25,7 @@ using NThreadsExt
 class ThreadArray<SimpleDelegator
   def map_threads(threads:4, &block)
     threads.threads(queue: self.size) do |q|
-      block.call(self.shift)
+      block.call(*self.shift)
     end
   end
 end
