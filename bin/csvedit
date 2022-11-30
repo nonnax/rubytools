@@ -8,7 +8,7 @@ require 'array_csv'
 require 'editor'
 # require 'fzf'
 # require 'string_ext'
-require 'file_ext'
+require 'file/file_ext'
 require 'fileutils'
 
 f = ARGV.first
@@ -16,7 +16,7 @@ exit unless f.end_with?(".csv")
 f=File.basename(f)
 File.backup(f)
 
-f ||= 
+f ||=
 Dir['*.csv']
     .fzf(cmd: 'fzf --preview="csview {}"')
     .first
