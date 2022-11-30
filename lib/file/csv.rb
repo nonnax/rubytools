@@ -4,7 +4,7 @@ require_relative 'serializer'
 require 'csv'
 require 'date'
 
-CSV::Converters[:mytime] = lambda{|s|
+CSV::Converters[:timex] = lambda{|s|
   begin
     DateTime.parse(s).to_time
   rescue ArgumentError
@@ -14,7 +14,7 @@ CSV::Converters[:mytime] = lambda{|s|
 
 class CSVFile < Serializer
   def read
-    CSV.read(@path, converters: %i[numeric date mytime])
+    CSV.read(@path, converters: %i[numeric date timex])
   end
   def write(obj)
     File.write @path, to_csv(obj)
