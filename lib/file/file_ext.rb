@@ -102,6 +102,19 @@ class File
       nil
     end
   end
+
+  def self.flock(file, mode)
+    success = file.flock(mode)
+    if success
+      begin
+        yield file
+      ensure
+        file.flock(File::LOCK_UN)
+      end
+    end
+    success
+  end
+
   # open_lock(fname, mode = 'w', File::LOCK_EX | File::LOCK_NB) non-blocking lock
   def self.open_lock(fname, mode = 'r', lockmode = nil)
     lockmode ||= if %w[r rb].include?(mode)
@@ -114,8 +127,6 @@ class File
     open(fname, mode) do |f|
       flock(f, lockmode) do
         value = yield f
-      ensure
-        f.flock(File::LOCK_UN) # Comment this line out on Windows.
       end
       return value
     end
