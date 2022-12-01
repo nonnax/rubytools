@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-08-22 20:38:32 +0800
-require 'rubytools/ansi_bars'
+require 'rubytools/d_array_bars'
 
 class String
   # color helper for drawing candlestick patterns on a Unix/Linux terminal
@@ -13,11 +13,17 @@ class String
   def color_codes
     {
       red: 31,
+      light_red: 91,
       green: 32,
+      light_green: 92,
       yellow: 33,
       blue: 34,
+      magenta: 35,
+      light_magenta: 95,
       pink: 35,
-      cyan: 36
+      light_pink: 95,
+      cyan: 36,
+      light_cyan: 96
     }
   end
 
@@ -79,7 +85,7 @@ module AsciiPlot
     else
       bar[start...(start + len)] = DENSITY_SIGNS[-1] * len
     end
-    up_down.negative? ? bar.red : bar.cyan
+    up_down.negative? ? bar.magenta : bar.cyan
   end
 
   def plot_df(data)
@@ -169,6 +175,6 @@ if __FILE__ == $PROGRAM_NAME
     puts [b, r[:title]].join("\t")
   end
 
-  puts string_bars.to_hbars(delimeter: ' ')
+  puts DArrayBars.new(string_bars).to_hbars(delimeter: ' ')
 
 end

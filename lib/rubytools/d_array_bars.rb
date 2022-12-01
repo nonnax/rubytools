@@ -5,7 +5,7 @@ require 'delegate'
 require 'rubytools/array_table'
 require 'rubytools/ansi_color'
 
-module DArrayBars < SimpleDelegate
+class DArrayBars < SimpleDelegator
   def to_vbars(delimiter: ' . ', &block)
     def expand_rows(&block)
       max_width = map(&:size).max

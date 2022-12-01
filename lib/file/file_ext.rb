@@ -24,7 +24,6 @@ class String
   alias binary_file? is_binary_file?
 end
 
-
 module SafeFileName
   def to_safename
     gsub(/[^\w.]+/, '_')
@@ -33,10 +32,10 @@ end
 
 module NumberedFile
   UNDERSCORE = '-'
-  RE_END_DIGIT = /#{UNDERSCORE}\d+$/.freeze
+  RE_END_DIGIT = /#{UNDERSCORE}\d+$/
 
   def get_next_name(bn, ext)
-    out=nil
+    out = nil
     loop do
       bn = bn.match?(RE_END_DIGIT) ? bn.succ : "#{bn}-001"
       out = [bn, ext].join('.')
@@ -48,28 +47,26 @@ module NumberedFile
   def filename_succ(f)
     basename, _, ext = f.rpartition('.')
     out = nil
-    bn=basename.empty? ? ext : basename # check dot-files
+    bn = basename.empty? ? ext : basename # check dot-files
     get_next_name(bn, ext)
   end
   alias to_safe_filename filename_succ
 
   def filename_next(f)
-    fname = f.match?(RE_END_DIGIT)? f : "#{f}-001"
+    fname = f.match?(RE_END_DIGIT) ? f : "#{f}-001"
     File.exist?(fname) ? filename_next(fname.succ) : fname
   end
-
 end
 
 # String.include(NumberedFile)
 String.include(SafeFileName)
 
-
 class File
   extend NumberedFile
 
   def self.File(file)
-    file=file.to_path if file.respond_to?:to_path
-    file=file.to_str
+    file = file.to_path if file.respond_to? :to_path
+    file = file.to_str
   end
 
   def self.splitname(f)
@@ -77,18 +74,20 @@ class File
   end
 
   def self.splitpath(f)
-    f=f.to_path&.to_str if f.respond_to?:to_path
+    f = f.to_path&.to_str if f.respond_to? :to_path
     f_basename = basename(f)
     [File.expand_path(f).gsub(f_basename, ''), f_basename]
   end
 
   def self.append(path, str)
-    File.open(path, 'a+'){|f| f.puts str}
+    File.open(path, 'a+') { |f| f.puts str }
   end
 
-  def self.age(f, attribute: :mtime) # :mtime, :atime, :ctime
+  # :mtime, :atime, :ctime
+  def self.age(f, attribute: :mtime)
     return 999_999_999 unless File.exist?(f)
-    Time.now-File.send(attribute, f)
+
+    Time.now - File.send(attribute, f)
   end
 
   class << self
@@ -97,16 +96,55 @@ class File
 
   def self.backup(f)
     path, f_ = splitpath(f)
-    FileUtils.cp(f, File.join(path, f_.filename_succ)) rescue nil
+    begin
+      FileUtils.cp(f, File.join(path, f_.filename_succ))
+    rescue StandardError
+      nil
+    end
+  end
+
+  def self.open_lock(fname, mode = 'r', lockmode = nil)
+    lockmode ||= if %w[r rb].include?(mode)
+                   File::LOCK_SH
+                 else
+                   File::LOCK_EX
+                 end
+    value = nil
+    open(fname, mode) do |f|
+      flock(f, lockmode) do
+        value = yield f
+      ensure
+        f.flock(File::LOCK_UN) # Comment this line out on Windows.
+      end
+      return value
+    end
+  end
+
+  def self.locked?(f)
+    f = File.open(f, File::CREAT)
+
+    # returns false if already locked, 0 if not
+    ret = f.flock(File::LOCK_EX | File::LOCK_NB)
+
+    # unlocks if possible, for cleanup; this is a noop if lock not acquired
+    f.flock(File::LOCK_UN)
+
+    f.close
+    !ret # ret == false means we *couldn't* get a lock, i.e. it was locked
   end
 end
 
 module PathnameExt
   def backup
     path, f_ = split(f)
-    FileUtils.cp(f, File.join(path, f_.filename_succ)) rescue nil
+    begin
+      FileUtils.cp(f, File.join(path, f_.filename_succ))
+    rescue StandardError
+      nil
+    end
   end
+
   def filename_succ
-    Pathname.new(File.filename_succ(self.basename))
+    Pathname.new(File.filename_succ(basename))
   end
 end
