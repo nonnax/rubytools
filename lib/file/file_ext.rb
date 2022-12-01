@@ -80,7 +80,7 @@ class File
   end
 
   def self.append(path, str)
-    File.open(path, 'a+') { |f| f.puts str }
+    File.write(path, str, mode: 'a+') # read-write append or create
   end
 
   # :mtime, :atime, :ctime
@@ -103,44 +103,32 @@ class File
     end
   end
 
-  def self.flock(file, mode)
-    success = file.flock(mode)
-    if success
+  def self.flock(f, mode)
+    if f.flock(mode)
       begin
-        yield file
+        yield f
       ensure
-        file.flock(File::LOCK_UN)
+        f.flock(File::LOCK_UN)
       end
     end
-    success
   end
 
   # open_lock(fname, mode = 'w', File::LOCK_EX | File::LOCK_NB) non-blocking lock
-  def self.open_lock(fname, mode = 'r', lockmode = nil)
-    lockmode ||= if %w[r rb].include?(mode)
-                   File::LOCK_SH
-                 else
-                   # File::LOCK_EX
-                   File::LOCK_EX | File::LOCK_NB
-                 end
-    value = nil
+  def self.open_lock(fname, mode = 'r', lockmode = File::LOCK_EX | File::LOCK_NB)
+    lockmode = File::LOCK_SH if %w[r rb].include?(mode)
     open(fname, mode) do |f|
       flock(f, lockmode) do
-        value = yield f
+        yield f
       end
-      return value
     end
   end
 
   def self.locked?(f)
     f = File.open(f, File::CREAT)
-
     # returns false if already locked, 0 if not
     ret = f.flock(File::LOCK_EX | File::LOCK_NB)
-
     # unlocks if possible, for cleanup; this is a noop if lock not acquired
     f.flock(File::LOCK_UN)
-
     f.close
     !ret # ret == false means we *couldn't* get a lock, i.e. it was locked
   end

@@ -5,7 +5,7 @@
 require 'rubytools'
 require 'editor'
 require 'string_ext'
-require 'file_ext'
+require 'file/file_ext'
 require 'optparse'
 
 f=ARGV.first
@@ -27,10 +27,10 @@ def edit_and_commit(f)
 
   message="update: #{f_base}"
   IO.popen("git add #{f_base} && git commit -m '#{message}'", &:read)
-  
+
 rescue StandardError => e
   puts e
-ensure 
+ensure
   puts IO.popen("git log --oneline | head ", &:read)
 end
 
