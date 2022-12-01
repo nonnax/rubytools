@@ -86,7 +86,7 @@ class ArrayCSV
     return if @dataframe.compact.empty?
 
     Thread.new do
-      File.write(@fname, @dataframe.map(&:to_csv).join)
+      File.open_lock(@fname, 'w+'){|f| f.write @dataframe.map(&:to_csv).join}
     end.join
     self
   end

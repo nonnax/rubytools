@@ -102,12 +102,13 @@ class File
       nil
     end
   end
-
+  # open_lock(fname, mode = 'w', File::LOCK_EX | File::LOCK_NB) non-blocking lock
   def self.open_lock(fname, mode = 'r', lockmode = nil)
     lockmode ||= if %w[r rb].include?(mode)
                    File::LOCK_SH
                  else
-                   File::LOCK_EX
+                   # File::LOCK_EX
+                   File::LOCK_EX | File::LOCK_NB
                  end
     value = nil
     open(fname, mode) do |f|
