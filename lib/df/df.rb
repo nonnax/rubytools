@@ -67,17 +67,21 @@ class DF
     DF.new { @rows.transpose }
   end
 
+
   def to_s(**params, &block)
     view_rows = @rows.dup
+
+    columns=(1..view_rows.first.size).to_a.zip([]+Array(params[:columns])).to_h
+    rows=(0..view_rows.size).to_a.zip(Array(params[:rows])).to_h
 
     fixed_width = params.fetch(:width, nil)
     separator = params.fetch(:separator, '  ')
     just = params[:ljust] ? :ljust : :rjust
 
     if params.fetch(:index, nil)
-      view_rows.prepend((1..view_rows.first.size).to_a)
+      view_rows.prepend(columns.map{|k, v| v || k })
       # view_rows.prepend(view_rows.first.size.times.map.to_a)   # column labels
-      view_rows=view_rows.map.with_index{|r, i| r.prepend(i)} # row labels
+      view_rows=view_rows.map.with_index{|r, i|r.prepend(rows[i] || i) } # row labels
     end
 
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
