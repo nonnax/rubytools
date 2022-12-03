@@ -74,11 +74,14 @@ class DF
     separator = params.fetch(:separator, '  ')
     just = params[:ljust] ? :ljust : :rjust
 
-    view_rows.prepend(view_rows.first.size.times.map.to_a) if params.fetch(:header, nil)
+    if params.fetch(:index, nil)
+      view_rows.prepend((1..view_rows.first.size).to_a)
+      # view_rows.prepend(view_rows.first.size.times.map.to_a)   # column labels
+      view_rows=view_rows.map.with_index{|r, i| r.prepend(i)} # row labels
+    end
 
     col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
     col_widths.map! { fixed_width } if fixed_width
-
 
     view_rows
       .map do |r|
