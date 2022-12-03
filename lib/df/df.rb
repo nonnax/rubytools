@@ -69,22 +69,21 @@ class DF
 
 
   def to_s(**params, &block)
-    view_rows = @rows.dup
+    view_rows = deep_dup(@rows)
 
-    columns=(1..view_rows.first.size).to_a.zip([]+Array(params[:columns])).to_h
-    rows=(0..view_rows.size).to_a.zip(%w[-]+Array(params[:rows])).to_h
+    _columns=(1..view_rows.first.size).to_a.zip([]+Array(params[:columns])).to_h
+    _rows=(0..view_rows.size).to_a.zip(%w[-]+Array(params[:rows])).to_h
 
     fixed_width = params.fetch(:width, nil)
     separator = params.fetch(:separator, '  ')
     just = params[:ljust] ? :ljust : :rjust
 
     if params.fetch(:index, nil)
-      view_rows.prepend(columns.map{|k, v| v || k })
-      # view_rows.prepend(view_rows.first.size.times.map.to_a)   # column labels
-      view_rows=view_rows.map.with_index{|r, i|r.prepend( rows[i] || i) } # row labels
+      view_rows.prepend(_columns.map{|k, v| v || k }) # column labels
+      view_rows=view_rows.map.with_index{|r, i|r.prepend( _rows[i] || i) } # row labels
     end
 
-    col_widths = @rows.dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
+    col_widths = deep_dup(view_rows).transpose.map { |r| r.map(&:to_s).map(&:size).max }
     col_widths.map! { fixed_width } if fixed_width
 
     view_rows
@@ -96,6 +95,10 @@ class DF
     end
       .join("\n")
       .tap { |s| block&.call(s) }
+  end
+
+  def deep_dup(o)
+    Marshal.load(Marshal.dump(o))
   end
 end
 
@@ -136,6 +139,7 @@ class DF
       end
     end
   end
+
 end
 
 # converts a compatible array into a DF object
