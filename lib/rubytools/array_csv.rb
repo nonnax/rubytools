@@ -5,6 +5,7 @@
 require 'csv'
 require 'forwardable'
 require 'rubytools/thread_ext'
+require 'file/file_ext'
 
 class Array
   def to_csv

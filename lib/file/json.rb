@@ -5,7 +5,7 @@ require 'json'
 
 class JSONFile < Serializer
   def read
-    JSON.parse(File.read(@path), symbolize_names:true)
+    JSON.parse(File.read(@path))
   end
   def write(obj)
     File.write @path, JSON.pretty_generate(obj)

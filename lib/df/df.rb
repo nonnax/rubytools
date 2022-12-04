@@ -142,6 +142,22 @@ class DF
 
 end
 
+class DF
+ def arrange(*columns, **params)
+  # columns are 1-indexed by default
+   index = params.fetch(:index, 1)
+   columns=columns.uniq
+   fail "columns size do not match #{[columns.size, @rows.first.size]}" unless [columns.size, @rows.first.size].uniq.size==1
+   @rows.map{|r|
+    r.map.with_index{|e, i|
+     idx = index==1 ? columns[i].pred : columns[i]
+     r[idx]
+    }
+   }
+   .then{|arr| DF.new{arr}}
+ end
+end
+
 # converts a compatible array into a DF object
 class ArrayDF < SimpleDelegator
   def to_df(cols: nil)
