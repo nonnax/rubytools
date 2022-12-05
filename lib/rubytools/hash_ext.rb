@@ -12,6 +12,10 @@
 
 module HashExt
   refine Hash do
+    def to_data
+     Data.define(*self.keys)[*self.values]
+    end
+
     def deep_flatten
       # produces a new flattened hash; renaming keys where appropriate
       # uses recursive descent to flatten deeply nested branches
