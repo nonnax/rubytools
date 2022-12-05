@@ -178,8 +178,8 @@ class DF
   end
 
   def rc(row, col, index: 1)
-    row = row.clamp(0, rows.size - 1)
-    col = col.clamp(0, rows.first.size - 1)
+    row = row.clamp(-rows.size, rows.size - 1)
+    col = col.clamp(-rows.first.size, rows.first.size - 1)
     rows[row][col].dup
   end
 
