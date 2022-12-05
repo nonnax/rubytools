@@ -5,6 +5,16 @@
 require 'forwardable'
 require 'delegate'
 
+module ArrayMarshalExt
+  refine Array do
+    def deep_dup
+    Marshal.load(Marshal.dump(self))
+    end
+  end
+end
+
+using ArrayMarshalExt
+
 class DF
   # dataframe
   # @rows -> [
@@ -61,6 +71,34 @@ class DF
     raise "Different column size: should be #{@cols}" unless [row.size, @cols].uniq.size == 1
 
     @rows << row
+    self
+  end
+
+  def prepend(row)
+    row = check_size(row)
+    raise "Different column size: should be #{@cols}" unless [row.size, @cols].uniq.size == 1
+
+    @rows.prepend row
+    self
+  end
+
+  def define(&block)
+      @rows
+      .deep_dup
+      .tap(&block)
+      .then{|arr|
+        DF.new{arr}
+      }
+  end
+
+  def no_headers
+    columns=[]
+    [define{|o| columns<<o.shift}, {columns: columns.flatten}]
+  end
+
+  def no_indexes
+    rows=[]
+    [define{|o| rows<<o.map(&:shift) }, {rows: rows.flatten}]
   end
 
   def transpose
@@ -69,7 +107,7 @@ class DF
 
 
   def to_s(**params, &block)
-    view_rows = deep_dup(@rows)
+    view_rows = @rows.deep_dup
 
     _columns=(1..view_rows.first.size).to_a.zip([]+Array(params[:columns])).to_h
     _rows=(0..view_rows.size).to_a.zip(%w[-]+Array(params[:rows])).to_h
@@ -83,7 +121,7 @@ class DF
       view_rows=view_rows.map.with_index{|r, i|r.prepend( _rows[i] || i) } # row labels
     end
 
-    col_widths = deep_dup(view_rows).transpose.map { |r| r.map(&:to_s).map(&:size).max }
+    col_widths = view_rows.deep_dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
     col_widths.map! { fixed_width } if fixed_width
 
     view_rows
@@ -98,7 +136,7 @@ class DF
   end
 
   def deep_dup(o)
-    Marshal.load(Marshal.dump(o))
+    o.deep_dup
   end
 end
 
@@ -123,8 +161,7 @@ class DF
     DF.new { v }
   end
 
-  def rc(row, col, index_by: 1)
-    # row, col = [row, col].map{|e| e-1} if index_by.positive?
+  def rc(row, col, index: 1)
     row = row.clamp(0, rows.size - 1)
     col = col.clamp(0, rows.first.size - 1)
     rows[row][col].dup
