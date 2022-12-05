@@ -6,7 +6,7 @@ require 'forwardable'
 require 'delegate'
 
 module ArrayMarshalExt
-  refine Array do
+  refine Object do
     def deep_dup
     Marshal.load(Marshal.dump(self))
     end
@@ -66,6 +66,14 @@ class DF
     self
   end
 
+  def to_a
+    @rows.deep_dup
+  end
+
+  def +(another_df)
+    DF.new{ @rows.to_a+another_df.to_a }
+  end
+
   def <<(row)
     row = check_size(row)
     raise "Different column size: should be #{@cols}" unless [row.size, @cols].uniq.size == 1
@@ -99,6 +107,14 @@ class DF
   def no_indexes
     rows=[]
     [define{|o| rows<<o.map(&:shift) }, {rows: rows.flatten}]
+  end
+
+  def at_columns(*cols)
+   self
+   .deep_dup
+   .transpose
+   .define{|o| o.replace o.values_at(*cols)}
+   .transpose
   end
 
   def transpose
@@ -135,8 +151,8 @@ class DF
       .tap { |s| block&.call(s) }
   end
 
-  def deep_dup(o)
-    o.deep_dup
+  def deep_dup
+    Marshal.load(Marshal.dump(self))
   end
 end
 
