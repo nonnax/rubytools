@@ -18,20 +18,41 @@ module ArrayExt
       self.map(&:size).max
     end
 
-    def balanced_rows
+    def to_balanced_array
       maxlen=self.longest_row
       self
+      .deep_dup
       .map{|r| r.rjust(maxlen) }
       .map{|r| r.flatten }
-      .then{|a| a.deep_dup }
     end
 
     def to_hash
       self
-      .balanced_rows
+      .to_balanced_array
       .inject({}){ |h, r| h[r.shift] = r; h}
     end
 
+    def max_column_widths
+      self
+      .deep_dup
+      .to_balanced_array
+      .map{|r| r.map(&:to_s).map(&:size).max }
+    end
+
+    def to_table
+      widths=max_column_widths
+
+      self
+      .deep_dup
+      .to_balanced_array
+      .map
+      .with_index{|r, i|
+        r.map{|e| e.to_s.rjust(widths[i], ' ')}
+      }
+      .transpose
+      .map{|r| r.join(' ')}
+      .join("\n")
+    end
   end
 end
 
@@ -47,14 +68,21 @@ module HashExt
     def to_balanced_hash
       self
       .to_flat_array
-      .balanced_rows
+      .to_balanced_array
       .inject({}){ |h, r| h[r.shift] = r; h}
+    end
+
+    def to_balanced_array
+      self
+      .dup
+      .to_flat_array
+      .to_balanced_array
     end
 
     def transpose
       self
       .to_flat_array
-      .balanced_rows
+      .to_balanced_array
       .transpose
       .to_hash
     end
