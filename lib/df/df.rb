@@ -6,9 +6,12 @@ require 'forwardable'
 require 'delegate'
 
 module ArrayMarshalExt
-  refine Object do
+  refine Array do
     def deep_dup
-    Marshal.load(Marshal.dump(self))
+      Marshal.load(Marshal.dump(self))
+    end
+    def and(other_arr, &block)
+      self.map.with_index{|e, i| block.call(*[e, other_arr[i]]) }
     end
   end
 end
@@ -187,7 +190,9 @@ class DF
     # select columns and apply a function on them
     # return a new DF result
     DF.new do
-      rows.map.with_index do |r, i|
+      rows
+      .map
+      .with_index do |r, i|
         [r, block.call(*cols.map { |col| rc(i, col) })].flatten
       end
     end
