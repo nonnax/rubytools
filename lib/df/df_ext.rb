@@ -3,6 +3,9 @@
 
 module ArrayExt
   refine Array do
+    def and(other_arr, &block)
+      self.map.with_index{|e, i| block.call(*[e, other_arr[i]]) }
+    end
 
     def deep_dup
       Marshal.load(Marshal.dump(self))

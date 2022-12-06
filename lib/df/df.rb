@@ -4,19 +4,8 @@
 # Id$ nonnax 2022-11-17 17:49:10
 require 'forwardable'
 require 'delegate'
-
-module ArrayMarshalExt
-  refine Array do
-    def deep_dup
-      Marshal.load(Marshal.dump(self))
-    end
-    def and(other_arr, &block)
-      self.map.with_index{|e, i| block.call(*[e, other_arr[i]]) }
-    end
-  end
-end
-
-using ArrayMarshalExt
+require 'df/df_ext'
+using DFExt
 
 class DF
   # dataframe
