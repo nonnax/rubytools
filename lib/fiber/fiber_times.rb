@@ -15,6 +15,16 @@ module FiberTimesExt
      Fiber.new(&fi_block)
    end
  end
+ refine Array do
+  def fiber_join
+    while self.any?(&:alive?)
+      self.each do |f|
+        next unless f.alive?
+        f.resume
+      end
+    end
+  end
+ end
 end
 
 class FiberJoinDeco<SimpleDelegator
