@@ -7,7 +7,7 @@ tmp='/tmp/eval.rb'
 File
 .edit( tmp )
 .then{ |code| eval code }
-.then{ |s| s.split("\n") }
+.then{ |s| String(s).split("\n") }
 .map{ |s| ['# ', s].join }
 .join("\n")
 .then{|s| File.write tmp, s, mode: 'a'}
