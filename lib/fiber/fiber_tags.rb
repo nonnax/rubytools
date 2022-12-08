@@ -3,12 +3,13 @@
 # simple blocking-fiber loop scheduler
 #
 # FiberTags.new do
-#
+#  # 1k times loop, default param (timeout: 0)
 #  _1_000{
 #   puts 'hi'
 #  }
-#  _10{
-#   puts 'ho'
+#  # execute loop every 5-sec
+#  _every(timeout: 5){
+#     puts 'ho'
 #  }
 #
 # end
@@ -18,6 +19,17 @@
 # ho
 # ...
 
+class TimeExpire
+  attr :timeout
+  def initialize(timeout=0)
+    @timeout=timeout
+    @expires=Time.now + timeout
+  end
+  def expired?(reset:true)
+    t=Time.now
+    (@expires = t+timeout if t > @expires) if reset
+  end
+end
 class FiberTags
 
   attr_accessor :fibers
@@ -26,6 +38,26 @@ class FiberTags
     @fibers=[]
     instance_exec(self, &block)
     join
+  end
+
+  def _every(**params, &block)
+    @fibers<<Fiber.new do
+      expires=TimeExpire.new params.fetch(:timeout, 0)
+      loop do
+        block.call if expires.expired?
+        Fiber.yield
+      end
+    end
+  end
+
+  def _observable(*observers, **params, &block)
+    @fibers<<Fiber.new do
+      expires=TimeExpire.new params.fetch(:timeout, 0)
+      loop do
+        observers.each(&block) if expires.expired?
+        Fiber.yield
+      end
+    end
   end
 
   def join
@@ -40,9 +72,10 @@ class FiberTags
 
   def method_missing(m, *a, **params, &block)
     @fibers<<Fiber.new do
-      timeout=Time.now + params.fetch(:timeout, 0)
+      expires=TimeExpire.new params.fetch(:timeout, 0)
+      # loop m-times
       m.to_s.tr('_','').to_i.times do |i|
-        block.call(i) if Time.now > timeout
+        block.call(i) if expires.expired?
         Fiber.yield
       end
     end if m.match?(/^_/)
