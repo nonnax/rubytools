@@ -31,9 +31,9 @@ class FiberTags
     join
   end
 
-  def _every(**params, &block)
-    @fibers<<Fiber.new do
-      expires=TimeExpiry.new params.fetch(:timeout, 0)
+  def _every(timeout=0, **params, &block)
+    @fibers<<Fiber.new(blocking: false) do
+      expires=TimeExpiry.new params.fetch(:timeout, timeout)
       loop do
         block.call if expires.expired?
         Fiber.yield
@@ -41,9 +41,9 @@ class FiberTags
     end
   end
 
-  def _observable(*observers, **params, &block)
-    @fibers<<Fiber.new do
-      expires=TimeExpiry.new params.fetch(:timeout, 0)
+  def _observable(timeout=0, *observers, **params, &block)
+    @fibers<<Fiber.new(blocking: false) do
+      expires=TimeExpiry.new params.fetch(:timeout, timeout)
       loop do
         observers.each(&block) if expires.expired?
         Fiber.yield
@@ -63,10 +63,9 @@ class FiberTags
 
   def method_missing(m, *a, **params, &block)
     @fibers<<Fiber.new do
-      expires=TimeExpiry.new params.fetch(:timeout, 0)
       # loop m-times
       m.to_s.tr('_','').to_i.times do |i|
-        block.call(i) if expires.expired?
+        block.call(i)
         Fiber.yield
       end
     end if m.match?(/^_/)
