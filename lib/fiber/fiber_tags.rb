@@ -18,18 +18,9 @@
 # hi
 # ho
 # ...
+#
+require 'time/time_expiry'
 
-class TimeExpire
-  attr :timeout
-  def initialize(timeout=0)
-    @timeout=timeout
-    @expires=Time.now + timeout
-  end
-  def expired?(reset:true)
-    t=Time.now
-    (@expires = t+timeout if t > @expires) if reset
-  end
-end
 class FiberTags
 
   attr_accessor :fibers
@@ -42,7 +33,7 @@ class FiberTags
 
   def _every(**params, &block)
     @fibers<<Fiber.new do
-      expires=TimeExpire.new params.fetch(:timeout, 0)
+      expires=TimeExpiry.new params.fetch(:timeout, 0)
       loop do
         block.call if expires.expired?
         Fiber.yield
@@ -52,7 +43,7 @@ class FiberTags
 
   def _observable(*observers, **params, &block)
     @fibers<<Fiber.new do
-      expires=TimeExpire.new params.fetch(:timeout, 0)
+      expires=TimeExpiry.new params.fetch(:timeout, 0)
       loop do
         observers.each(&block) if expires.expired?
         Fiber.yield
@@ -62,7 +53,7 @@ class FiberTags
 
   def join
     while @fibers.any?(&:alive?)
-      @fibers.each do |f|
+      @fibers.map do |f|
         next unless f.alive?
 
         f.resume
@@ -72,7 +63,7 @@ class FiberTags
 
   def method_missing(m, *a, **params, &block)
     @fibers<<Fiber.new do
-      expires=TimeExpire.new params.fetch(:timeout, 0)
+      expires=TimeExpiry.new params.fetch(:timeout, 0)
       # loop m-times
       m.to_s.tr('_','').to_i.times do |i|
         block.call(i) if expires.expired?
