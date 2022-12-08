@@ -8,7 +8,7 @@ module ArrayExt
       Marshal.load(Marshal.dump(self))
     end
 
-    def rjust(adjust, padding=nil)
+    def ljust(adjust, padding=nil)
       self.dup.then{|arr|
         arr+([padding]*(adjust-arr.size))
       }
@@ -22,7 +22,7 @@ module ArrayExt
       maxlen=self.longest_row
       self
       .deep_dup
-      .map{|r| r.rjust(maxlen) }
+      .map{|r| r.ljust(maxlen) }
       .map{|r| r.flatten }
     end
 
