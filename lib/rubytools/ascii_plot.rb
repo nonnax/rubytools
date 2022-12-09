@@ -104,7 +104,7 @@ module AsciiPlot
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    @x_axis_limit = 100/5
+    @x_axis_limit = 100/10
     bar = [' '] * @x_axis_limit
 
     up_down = (close <=> open)
@@ -116,7 +116,12 @@ module AsciiPlot
     start, stop = [open, close].minmax
     len = (stop - start).abs
 
-    bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+    if open==close then
+      start = [start - 1, 0].max
+      bar[start] = BOX_HORIZ_VERT
+    else
+      bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+    end
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
 
