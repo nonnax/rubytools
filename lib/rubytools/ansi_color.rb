@@ -66,11 +66,16 @@ class String
       "\033[#{mode_codes[mode]};#{fg_code};#{bg_code}m#{self}\033[0m"
     end
 
-    alias_method(:color, :set_color)
+    alias_method :color, :set_color
 
     "".colors.each do |c|
       define_method(c) { self.color(c) }
     end
+
+    def uncolor
+      gsub(/\e\[\d+m/, '')
+    end
+    alias_method :no_color, :uncolor
 end
 
 module Screen
@@ -111,7 +116,7 @@ module Screen
           default: 39,
           bg_default: 49
         }
-    
+
       def color(color)
         puts "\e[#{color}m"
       end
@@ -124,11 +129,15 @@ module Screen
 end
 
 class String
+  def numeric?
+    true if Float(self) rescue false
+  end
+
   def color_number
-    if strip.is_number?
-      to_f.negative? ? red : yellow
+    if strip.numeric?
+      to_f.negative? ? light_magenta : light_yellow
     else
-      white
+      light_white
     end
   end
 end

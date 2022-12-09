@@ -4,8 +4,11 @@
 module NumericExt
   refine String do
     def is_number?
-      # obj = obj.to_s unless obj.is_a? String
-      !/\A[+-]?\d+(\.\d+)?\z/.match(self).nil?
+      !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
+    end
+
+    def numeric?
+     true if Float(str) rescue false
     end
 
     def base32_to_i
@@ -23,12 +26,14 @@ module NumericExt
       to_s(32).rjust(padding, '0')
     end
   end
+
   refine Object do
     def is_number?
       to_s.is_number?
     end
   end
 end
+
 module CollectionPager
   def pages_of(n)
     self
@@ -132,5 +137,3 @@ Numeric.prepend(NumericFormatter)
 Float.prepend(NumericFormatter)
 Integer.prepend(NumericFormatter)
 Integer.include(CollectionPager)
-
-
