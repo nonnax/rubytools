@@ -2,7 +2,19 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-08-22 20:38:32 +0800
-require 'rubytools/d_array_bars'
+# require 'rubytools/d_array_bars'
+require 'df/df_ext'
+using DFExt
+
+class Array
+  def fill(start, stop, char='x')
+    stop=stop.clamp(0..self.size)
+    (start...stop).each do |i|
+      self[i] = char
+    end
+    self
+  end
+end
 
 class String
   # color helper for drawing candlestick patterns on a Unix/Linux terminal
@@ -68,8 +80,7 @@ module AsciiPlot
 
     up_down = (close <=> open)
     # normalize to zero x-axis
-    open, low, high, close, min, max = [open, low, high, close, min, max].map(&:to_f)
-    open, low, high, close, min, max = [open, low, high, close, min, max].map { |e| e - min }
+    open, low, high, close, min, max = [open, low, high, close, min, max].map(&:to_f).map{ |e| e - min.to_f }
 
     # normalize to percentage
     open, high, low, close = [open, high, low, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
@@ -88,6 +99,27 @@ module AsciiPlot
     up_down.negative? ? bar.magenta : bar.cyan
   end
 
+  def openclose(_name, open, close, min = 0, max = 100)
+    #
+    # plot an OHLC row as candlestick pattern
+    # row format == [:row_1, o, h, l, c, min, max]
+    #
+    @x_axis_limit = 100/5
+    bar = [' '] * @x_axis_limit
+
+    up_down = (close <=> open)
+    # normalize to zero x-axis
+    open, close, min, max = [open, close, min, max].map(&:to_f).map{ |e| e - min.to_f }
+    # normalize to percentage
+    open, close = [open, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
+
+    start, stop = [open, close].minmax
+    len = (stop - start).abs
+
+    bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+    up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
+  end
+
   def plot_df(data)
     #
     # plots an OHLC dataframe
@@ -98,6 +130,39 @@ module AsciiPlot
       row_h = %i[title open high low close].zip(row).to_h
       yield([AsciiPlot.candlestick(*row, min, max), row_h])
     end
+  end
+
+  def plot_bar(data)
+    #
+    # plots an OC dataframe
+    # dataframe=[[:row_1, o, c], ...[:row_n, o, c]]
+    #
+    min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
+    data.each do |row|
+      row_h = %i[title open close].zip(row).to_h
+      yield([AsciiPlot.openclose(*row, min, max), row_h])
+    end
+  end
+
+  def plot_bars(data)
+    Marshal.load(Marshal.dump(data))
+    bars=[]
+    AsciiPlot.plot_bar(data.dup) do |b, r|
+       bars << b
+       # puts [b.join, r[:title]].join("\t")
+    end
+    bar_size=bars.transpose.size
+    header=(0..bar_size-1).to_a.map{'-'}
+    min, max=data.map(&:last).minmax
+
+    header[-1]=max.to_s
+    header[header.size/2]=(max+min)/2
+    header[0]=min
+
+    puts bars
+    .tap{|br| br.prepend(header)}
+    .map(&:reverse)
+    .to_table
   end
 end
 
@@ -142,7 +207,7 @@ if __FILE__ == $PROGRAM_NAME
     data << [:next20, o, h, l, c]
   end
 
-  20.times do
+  30.times do
     min = 10
     max = 70
     @min = min
@@ -164,7 +229,7 @@ if __FILE__ == $PROGRAM_NAME
 
   puts '-' * 100
 
-  require 'string_bars'
+  # require 'string_bars'
 
   # array plot
   string_bars = []
@@ -175,6 +240,44 @@ if __FILE__ == $PROGRAM_NAME
     puts [b, r[:title]].join("\t")
   end
 
-  puts DArrayBars.new(string_bars).to_hbars(delimeter: ' ')
+  require 'df/df_ext'
+
+  # data=[]
+  # 40.times do
+    # min = -10
+    # max = 20
+    # @min = min
+    # @max = max
+    # o = rand(min..max)
+    # l = max + rand(5)
+    # h = min + rand(10)
+    # c = rand(min..max)
+    # l, h = [o, l, h, c].minmax
+    # c = [c, h].min
+    # data << [Time.now.to_s, o, c]
+  # end
+
+  data.map!{|r| r.values_at(0, -4, -1)}
+
+  # bars=[]
+  # AsciiPlot.plot_bar(data.dup) do |b, r|
+     # bars << b
+     # puts [b.join, r[:title]].join("\t")
+  # end
+  # bar_size=bars.transpose.size
+  # header=(0..bar_size-1).to_a.map{'-'}
+  # min, max=data.map(&:last).minmax
+#
+  # header[-1]=max.to_s
+  # header[header.size/2]=(max+min)/2
+  # header[0]=min
+#
+  # puts bars
+  # .tap{|br| br.prepend(header)}
+  # .map(&:reverse)
+  # .to_table
+
+  AsciiPlot.plot_bars(data.dup)
+  # puts DArrayBars.new(string_bars).to_hbars(delimeter: ' ')
 
 end
