@@ -135,6 +135,7 @@ module DFAsciiPlot
     bar.fill(start, (start + len), DENSITY_SIGNS[-1])
 
     if [start,stop].uniq.size==1
+      start = [start - 1, 0].max
       bar[start]=BOX_HORIZ_VERT
     end
 
