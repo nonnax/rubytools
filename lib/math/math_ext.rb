@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-12-09 10:58:57
-require_relative 'numeric_ext'
+require 'rubytools/numeric_ext'
 
 module MathExt
  include NumericExt
