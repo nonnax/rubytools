@@ -133,6 +133,11 @@ module DFAsciiPlot
     len = (stop - start).abs
 
     bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+
+    if [start,stop].uniq.size==1
+      bar[start]=BOX_HORIZ_VERT
+    end
+
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
 
