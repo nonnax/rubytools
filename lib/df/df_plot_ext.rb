@@ -14,8 +14,8 @@ module DFPlotExt
         yield([b, r])
       end
     end
-    def plot_bars
-      DFAsciiPlot.plot_bars(self)
+    def plot_bars(**params)
+      DFAsciiPlot.plot_bars(self, **params)
     end
 
     def fill(start, stop, char='x')
@@ -115,12 +115,12 @@ module DFAsciiPlot
     up_down.negative? ? bar.magenta : bar.cyan
   end
 
-  def openclose(_name, open, close, min = 0, max = 100)
+  def openclose(_name, open, close, min = 0, max = 100, **params)
     #
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    @x_axis_limit = 100/5
+    @x_axis_limit = params.fetch(:scale, 100/5)
     bar = [' '] * @x_axis_limit
 
     up_down = (close <=> open)
@@ -148,14 +148,14 @@ module DFAsciiPlot
     end
   end
 
-  def plot_bar_map(data, &block)
+  def plot_bar_map(data, **params,  &block)
     #
     # plots an OC dataframe
     # dataframe=[[:row_1, o, c], ...[:row_n, o, c]]
     #
     min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
     data.map do |row|
-      DFAsciiPlot.openclose(*row, min, max)
+      DFAsciiPlot.openclose(*row, min, max, **params)
       .tap{|arr| block.call(arr) if block}
     end
   end
@@ -172,9 +172,9 @@ module DFAsciiPlot
     }
   end
 
-  def plot_bars(data)
+  def plot_bars(data, **params)
     Marshal.load(Marshal.dump(data))
-    bars = DFAsciiPlot.plot_bar_map(data.dup)
+    bars = DFAsciiPlot.plot_bar_map(data.dup, **params)
 
     header = plot_bars_header(bars, data)
 
