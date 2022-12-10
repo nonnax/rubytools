@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2021-11-23 12:45:47 +0800
 require 'rubytools/editor'
+require 'math/math_ext'
+using MathExt
 
 tmp='/tmp/eval.rb'
 

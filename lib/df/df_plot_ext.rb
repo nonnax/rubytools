@@ -166,15 +166,18 @@ module DFAsciiPlot
     end
   end
 
-  def plot_bars_header(bars, data)
+  def plot_bars_header(bars, data, **params)
     min, max = data.dup.map(&:last).minmax
-
+    rjust_width=params.fetch(:rjust, max.to_i.to_s.size+3)
+    rjust=->x{
+      ("%0.2f" % x).send(:rjust, rjust_width)
+    }
     Array
-    .new(bars.transpose.size){'-'}
+    .new(bars.transpose.size-1){'-'}
     .tap{|header|
-      header[-1]=max.to_s
-      header[header.size/2]=(max+min)/2
-      header[0]=min
+      header[-1]=rjust[max]
+      header[header.size/2]=rjust[(max+min)/2]
+      header[0]=rjust[min]
     }
   end
 
@@ -182,7 +185,7 @@ module DFAsciiPlot
     Marshal.load(Marshal.dump(data))
     bars = DFAsciiPlot.plot_bar_map(data.dup, **params)
 
-    header = plot_bars_header(bars, data)
+    header = plot_bars_header(bars, data, **params)
 
     bars
     .tap{|br| br.prepend(header)}
