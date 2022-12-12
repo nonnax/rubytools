@@ -15,14 +15,6 @@ class String
     end
   end
 
-  def first(n)
-    slice(0, n)
-  end
-
-  def last(n)
-    slice(n * -1, size)
-  end
-
   def scroll(slice: 10, repeat: 15)
     take_cons(slice: slice, repeat: repeat)
       .to_a
@@ -36,13 +28,13 @@ class String
       .each_cons(slice)
   end
 
-  def gsub_match(*a, &block)
+  def gsub_match(re, &block)
     # a more ruby-ish gsub which yields the matched data to the block
-    gsub(*a) do |m|
-      p m.class
-      block&.call(m, Regexp.last_match)
+    gsub(re) do |_m|
+      block&.call(Regexp.last_match)
     end
   end
+
 end
 
 module QueryStringConverter
@@ -104,7 +96,7 @@ module StringXOR
     .tap{ |text|
       text
       .length
-      .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }    
+      .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }
     }
   end
 end
