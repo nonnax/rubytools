@@ -4,6 +4,9 @@
 #
 # FiberTags.new do
 #  # 1k times loop, default param (timeout: 0)
+#  _loop{
+#   puts 'hi'
+#  }
 #  _1_000{
 #   puts 'hi'
 #  }
@@ -32,33 +35,62 @@ class FiberTags
   end
 
   def _every(timeout=0, **params, &block)
-    @fibers<<Fiber.new(blocking: false) do
+    Fiber
+    .new(blocking: false) do
       expires=TimeExpiry.new params.fetch(:timeout, timeout)
       loop do
         block.call if expires.expired?
         Fiber.yield
       end
     end
+    .tap do |fb|
+      @fibers<<fb
+    end
   end
+  alias every _every
 
   def _each(enum, &block)
-    @fibers<<Fiber.new(blocking: false) do
+    Fiber
+    .new(blocking: false) do
       enum.each do |e|
         block.call(e)
         Fiber.yield
       end
     end
+    .tap do |fb|
+      @fibers<<fb
+    end
   end
+  alias each _each
+
+  def _loop(&block)
+    Fiber
+    .new(blocking: false) do
+      Kernel.loop do |e|
+        block.call(e)
+        Fiber.yield
+      end
+    end
+    .tap do |fb|
+      @fibers<<fb
+    end
+  end
+  alias loop _loop
 
   def _observable(timeout=0, *observers, **params, &block)
-    @fibers<<Fiber.new(blocking: false) do
+    Fiber
+    .new(blocking: false) do
       expires=TimeExpiry.new params.fetch(:timeout, timeout)
       loop do
         observers.each(&block) if expires.expired?
         Fiber.yield
       end
     end
+    .tap do |fb|
+      @fibers<<fb
+    end
   end
+  alias observable _observable
 
   def join
     while @fibers.any?(&:alive?)
@@ -71,13 +103,14 @@ class FiberTags
   end
 
   def method_missing(m, *a, **params, &block)
-    @fibers<<Fiber.new do
-      # loop m-times
-      m.to_s.tr('_','').to_i.times do |i|
-        block.call(i)
-        Fiber.yield
-      end
-    end if m.match?(/^_/)
+    @fibers<<Fiber
+      .new do
+        # loop m-times
+        m.to_s.tr('_','').to_i.times do |i|
+          block.call(i)
+          Fiber.yield
+        end
+      end if m.match?(/^_/)
   end
 
 end
