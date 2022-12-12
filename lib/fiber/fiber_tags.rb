@@ -41,6 +41,15 @@ class FiberTags
     end
   end
 
+  def _each(enum, &block)
+    @fibers<<Fiber.new(blocking: false) do
+      enum.each do |e|
+        block.call(e)
+        Fiber.yield
+      end
+    end
+  end
+
   def _observable(timeout=0, *observers, **params, &block)
     @fibers<<Fiber.new(blocking: false) do
       expires=TimeExpiry.new params.fetch(:timeout, timeout)
