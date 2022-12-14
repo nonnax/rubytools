@@ -31,9 +31,6 @@ class Time
     strftime('%Y-%m-%d')
   end
 
-  def on_fourth
-    self if [0, 4, 8].include?(strftime('%h').to_i)
-  end
 end
 
 # Similar adjustments to Date will let you convert DateTime to Time .
