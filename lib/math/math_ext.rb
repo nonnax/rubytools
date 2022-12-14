@@ -20,7 +20,16 @@ module MathExt
   end
 
   def delta_change
-   self.each_cons(2).map{|a, b| a.delta_change(b) }
+   self
+   .each_cons(2)
+   .map(&:to_delta)
+   .flatten
+  end
+
+  def to_delta
+   # precondition: a two-element array or the opposite elements of an array
+   # return:  Numeric
+   [self.first_last].map{|a, b| a.delta_change(b) }.pop
   end
 
   def moving_average(n)
@@ -30,8 +39,22 @@ module MathExt
    .reverse
   end
 
+  def rate_change(n)
+   self
+   .each_cons(n)
+   .map(&:to_delta)
+  end
+
   def to_percent
    self.map{|x| x * 100}
+  end
+
+  def to_series
+   self.each_cons(2).map.with_index{|e, i| [i, e].flatten }
+  end
+
+  def first_last
+    [self.first, self.last]
   end
 
  end
