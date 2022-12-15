@@ -24,9 +24,11 @@ require 'delegate'
 using NThreadExt
 class NThreadArray<SimpleDelegator
   def map(threads:4, &block)
+    values=[]
     threads.threads(queue: self.size) do |q|
-      block.call(*self.shift)
+      values<<block.call(*self.shift)
     end
+    values
   end
 end
 
