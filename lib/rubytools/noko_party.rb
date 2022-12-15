@@ -7,11 +7,15 @@ require 'httparty'
 
 class NokoParty
   BROWSER = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/536.30.1 (KHTML, like Gecko) Version/6.0.5 Safari/536.30.1'
-  def self.get(url)
+  def self.default_handler(url)
     HTTParty
-     .get(url, browser: BROWSER)
-     .body
-     .force_encoding('UTF-8')
-     .then{ |html| Nokogiri::HTML(html) }
+   .get(url, browser: BROWSER)
+   .body
+   .force_encoding('UTF-8')
+  end
+  def self.get(url, &block)
+    http_handler = block ? block.call(url) : default_handler(url)
+    http_handler
+    .then{ |html| Nokogiri::HTML(html) }
   end
 end
