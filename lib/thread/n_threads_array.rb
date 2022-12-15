@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-11-30 10:03:21
-module NThreadsExt
+module NThreadExt
   refine Integer do
     def threads(queue:1, &block)
       q=queue.thread_queues
@@ -21,9 +21,9 @@ end
 
 require 'delegate'
 
-using NThreadsExt
-class ThreadArray<SimpleDelegator
-  def map_threads(threads:4, &block)
+using NThreadExt
+class NThreadArray<SimpleDelegator
+  def map(threads:4, &block)
     threads.threads(queue: self.size) do |q|
       block.call(*self.shift)
     end
