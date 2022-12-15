@@ -36,12 +36,13 @@ module Plotter
 
   def initialize(**params)
     @x_axis_limit = params.fetch(:scale, 100/5)
+    @label_width = params.fetch(:label_width, 1)
   end
 
-  def xplot(data, &block)
+  def xplot(data, **params, &block)
     bars = plot_map(data.deep_dup, &block)
 
-    header = plot_horiz_labels(bars, data)
+    header = plot_horiz_labels(bars, data, **params)
 
     bars
     .tap{|br| br.prepend(header)}
@@ -62,15 +63,16 @@ module Plotter
   end
 
 
-  def plot_horiz_labels(bars, data)
+  def plot_horiz_labels(bars, data, **params)
     min, max = data.dup.map(&:last).minmax
-
+    label_width = params.fetch(:label_width, @label_width)
+    label_format=->text{ text.to_s.rjust(label_width) }
     Array
     .new(bars.transpose.size){'-'}
     .tap{|header|
-      header[-1]=max.to_s
-      header[header.size/2]=(max+min)/2
-      header[0]=min
+      header[-1]=label_format[max]
+      header[header.size/2]=label_format[(max+min)/2]
+      header[0]=label_format[min]
     }
   end
 
@@ -115,11 +117,9 @@ class Candlestick
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
 
-
-  def plot(data)
-    xplot(data.deep_dup){|row, min, max| draw(*row, min, max)}
+  def plot(data, **params)
+    xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
   end
-
 end
 
 class OpenClose
