@@ -53,60 +53,62 @@ end
 
 #
 ## Helper methods for working with time units other than seconds
-module NumericHelper
-  # Convert time intervals to seconds
-  def milliseconds
-    self / 1000.0
-  end
+module NumericExt
+  refine Numeric do
+    # Convert time intervals to seconds
+    def milliseconds
+      self / 1000.0
+    end
 
-  def seconds
-    self
-  end
-  alias second seconds
+    def seconds
+      self
+    end
+    alias second seconds
 
-  def minutes
-    self * 60
-  end
-  alias minute minutes
+    def minutes
+      self * 60
+    end
+    alias minute minutes
 
-  def hours
-    self * 60 * 60
-  end
-  alias hour hours
+    def hours
+      self * 60 * 60
+    end
+    alias hour hours
 
-  def days
-    self * 60 * 60 * 24
-  end
-  alias day days
+    def days
+      self * 60 * 60 * 24
+    end
+    alias day days
 
-  def weeks
-    self * 60 * 60 * 24 * 7
-  end
-  alias week weeks
+    def weeks
+      self * 60 * 60 * 24 * 7
+    end
+    alias week weeks
 
-  # Convert seconds to other intervals
-  def to_milliseconds
-    self * 1000
-  end
+    # Convert seconds to other intervals
+    def to_milliseconds
+      self * 1000
+    end
 
-  def to_seconds
-    self
-  end
+    def to_seconds
+      self
+    end
 
-  def to_minutes
-    self / 60.0
-  end
+    def to_minutes
+      self / 60.0
+    end
 
-  def to_hours
-    self / (60 * 60.0)
-  end
+    def to_hours
+      self / (60 * 60.0)
+    end
 
-  def to_days
-    self / (60 * 60 * 24.0)
-  end
+    def to_days
+      self / (60 * 60 * 24.0)
+    end
 
-  def to_weeks
-    self / (60 * 60 * 24 * 7.0)
+    def to_weeks
+      self / (60 * 60 * 24 * 7.0)
+    end
   end
 end
 
@@ -132,8 +134,8 @@ module NumericFormatter
   end
 end
 
-Numeric.include(NumericHelper)
-Numeric.prepend(NumericFormatter)
+# Numeric.include(NumericHelper)
+# Numeric.prepend(NumericFormatter)
 Float.prepend(NumericFormatter)
 Integer.prepend(NumericFormatter)
 Integer.include(CollectionPager)

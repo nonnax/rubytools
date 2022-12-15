@@ -14,7 +14,7 @@ class NokoParty
    .force_encoding('UTF-8')
   end
   def self.get(url, &block)
-    http_handler = block ? block.call(url) : default_handler(url)
+    http_handler = block&.call(url) || default_handler(url)
     http_handler
     .then{ |html| Nokogiri::HTML(html) }
   end
