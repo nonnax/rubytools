@@ -86,9 +86,7 @@ class ArrayCSV
     # save dataframe
     return if @dataframe.compact.empty?
 
-    Thread.new do
-      File.open_lock(@fname, 'w+'){|f| f.write @dataframe.map(&:to_csv).join}
-    end.join
+    File.open_lock(@fname, 'w+'){|f| f.write @dataframe.map(&:to_csv).join}
     self
   end
 
@@ -101,9 +99,7 @@ class ArrayCSV
   end
 
   def load
-    Thread.new do
-      @dataframe = File.exist?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric date]) : []
-    end.join
+    @dataframe = File.exist?(@fname) ? CSV.parse(File.read(@fname), converters: %i[numeric date]) : []
     self
   end
   alias load_data load

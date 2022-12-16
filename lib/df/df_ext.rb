@@ -1,68 +1,64 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Id$ nonnax 2022-12-05 15:35:08
 
 module ArrayExt
   refine Array do
-
     def deep_dup
       Marshal.load(Marshal.dump(self))
     end
 
-    def ljust(adjust, padding=nil)
-      self.dup.then{|arr|
-        arr+([padding]*(adjust-arr.size))
-      }
+    def ljust(adjust, padding = nil)
+      dup.then do |arr|
+        arr + ([padding] * (adjust - arr.size))
+      end
     end
 
     def longest_row
-      self.map(&:size).max
+      map(&:size).max
     end
 
     def to_balanced_array
-      maxlen=self.longest_row
-      self
-      .deep_dup
-      .map{|r| r.ljust(maxlen) }
-      .map{|r| r.flatten }
+      maxlen = longest_row
+
+      deep_dup
+        .map { |r| r.ljust(maxlen) }
+        .map(&:flatten)
     end
 
     def to_hash
-      self
-      .to_balanced_array
-      .inject({}){ |h, r| h[r.shift] = r; h}
+      to_balanced_array.each_with_object({}) do |r, h|
+        h[r.shift] = r
+      end
     end
 
     def max_column_widths
-      self
-      .deep_dup
-      .to_balanced_array
-      .map{|r| r.map(&:to_s).map(&:size).max }
+      deep_dup
+        .to_balanced_array
+        .map { |r| r.map(&:to_s).map(&:size).max }
     end
 
     def map_as_strings(&block)
-      widths=max_column_widths
-
-      self
-      .deep_dup
-      .map
-      .with_index{|r, i|
-        block ? block.call(*[r.map(&:to_s), i]) : r
-      }
+      deep_dup
+        .map
+        .with_index do |r, i|
+          block ? block.call(r.map(&:to_s), i) : r
+        end
     end
 
-    def to_table
-      widths=max_column_widths
+    def to_table(separator: ' ', width: nil)
+      widths = width ? max_column_widths.map{ width } : max_column_widths
 
-      self
-      .deep_dup
-      .to_balanced_array
-      .map
-      .with_index{|r, i|
-        r.map{|e| e.to_s.rjust(widths[i], ' ')}
-      }
-      .transpose
-      .map{|r| r.join(' ')}
-      .join("\n")
+      deep_dup
+        .to_balanced_array
+        .map
+        .with_index do |r, i|
+          r.map { |e| e.to_s.rjust(widths[i], ' ') }
+        end
+        .transpose
+        .map { |r| r.join(separator) }
+        .join("\n")
     end
   end
 end
@@ -71,33 +67,30 @@ module HashExt
   using ArrayExt
 
   refine Hash do
-
     def to_flat_array
-      self.map{ |h| h.flatten }
+      map(&:flatten)
     end
 
     def to_balanced_hash
-      self
-      .to_flat_array
-      .to_balanced_array
-      .inject({}){ |h, r| h[r.shift] = r; h}
+      to_flat_array
+        .to_balanced_array
+        .each_with_object({}) do |r, h|
+          h[r.shift] = r
+        end
     end
 
     def to_balanced_array
-      self
-      .dup
-      .to_flat_array
-      .to_balanced_array
+      dup
+        .to_flat_array
+        .to_balanced_array
     end
 
     def transpose
-      self
-      .to_flat_array
-      .to_balanced_array
-      .transpose
-      .to_hash
+      to_flat_array
+        .to_balanced_array
+        .transpose
+        .to_hash
     end
-
   end
 end
 

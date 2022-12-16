@@ -7,6 +7,19 @@ require 'delegate'
 require 'df/df_ext'
 using DFExt
 
+module ArrayMarshalExt
+  refine Array do
+    def deep_dup
+      Marshal.load(Marshal.dump(self))
+    end
+    def and(other_arr, &block)
+      self.map.with_index{|e, i| block.call(*[e, other_arr[i]]) }
+    end
+  end
+end
+
+using ArrayMarshalExt
+
 class DF
   # dataframe
   # @rows -> [
@@ -129,18 +142,7 @@ class DF
       view_rows=view_rows.map.with_index{|r, i|r.prepend( _rows[i] || i) } # row labels
     end
 
-    col_widths = view_rows.deep_dup.transpose.map { |r| r.map(&:to_s).map(&:size).max }
-    col_widths.map! { fixed_width } if fixed_width
-
-    view_rows
-      .map do |r|
-      # apply formatting to each element
-      r.map(&:to_s)
-       .map.with_index { |s, i| s.send(just, col_widths[i]) }
-       .join(separator)
-    end
-      .join("\n")
-      .tap { |s| block&.call(s) }
+    view_rows.to_table(width: fixed_width)
   end
 
   def deep_dup
