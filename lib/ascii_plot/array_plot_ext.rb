@@ -127,7 +127,7 @@ class Candlestick
     when 0
       start = [start - 1, 0].max
       bar[start] =
-      case start<=> stop
+      case up_down
         when -1
           Unicode::TOP
         when 0
