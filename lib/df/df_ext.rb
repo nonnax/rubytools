@@ -95,4 +95,5 @@ end
 module DFExt
   include ArrayExt
   include HashExt
+  include ObjectExt
 end

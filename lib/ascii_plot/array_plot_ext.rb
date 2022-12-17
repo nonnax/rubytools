@@ -11,6 +11,22 @@ require 'ascii_plot/ascii_plot_ext'
 using DFExt
 using AsciiPlotExt
 
+module Unicode
+  # Chart characters
+  # BODY = "█"
+  BODY = "┃"
+  BOTTOM = "╿"
+  HALF_BODY_BOTTOM = "╻"
+  HALF_BODY_TOP = "╹"
+  FILL = "┃"
+  TOP = "╽"
+  VOID = " "
+  WICK = "│"
+  WICK_LOWER = "╵"
+  WICK_UPPER = "╷"
+  MIN_DIFF_THRESHOLD = 0.25
+  MAX_DIFF_THRESHOLD = 0.75
+end
 
 module Plotter
   #
@@ -25,7 +41,8 @@ module Plotter
   BOX_HORIZ = '-'
   # BOX_HORIZ_VERT = '┼'.freeze
   BOX_HORIZ_VERT = '┼'
-  BOX_VERT = '|'.freeze
+  # BOX_VERT = '|'.freeze
+  BOX_VERT = Unicode::WICK
 
   BAR_XLIMIT = 50
   @x_axis_limit = nil
@@ -47,7 +64,7 @@ module Plotter
     bars
     .tap{|br| br.prepend(header)}
     .map(&:reverse)
-    .to_table
+    .to_table(separator:'')
   end
 
   def plot_map(data, &block)
@@ -91,7 +108,7 @@ class Candlestick
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    bar = [' '] * @x_axis_limit
+    bar = [''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
@@ -112,7 +129,7 @@ class Candlestick
     else
       start, stop = [open, close].minmax
       len = (stop - start).abs
-      bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+      bar.fill(start, (start + len), Unicode::BODY)
     end
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
@@ -130,7 +147,7 @@ class OpenClose
     # plot an OC row as a directional bar pattern
     # row format == [:row_1, o, c, min, max]
     #
-    bar = [' '] * @x_axis_limit
+    bar = [''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
@@ -147,7 +164,7 @@ class OpenClose
     else
       start, stop = [open, close].minmax
       len = (stop - start).abs
-      bar.fill(start, (start + len), DENSITY_SIGNS[-1])
+      bar.fill(start, (start + len), Unicode::BODY)
     end
 
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
