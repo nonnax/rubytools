@@ -13,7 +13,6 @@ using AsciiPlotExt
 
 module Unicode
   # Chart characters
-  # BODY = "█"
   BODY = "┃"
   BOTTOM = "╿"
   HALF_BODY_BOTTOM = "╻"
@@ -24,6 +23,8 @@ module Unicode
   WICK = "│"
   WICK_LOWER = "╵"
   WICK_UPPER = "╷"
+  TEE_UP = "⊥"
+  TEE_DOWN = "⊤"
   MIN_DIFF_THRESHOLD = 0.25
   MAX_DIFF_THRESHOLD = 0.75
 end
@@ -125,7 +126,18 @@ class Candlestick
     case len
     when 0
       start = [start - 1, 0].max
-      bar[start] = BOX_HORIZ_VERT
+      bar[start] =
+      case start<=> stop
+        when -1
+          Unicode::TOP
+        when 0
+          BOX_HORIZ_VERT
+        when 1
+          Unicode::BOTTOM
+        else
+          0
+      end
+
     else
       start, stop = [open, close].minmax
       len = (stop - start).abs
