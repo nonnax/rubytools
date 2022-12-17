@@ -12,8 +12,9 @@ module ArrayMarshalExt
     def deep_dup
       Marshal.load(Marshal.dump(self))
     end
+
     def and(other_arr, &block)
-      self.map.with_index{|e, i| block.call(*[e, other_arr[i]]) }
+      map.with_index { |e, i| block.call(e, other_arr[i]) }
     end
   end
 end
@@ -21,18 +22,14 @@ end
 using ArrayMarshalExt
 
 class DF
-  # dataframe
-  # @rows -> [
-  # row0 -> [*items],
-  # row1 -> [*items],
-  # row2 -> [*items],
-  # row3 -> [*items]
+  # dataframe spec:
+  # an array of arrays
+  # [
+  #   [*row0items],
+  #   [*row1items],
+  #   ...,
+  #   [*rownitems]
   # ]
-  # @rows.map(&:size).uniq==1 or raise ExceptionDifferentSizes
-  # def <<(arow)
-  #   raise ExceptionDifferentSizes unless [arow.size, rows.first.size].uniq==1
-  #   @rows << arow
-  # end
 
   extend Forwardable
   def_delegators :@rows, :each, :map, :values_at, :first, :last
@@ -75,8 +72,8 @@ class DF
     @rows.deep_dup
   end
 
-  def +(another_df)
-    DF.new{ @rows.to_a+another_df.to_a }
+  def +(other)
+    DF.new { @rows.to_a + other.to_a }
   end
 
   def <<(row)
@@ -96,50 +93,46 @@ class DF
   end
 
   def define(&block)
-      @rows
+    @rows
       .deep_dup
       .tap(&block)
-      .then{|arr|
-        DF.new{arr}
-      }
+      .then{ |arr| DF.new { arr } }
   end
 
   def no_headers
-    columns=[]
-    [define{|o| columns<<o.shift}, {columns: columns.flatten}]
+    columns = []
+    [define { |o| columns << o.shift }, { columns: columns.flatten }]
   end
 
   def no_indexes
-    rows=[]
-    [define{|o| rows<<o.map(&:shift) }, {rows: rows.flatten}]
+    rows = []
+    [define { |o| rows << o.map(&:shift) }, { rows: rows.flatten }]
   end
 
   def at_columns(*cols)
-   self
-   .deep_dup
-   .transpose
-   .define{|o| o.replace o.values_at(*cols)}
-   .transpose
+    deep_dup
+      .transpose
+      .define { |o| o.replace o.values_at(*cols) }
+      .transpose
   end
 
   def transpose
     DF.new { @rows.transpose }
   end
 
-
-  def to_s(**params, &block)
+  def to_s(**params)
     view_rows = @rows.deep_dup
 
-    _columns=(1..view_rows.first.size).to_a.zip([]+Array(params[:columns])).to_h
-    _rows=(0..view_rows.size).to_a.zip(%w[-]+Array(params[:rows])).to_h
+    _columns = (1..view_rows.first.size).to_a.zip([] + Array(params[:columns])).to_h
+    _rows = (0..view_rows.size).to_a.zip(%w[-] + Array(params[:rows])).to_h
 
     fixed_width = params.fetch(:width, nil)
     separator = params.fetch(:separator, '  ')
     just = params[:ljust] ? :ljust : :rjust
 
     if params.fetch(:index, nil)
-      view_rows.prepend(_columns.map{|k, v| v || k }) # column labels
-      view_rows=view_rows.map.with_index{|r, i|r.prepend( _rows[i] || i) } # row labels
+      view_rows.prepend(_columns.map { |k, v| v || k }) # column labels
+      view_rows = view_rows.map.with_index { |r, i| r.prepend(_rows[i] || i) } # row labels
     end
 
     view_rows.to_table(width: fixed_width)
@@ -182,29 +175,30 @@ class DF
     # return a new DF result
     DF.new do
       rows
-      .map
-      .with_index do |r, i|
+        .map
+        .with_index do |r, i|
         [r, block.call(*cols.map { |col| rc(i, col) })].flatten
       end
     end
   end
-
 end
 
 class DF
- def arrange(*columns, **params)
-  # columns are 1-indexed by default
-   index = params.fetch(:index, 1)
-   columns=columns.uniq
-   fail "columns size do not match #{[columns.size, @rows.first.size]}" unless [columns.size, @rows.first.size].uniq.size==1
-   @rows.map{|r|
-    r.map.with_index{|e, i|
-     idx = index==1 ? columns[i].pred : columns[i]
-     r[idx]
-    }
-   }
-   .then{|arr| DF.new{arr}}
- end
+  def arrange(*columns, **params)
+    # columns are 1-indexed by default
+    index = params.fetch(:index, 1)
+    columns = columns.uniq
+    raise "columns size do not match #{[columns.size, @rows.first.size]}" unless [columns.size,
+                                                                                  @rows.first.size].uniq.size == 1
+
+    @rows.map do |r|
+      r.map.with_index do |_e, i|
+        idx = index == 1 ? columns[i].pred : columns[i]
+        r[idx]
+      end
+    end
+         .then { |arr| DF.new { arr } }
+  end
 end
 
 # converts a compatible array into a DF object

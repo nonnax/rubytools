@@ -9,33 +9,27 @@ module ArrayExt
       Marshal.load(Marshal.dump(self))
     end
 
-    def ljust(adjust, padding = nil)
-      dup.then do |arr|
-        arr + ([padding] * (adjust - arr.size))
-      end
+    def ljust(width=1, padding = nil)
+      dup + ([padding] * (width - size))
     end
 
     def longest_row
       map(&:size).max
     end
 
-    def to_balanced_array
-      maxlen = longest_row
-
-      deep_dup
-        .map { |r| r.ljust(maxlen) }
-        .map(&:flatten)
+    def ljust_rows(width = nil)
+      max_width = width || longest_row
+      map { |r| r.ljust(max_width) }
     end
 
     def to_hash
-      to_balanced_array.each_with_object({}) do |r, h|
+      ljust_rows.each_with_object({}) do |r, h|
         h[r.shift] = r
       end
     end
 
     def max_column_widths
       deep_dup
-        .to_balanced_array
         .map { |r| r.map(&:to_s).map(&:size).max }
     end
 
@@ -51,7 +45,7 @@ module ArrayExt
       widths = width ? max_column_widths.map{ width } : max_column_widths
 
       deep_dup
-        .to_balanced_array
+        .ljust_rows
         .map
         .with_index do |r, i|
           r.map { |e| e.to_s.rjust(widths[i], ' ') }
@@ -71,25 +65,22 @@ module HashExt
       map(&:flatten)
     end
 
-    def to_balanced_hash
-      to_flat_array
-        .to_balanced_array
-        .each_with_object({}) do |r, h|
-          h[r.shift] = r
-        end
-    end
-
-    def to_balanced_array
+    def ljust_values(width=nil)
+      max_width = width || values.longest_row
       dup
-        .to_flat_array
-        .to_balanced_array
+        .transform_values{|v| v.ljust(max_width)}
     end
 
     def transpose
       to_flat_array
-        .to_balanced_array
+        .ljust_rows
         .transpose
         .to_hash
+    end
+
+    def to_table
+      to_flat_array
+      .to_table
     end
   end
 end
