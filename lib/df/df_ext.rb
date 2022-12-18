@@ -23,13 +23,14 @@ module ArrayExt
       map(&:size).max
     end
 
-    def ljust_rows(width = nil, padding = nil)
+    def reshape(width = nil, padding = nil)
       max_width = width || longest_row
       map { |r| r.ljust(max_width, padding) }
     end
 
     def to_hash
-      ljust_rows.each_with_object({}) do |r, h|
+      reshape
+      .each_with_object({}) do |r, h|
         h[r.shift] = r
       end
     end
@@ -52,7 +53,7 @@ module ArrayExt
       widths = width ? max_column_widths.map{ width } : max_column_widths
 
       deep_dup
-        .ljust_rows
+        .reshape
         .map
         .with_index do |r, i|
           r.map { |e| e.to_s.rjust(widths[i], ' ') }
@@ -72,7 +73,7 @@ module HashExt
       map(&:flatten)
     end
 
-    def ljust_values(width=nil, padding=nil)
+    def reshape(width=nil, padding=nil)
       max_width = width || values.longest_row
       dup
         .transform_values{|v| v.ljust(max_width, padding)}
@@ -80,7 +81,7 @@ module HashExt
 
     def transpose
       to_flat_array
-        .ljust_rows
+        .reshape
         .transpose
         .to_hash
     end
