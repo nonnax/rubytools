@@ -31,6 +31,11 @@ module NumericExt
     def is_number?
       to_s.is_number?
     end
+
+    def in?(enum)
+      enum.include?(self) if enum.respond_to?(:include?)
+    end
+
   end
 end
 

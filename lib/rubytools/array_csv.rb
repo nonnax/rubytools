@@ -48,6 +48,11 @@ class ArrayCSV
     @dataframe
   end
 
+  def update(&block)
+    @dataframe.replace block.call(@dataframe)
+    self
+  end
+
   def prepend(*a)
     @dataframe.prepend(*a)
     save if @autosave
