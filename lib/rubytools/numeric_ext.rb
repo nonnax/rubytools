@@ -19,6 +19,14 @@ module NumericExt
       self.scan(/[+-.\d]+/).first
     end
 
+    def with_commas
+      i, _, d = partition('.')
+      d='00' if d.empty?
+      int=i.reverse.split(//).each_slice(3).to_a.map(&:join).join('_').reverse
+      [int, d].join('.')
+    end
+    alias with_comma with_commas
+
   end
 
   refine Integer do
@@ -117,30 +125,26 @@ module NumericExt
   end
 end
 
-module NumericFormatter
-  # auto print formatting for numbers
 
-  def commify
-    return if infinite?
+using NumericExt
 
-    n = abs
+module FloatExt
+  refine Float do
+    def human
+      return if infinite?
+      to_s.with_commas
+    end
 
-    u, d = (format('%.2f', n.to_f)).split('.')
-    arr = u.to_s.reverse.split('')
-    arr = arr.each_slice(3).map(&:join).join('_').reverse
 
-    arr << '.' << d unless is_a?(Integer)
-    arr = "-#{arr}" if negative?
-    arr
-  end
-
-  def to_s(*a)
-    a.empty? ? commify : super(*a)
+    def to_s(digit=nil)
+      fmt_str = digit ? "%0.#{digit}f"  : "%0.2f"
+      fmt_str % self
+    end
   end
 end
 
-# Numeric.include(NumericHelper)
-# Numeric.prepend(NumericFormatter)
-Float.prepend(NumericFormatter)
-Integer.prepend(NumericFormatter)
+module NumericExt
+  include FloatExt
+end
+
 Integer.include(CollectionPager)
