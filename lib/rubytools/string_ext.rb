@@ -5,36 +5,69 @@ require 'erb'
 require 'base64'
 require 'cgi'
 
-class String
-  def wrap(max_width = 20)
-    if size < max_width
+module StringExt
+  refine String do
+    def wrap(max_width = 20)
+      if size < max_width
+        self
+      else
+        scan(/.{1,#{max_width}}(?: |$)/)
+          .join("\n")
+      end
+    end
+
+    def scroll(slice: 10, repeat: 15)
+      take_cons(slice: slice, repeat: repeat)
+        .to_a
+        .each { |e| yield e.join }
       self
-    else
-      scan(/.{1,#{max_width}}(?: |$)/)
-        .join("\n")
     end
-  end
 
-  def scroll(slice: 10, repeat: 15)
-    take_cons(slice: slice, repeat: repeat)
-      .to_a
-      .each { |e| yield e.join }
-    self
-  end
-
-  def take_cons(slice: 10, repeat: 15)
-    (self * repeat)
-      .split(//)
-      .each_cons(slice)
-  end
-
-  def gsub_match(re, &block)
-    # a more ruby-ish gsub which yields the matched data to the block
-    gsub(re) do |_m|
-      block&.call(Regexp.last_match)
+    def take_cons(slice: 10, repeat: 15)
+      (self * repeat)
+        .split(//)
+        .each_cons(slice)
     end
-  end
 
+    def gsub_match(re, &block)
+      # a more ruby-ish gsub which yields the matched data to the block
+      gsub(re) do |_m|
+        block&.call(Regexp.last_match)
+      end
+    end
+
+    def rtrim(len)
+      self[0..len-1]
+    end
+
+
+    def render(binding_obj)
+      ERB.new(self).result(binding_obj)
+    end
+    alias result render
+
+    def encode64
+      Base64.encode64(self)
+    end
+
+    def decode64
+      Base64.decode64(self)
+    end
+
+    def base64?
+      Base64.encode64(Base64.decode64(self)).strip == strip && (size % 4).positive?
+    end
+
+    def xor(key)
+      dup
+      .tap{ |text|
+        text
+        .length
+        .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }
+      }
+    end
+
+  end
 end
 
 module QueryStringConverter
@@ -69,40 +102,9 @@ module TextScanner
   end
 end
 
-module RenderERB
-  def render(binding_obj)
-    ERB.new(self).result(binding_obj)
-  end
-  alias result render
-end
 
-module StringBase64
-  def encode64
-    Base64.encode64(self)
-  end
-
-  def decode64
-    Base64.decode64(self)
-  end
-
-  def base64?
-    Base64.encode64(Base64.decode64(self)).strip == strip && (size % 4).positive?
-  end
-end
-
-module StringXOR
-  def xor(key)
-    dup
-    .tap{ |text|
-      text
-      .length
-      .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }
-    }
-  end
-end
-
-String.include(TextScanner)
-String.include(QueryStringConverter)
-String.include(RenderERB)
-String.include(StringBase64)
-String.include(StringXOR)
+StringExt.include(TextScanner)
+StringExt.include(QueryStringConverter)
+# String.include(RenderERB)
+# String.include(StringBase64)
+# String.include(StringXOR)

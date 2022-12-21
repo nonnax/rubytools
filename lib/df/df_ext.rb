@@ -62,6 +62,10 @@ module ArrayExt
         .map { |r| r.join(separator) }
         .join("\n")
     end
+
+    def except(*rejects)
+      reject.with_index{|_e, i| rejects.include?(i) }
+    end
   end
 end
 

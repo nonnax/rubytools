@@ -6,9 +6,13 @@ require 'numeric_ext'
 require 'string_ext'
 require 'hash_ext'
 require 'file/file_ext'
-require 'time_and_date_ext'
+require 'file/filer'
+require 'time_ext'
 
 module CoreExt
+  include StringExt
+  include NumericExt
+
   refine NilClass do
     # +nil+ is blank:
     #
