@@ -42,10 +42,9 @@ module ArrayExt
 
     def map_as_strings(&block)
       deep_dup
-        .map
-        .with_index do |r, i|
+        .map do |r|
           r_string = r.map(&:to_s)
-          block ? block.call(r_string, i) : r_string
+          block ? block.call(r_string) : r_string
         end
     end
 

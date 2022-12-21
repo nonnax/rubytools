@@ -3,13 +3,14 @@
 
 module NumericExt
   refine String do
-    def is_number?
-      !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
-    end
+    # def is_number?
+      # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
+    # end
 
     def numeric?
-     true if Float(str) rescue false
+     true if Float(self) rescue false
     end
+    alias is_number? numeric?
 
     def base32_to_i
       to_i(32)
