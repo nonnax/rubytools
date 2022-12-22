@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2022-12-05 15:35:08
+require 'rubytools/numeric_ext'
+require 'math/math_ext'
 
 module ObjectExt
   refine Object do
@@ -100,4 +102,6 @@ module DFExt
   include ArrayExt
   include HashExt
   include ObjectExt
+  include NumericExt
+  include MathExt
 end

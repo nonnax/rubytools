@@ -4,9 +4,12 @@
 # Id$ nonnax 2021-08-22 20:38:32 +0800
 # require 'rubytools/d_array_bars'
 require 'df/df_ext'
+require 'rubytools/ansi_color'
+
 using DFExt
 
 module DFPlotExt
+  include DFExt
   refine Array do
     def plot_df
       # plot an OHLC dataframe
@@ -194,101 +197,3 @@ module DFAsciiPlot
   end
 end
 
-
-if __FILE__ == $PROGRAM_NAME
-  DFAsciiPlot.x_axis_limit = 30
-
-  data = []
-  20.times do
-    min = 170
-    max = 245
-    @min = min
-    @max = max
-    o = rand(min..max)
-    l = max + rand(5)
-    h = min + rand(10)
-    c = rand(min..max)
-    l, h = [o, l, h, c].minmax
-    c = [c, h].min
-    data << [:first20, o, h, l, c]
-  end
-
-  20.times do
-    min = 70
-    max = 180
-    @min = min
-    @max = max
-    o = rand(min..max)
-    l = max + rand(50)
-    h = rand(min..min + 10)
-    c = rand(min..max)
-    l, h = [o, l, h, c].minmax
-    c = [c, h].min
-    data << [:next20, o, h, l, c]
-  end
-
-  30.times do
-    min = 10
-    max = 70
-    @min = min
-    @max = max
-    o = rand(min..max)
-    l = max + rand(5)
-    h = min + rand(10)
-    c = rand(min..max)
-    l, h = [o, l, h, c].minmax
-    c = [c, h].min
-    data << [Time.now.to_s, o, h, l, c]
-  end
-
-  DFAsciiPlot.plot_df(data) do |bar, r|
-    puts [bar, r[:title]].join(' ')
-  end
-
-  DFAsciiPlot.x_axis_limit = 100
-
-  puts '-' * 100
-
-  # require 'string_bars'
-  using DFPlotExt
-
-  # array plot
-  string_bars = []
-
-  data.plot_df  do |b, r|
-    suff = r[:close] < r[:open] ? '-' : ' '
-    string_bars << "title#{b.uncolor.gsub(/-/, '|')}#{suff}"
-    puts [b, r[:title]].join("\t")
-  end
-
-  require 'df/df_ext'
-
-  # data=[]
-  # 40.times do
-    # min = -10
-    # max = 20
-    # @min = min
-    # @max = max
-    # o = rand(min..max)
-    # l = max + rand(5)
-    # h = min + rand(10)
-    # c = rand(min..max)
-    # l, h = [o, l, h, c].minmax
-    # c = [c, h].min
-    # data << [Time.now.to_s, o, c]
-  # end
-
-  # re-format for OC plot
-  # [
-  #   [String, Number, Number]...
-  # ]
-  data=data.map.with_index{|r, i| r.values_at(i, -4, -1)}
-
-
-  p 'DFAsciiPlot.plot_bars(data.dup)'
-  puts DFAsciiPlot.plot_bars(data.dup)
-
-  puts data.dup.plot_bars
-  # puts DArrayBars.new(string_bars).to_hbars(delimeter: ' ')
-
-end
