@@ -3,71 +3,32 @@
 
 # Id$ nonnax 2021-08-22 20:38:32 +0800
 # require 'rubytools/d_array_bars'
+# $LOAD_PATH<<'./lib'
 require 'df/df_ext'
 require 'rubytools/ansi_color'
-
+require 'rubytools/numeric_ext'
+using NumericExt
 using DFExt
 
-module DFPlotExt
-  include DFExt
-  refine Array do
-    def plot_df
-      # plot an OHLC dataframe
-      DFAsciiPlot.plot_df(self) do |b, r|
-        yield([b, r])
-      end
-    end
-    def plot_bars(**params)
-      DFAsciiPlot.plot_bars(self, **params)
-    end
-
-    def fill(start, stop, char='x')
-      stop=stop.clamp(0..self.size)
-      (start...stop).each do |i|
-        self[i] = char
-      end
-      self
-    end
-  end
-
-  refine String do
-    # color helper for drawing candlestick patterns on a Unix/Linux terminal
-    def set_color(color_code)
-      "\e[#{color_code}m#{self}\e[0m"
-    end
-
-    def color_codes
-      {
-        red: 31,
-        light_red: 91,
-        green: 32,
-        light_green: 92,
-        yellow: 33,
-        blue: 34,
-        magenta: 35,
-        light_magenta: 95,
-        pink: 35,
-        light_pink: 95,
-        cyan: 36,
-        light_cyan: 96
-      }
-    end
-
-    def uncolor
-      gsub(/\e\[\d+m/, '')
-    end
-
-    ''.color_codes.each do |k, v|
-      define_method(k) { set_color(v) }
-    end
-  end
-
-
+module Unicode
+  # Chart characters
+  BODY = "┃"
+  BOTTOM = "╿"
+  HALF_BODY_BOTTOM = "╻"
+  HALF_BODY_TOP = "╹"
+  FILL = "┃"
+  TOP = "╽"
+  VOID = " "
+  WICK = "│"
+  WICK_LOWER = "╵"
+  WICK_UPPER = "╷"
+  TEE_UP = "⊥"
+  TEE_DOWN = "⊤"
+  MIN_DIFF_THRESHOLD = 0.25
+  MAX_DIFF_THRESHOLD = 0.75
 end
 
-using DFPlotExt
-
-module DFAsciiPlot
+module Plotter
   #
   # Unix-compatible Terminal OHLC data plotter
   # uses ANSI box drawing chars
@@ -80,7 +41,8 @@ module DFAsciiPlot
   BOX_HORIZ = '-'
   # BOX_HORIZ_VERT = '┼'.freeze
   BOX_HORIZ_VERT = '┼'
-  # BOX_HORIZ_VERT = '|'.freeze
+  # BOX_VERT = '|'.freeze
+  BOX_VERT = Unicode::WICK
 
   BAR_XLIMIT = 50
   @x_axis_limit = nil
@@ -89,13 +51,75 @@ module DFAsciiPlot
     attr_accessor :x_axis_limit
   end
 
-  def candlestick(_name, open, high, low, close, min = 0, max = 100)
+  def initialize(**params)
+    @x_axis_limit = params.fetch(:scale, 100/5)
+    @label_width = params.fetch(:label_width, 1)
+  end
+
+  def xplot(data, **params, &block)
+    bars = plot_map(data.deep_dup, &block)
+
+    header = plot_horiz_labels(bars, data, **params)
+
+    bars
+    .tap{|br| br.prepend(header)}
+    .map(&:reverse)
+    .to_table(separator:'')
+  end
+
+  def plot_map(data, &block)
+    #
+    # block returns strategy
+    # candlestick(*row, min, max)
+    # openclose(*row, min, max)
+
+    min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
+    data.map do |row|
+      block.call(row, min, max)
+    end
+  end
+
+  def label_format(label, label_width)
+    nformat=->x{
+      return x unless x.to_s.numeric?
+      width = x < 1 ? 5 : 2
+      x.to_f.to_s(width)
+    }
+    ->text{
+        t=nformat[text]
+        t.rjust(label_width)
+    }
+    .call(label)
+  end
+
+  def plot_horiz_labels(bars, data, **params)
+    min, max = data.dup.map(&:last).minmax
+    label_width = params.fetch(:label_width, @label_width)
+    Array
+    .new(bars.transpose.size){'-'}
+    .tap{|header|
+      header[-1]=label_format(max, label_width)
+      header[header.size/2]=label_format( (max+min)/2, label_width)
+      header[0]=label_format(min, label_width)
+    }
+  end
+
+end
+
+class Candlestick
+  #
+  # Unix-compatible Terminal OHLC data plotter
+  # uses ANSI box drawing chars
+  #
+
+  include Plotter
+
+  def draw(_name, open, high, low, close, min = 0, max = 100, **params)
     #
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    @x_axis_limit ||= BAR_XLIMIT
-    bar = ' ' * @x_axis_limit
+    bar = [''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
@@ -105,26 +129,47 @@ module DFAsciiPlot
     open, high, low, close = [open, high, low, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
 
     len = (high - low)
-    bar[low...(low + len)] = BOX_HORIZ * len
+    bar.fill(low, (low + len), BOX_VERT)
+
     start, stop = [open, close].minmax
-    len = (stop - start)
+    len = (stop - start) # reuse len
     case len
     when 0
       start = [start - 1, 0].max
-      bar[start] = BOX_HORIZ_VERT
+      bar[start] =
+      case up_down
+        when -1
+          Unicode::TOP
+        when 0
+          BOX_HORIZ_VERT
+        when 1
+          Unicode::BOTTOM
+        else
+          0
+      end
+
     else
-      bar[start...(start + len)] = DENSITY_SIGNS[-1] * len
+      start, stop = [open, close].minmax
+      len = (stop - start).abs
+      bar.fill(start, (start + len), Unicode::BODY)
     end
-    up_down.negative? ? bar.magenta : bar.cyan
+    up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
 
-  def openclose(_name, open, close, min = 0, max = 100, **params)
+  def plot(data, **params)
+    xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
+  end
+end
+
+class OpenClose
+  include Plotter
+
+  def draw(_name, open, close, min = 0, max = 100)
     #
-    # plot an OHLC row as candlestick pattern
-    # row format == [:row_1, o, h, l, c, min, max]
+    # plot an OC row as a directional bar pattern
+    # row format == [:row_1, o, c, min, max]
     #
-    @x_axis_limit = params.fetch(:scale, 100/5)
-    bar = [' '] * @x_axis_limit
+    bar = [''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
@@ -134,66 +179,40 @@ module DFAsciiPlot
 
     start, stop = [open, close].minmax
     len = (stop - start).abs
-
-    bar.fill(start, (start + len), DENSITY_SIGNS[-1])
-
-    if [start,stop].uniq.size==1
+    case len
+    when 0
       start = [start - 1, 0].max
-      bar[start]=BOX_HORIZ_VERT
+      bar[start] = BOX_HORIZ_VERT
+    else
+      start, stop = [open, close].minmax
+      len = (stop - start).abs
+      bar.fill(start, (start + len), Unicode::BODY)
     end
 
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
   end
 
-  def plot_df(data)
-    #
-    # plots an OHLC dataframe
-    # dataframe=[[:row_1, o, h, l, c], ...[:row_n, o, h, l, c]]
-    #
-    min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
-    data.each do |row|
-      row_h = %i[title open high low close].zip(row).to_h
-      yield([DFAsciiPlot.candlestick(*row, min, max), row_h])
+  def plot(data)
+    xplot(data.deep_dup){|row, min, max| draw(*row, min, max)}
+  end
+end
+
+module DFPlotExt
+  include NumericExt
+  include DFExt
+
+  refine Array do
+    def init_plot
+      each_cons(2).map.with_index{|e, i| [i, e].flatten }
     end
-  end
 
-  def plot_bar_map(data, **params,  &block)
-    #
-    # plots an OC dataframe
-    # dataframe=[[:row_1, o, c], ...[:row_n, o, c]]
-    #
-    min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
-    data.map do |row|
-      DFAsciiPlot.openclose(*row, min, max, **params)
-      .tap{|arr| block.call(arr) if block}
+    def plot_candlestick(**params)
+      # plot an OHLC dataframe
+      Candlestick.new(**params).plot(self)
     end
-  end
-
-  def plot_bars_header(bars, data, **params)
-    min, max = data.dup.map(&:last).minmax
-    rjust_width=params.fetch(:rjust, max.to_i.to_s.size+3)
-    rjust=->x{
-      ("%0.2f" % x).send(:rjust, rjust_width)
-    }
-    Array
-    .new(bars.transpose.size-1){'-'}
-    .tap{|header|
-      header[-1]=rjust[max]
-      header[header.size/2]=rjust[(max+min)/2]
-      header[0]=rjust[min]
-    }
-  end
-
-  def plot_bars(data, **params)
-    Marshal.load(Marshal.dump(data))
-    bars = DFAsciiPlot.plot_bar_map(data.dup, **params)
-
-    header = plot_bars_header(bars, data, **params)
-
-    bars
-    .tap{|br| br.prepend(header)}
-    .map(&:reverse)
-    .to_table
+    def plot_bars(**params)
+      OpenClose.new(**params).plot(self)
+    end
   end
 end
 
