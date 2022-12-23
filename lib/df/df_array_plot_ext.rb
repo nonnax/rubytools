@@ -198,7 +198,14 @@ class OpenClose
 end
 
 module DFPlotExt
+  include NumericExt
+  include DFExt
+
   refine Array do
+    def init_plot
+      each_cons(2).map.with_index{|e, i| [i, e].flatten }
+    end
+
     def plot_candlestick(**params)
       # plot an OHLC dataframe
       Candlestick.new(**params).plot(self)
