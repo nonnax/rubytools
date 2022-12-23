@@ -2,8 +2,7 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2022-12-05 15:35:08
-require 'rubytools/numeric_ext'
-require 'math/math_ext'
+# require_relative 'formatter'
 
 module ObjectExt
   refine Object do
@@ -67,6 +66,19 @@ module ArrayExt
     def except(*rejects)
       reject.with_index{|_e, i| rejects.include?(i) }
     end
+
+    def fill(start, stop, char='x')
+      stop=stop.clamp(0..self.size)
+      (start...stop).each do |i|
+        self[i] = char
+      end
+      self
+    end
+
+    # def to_html
+      # IRuby::HTML.table(self)
+    # end
+
   end
 end
 
@@ -102,6 +114,4 @@ module DFExt
   include ArrayExt
   include HashExt
   include ObjectExt
-  include NumericExt
-  include MathExt
 end
