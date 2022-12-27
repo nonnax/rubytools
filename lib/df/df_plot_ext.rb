@@ -211,7 +211,9 @@ module DFPlotExt
       Candlestick.new(**params).plot(self)
     end
     def plot_bars(**params)
-      OpenClose.new(**params).plot(self)
+      plot_data = self
+      plot_data = init_plot unless first.is_a?(Array) && first.size==3
+      OpenClose.new(**params).plot(plot_data)
     end
   end
 end
