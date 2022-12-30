@@ -8,6 +8,5 @@ module Texticle
     io_handler.(f)
     .then{|s| FileImporter.parse(s) } #.tap{|s| puts s}
     .then{|s| Texticle.parse(s, &block) }
-    .then{|s| s.join }
    end
 end

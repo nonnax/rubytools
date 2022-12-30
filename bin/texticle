@@ -8,8 +8,8 @@ require mod
 
 unless f
   puts "file not found."
-  puts "usage: #{File.basename(__FILE__)} <file> <template> <any-optional-flag>"
-  puts "<any-optional-flag> allows string interpolation"
+  puts "usage: #{File.basename(__FILE__)} <file> <template> <any>"
+  puts "<any> flag discards interpolation"
   exit
 end
 
