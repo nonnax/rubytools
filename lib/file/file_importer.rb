@@ -12,8 +12,8 @@ class FileImporter
   def initialize(dir:'./')
     @dir=dir
   end
-  # gsub_imports/puts is recursive.
-  # if @import `afile` has another @import 'bfile' in it, it calls same method on itself
+  # recursive gsub_imports/puts/parse.
+  # if @import `afile` includes another @import 'bfile' it calls the method again
   def gsub_imports(_text)
     _text.gsub(RE_IMPORT){ File.read(File.join(@dir, Regexp.last_match[2])) }
          .then{|text| text.match?(RE_IMPORT) ? gsub_imports(text) : text }
