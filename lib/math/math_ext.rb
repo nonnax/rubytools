@@ -18,6 +18,7 @@ module MathExt
   def mean
    self.sum/self.size.to_f
   end
+  alias average mean
 
   def delta_change
    self

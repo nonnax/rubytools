@@ -6,7 +6,7 @@ module NumericExt
     # def is_number?
       # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
     # end
-
+    alias human to_s
     def numeric?
      true if Float(self) rescue false
     end
@@ -40,6 +40,7 @@ module NumericExt
     def is_number?
       to_s.is_number?
     end
+    alias numeric? is_number?
 
     def in?(enum)
       enum.include?(self) if enum.respond_to?(:include?)
@@ -131,9 +132,9 @@ using NumericExt
 
 module FloatExt
   refine Float do
-    def human
+    def human(dec=nil)
       return if infinite?
-      to_s.with_commas
+      to_s(dec).with_commas
     end
 
 

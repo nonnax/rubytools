@@ -31,6 +31,7 @@ module CoreExt
     def blank?
       true
     end
+
   end
 
   refine TrueClass do
@@ -89,6 +90,8 @@ module CoreExt
       return unless arr.respond_to?(:<<)
       arr<<self
     end
+    alias human to_s
+
   end
 
 end
