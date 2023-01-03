@@ -2,7 +2,9 @@
 # Id$ nonnax 2021-11-23 12:45:47 +0800
 require 'rubytools/editor'
 require 'math/math_ext'
+require 'df/df_ext'
 using MathExt
+using DFExt
 
 tmp='/tmp/eval.rb'
 

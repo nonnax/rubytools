@@ -3,6 +3,7 @@
 
 require 'rubytools'
 require 'numeric_ext'
+require 'enumerable_ext'
 require 'string_ext'
 require 'hash_ext'
 require 'file/file_ext'
@@ -12,6 +13,7 @@ require 'time_ext'
 module CoreExt
   include StringExt
   include NumericExt
+  include EnumerableExt
 
   refine NilClass do
     # +nil+ is blank:
