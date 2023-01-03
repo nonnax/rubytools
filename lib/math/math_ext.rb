@@ -58,6 +58,16 @@ module MathExt
     [self.first, self.last]
   end
 
+  def meansert
+    (self<<mean).flatten.uniq.sort
+  end
+
+  def means(n=1)
+    return self.map(&:to_f).uniq.sort if n<1
+    arr=each_cons(2).map(&:meansert).flatten.sort.uniq
+    arr.meansert.means(n-1)
+  end
+
  end
 
 end
