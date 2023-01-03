@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-12-09 10:58:57
 require 'rubytools/numeric_ext'
+require 'rubytools/array_ext'
 
 module MathExt
  include NumericExt
+ include ArrayExt
+
  refine Numeric do
   def delta_change(to)
    Float(to)/self-1

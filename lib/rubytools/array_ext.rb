@@ -31,6 +31,20 @@ module ArrayPaging
   end
 end
 
+module ArrayExt
+ refine Array do
+  def each_step(step=1, &block)
+    each_slice(step).map(&:first).map(&block)
+  end
+
+  def each_of(n)
+   x=(size/n.to_f)
+   each_slice(x.clamp(1..size))
+  end
+
+ end
+end
+
 module Enumerable
   # arr = (1..99).to_a
   # pager = arr.each_page(3) #returns an enumerator of sliced arr indexes
