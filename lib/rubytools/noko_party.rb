@@ -18,4 +18,7 @@ class NokoParty
     http_handler
     .then{ |html| Nokogiri::HTML(html) }
   end
+  def self.read(fname)
+    File.open(fname){|f| Nokogiri::HTML(f) }
+  end
 end
