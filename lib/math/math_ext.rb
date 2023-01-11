@@ -28,6 +28,19 @@ module MathExt
    (self-x).abs
   end
 
+  def percent_of(n)
+    # decimal percent/non-fractional, e.g. 5% of 100 == 5
+    n*(self.to_f/100)
+  end
+
+  def percent_inc(n)
+    n+self.percent_of(n)
+  end
+
+  def percent_dec(n)
+    n-self.percent_of(n)
+  end
+
  end
 
  refine Enumerable do
