@@ -1,9 +1,11 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2023-01-13 10:52:55
 require 'rubytools/core_ext'
+require 'math/math_ext'
+using MathExt
 
 module Scrapemathics
- include CoreExt
+ include MathExt
 
  refine String do
   def scan_to_f(re=/[\d\.,]+/)
