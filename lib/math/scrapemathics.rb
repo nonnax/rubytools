@@ -4,13 +4,14 @@ require 'rubytools/core_ext'
 
 module Scrapemathics
  include CoreExt
- class String
+
+ refine String do
   def scan_to_f(re=/[\d\.,]+/)
     scan(re).map{|n| n.tr ',', ''}.map(&:to_f)
   end
  end
 
- class Array
+ refine Array do
    def pair_describe
      first_last.then{ |pair|
        pair_delta = pair.then{|d| [[d, d.to_delta.to_percent.human.to_f]].to_h}
