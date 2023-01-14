@@ -9,6 +9,7 @@ require_relative 'textfile'
 require_relative 'msgpack'
 require_relative 'msgpack'
 require 'forwardable'
+require 'file/file_ext'
 
 class Filer
   extend Forwardable

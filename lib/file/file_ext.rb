@@ -25,6 +25,10 @@ class String
 end
 
 module SafeFileName
+  def to_pathname
+    Pathname(self).expand_path
+  end
+
   def to_safename
     gsub(/[^\w.]+/, '_')
   end

@@ -79,15 +79,15 @@ module Plotter
     end
   end
 
-  def label_format(label, label_width)
+  def label_format(label, label_width=6)
     nformat=->x{
       return x unless x.to_s.numeric?
-      width = x < 1 ? 5 : 2
+      width = x < 1 ? label_width : 2
       x.to_f.to_s(width)
     }
     ->text{
         t=nformat[text]
-        t.rjust(label_width)
+        t.rjust(label_width)[0...label_width]
     }
     .call(label)
   end
@@ -208,7 +208,8 @@ module DFPlotExt
 
     def plot_candlestick(**params)
       # plot an OHLC dataframe
-      Candlestick.new(**params).plot(self)
+      plot_data = self #.map{|r| [r, r.min, r.max] }
+      Candlestick.new(**params).plot(plot_data)
     end
     def plot_bars(**params)
       plot_data = self

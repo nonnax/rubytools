@@ -17,7 +17,7 @@ module Scrapemathics
    def pair_describe
      first_last.then{ |pair|
        pair_delta = pair.then{|d| [[d, d.to_delta.to_percent.human.to_f]].to_h}
-       pair_mean_delta = pair.means.each_cons(2).map{|d| [[d, d.to_delta.to_percent.human.to_f]].to_h}
+       pair_mean_delta = pair.means.each_cons(2).map{|d| [[d.map{|e| e.human(9).to_f}, d.to_delta.to_percent.human.to_f]].to_h}
        {pair_delta:, pair_mean_delta: }
      }
    end

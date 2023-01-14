@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2021-11-23 12:45:47 +0800
 require 'rubytools/editor'
-require 'math/math_ext'
+require 'math/scrapemathics'
 require 'df/df_ext'
 using DFExt
-using MathExt
+using Scrapemathics
 
 tmp='/tmp/eval.rb'
 

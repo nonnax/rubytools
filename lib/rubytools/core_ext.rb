@@ -9,11 +9,13 @@ require 'hash_ext'
 require 'file/file_ext'
 require 'file/filer'
 require 'time_ext'
+require 'math/math_ext'
 
 module CoreExt
   include StringExt
   include NumericExt
   include EnumerableExt
+  include MathExt
 
   refine NilClass do
     # +nil+ is blank:
