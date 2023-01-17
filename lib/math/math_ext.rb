@@ -10,6 +10,12 @@ module MathExt
   include NumericExt
   include ArrayExt
 
+  refine Object do
+    def display
+      Kernel.puts self
+    end
+  end
+
   refine Numeric do
     def delta_change(to)
       Float(to) / self - 1
@@ -112,5 +118,6 @@ module MathExt
     def first_last
       [first, last]
     end
+
   end
 end

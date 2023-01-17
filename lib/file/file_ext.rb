@@ -6,6 +6,7 @@ require 'ruby-filemagic'
 require 'fileutils'
 require 'pathname'
 require 'file/file_importer'
+require 'rubytools/editor'
 
 class String
   def is_text_file?
@@ -64,9 +65,10 @@ end
 
 # String.include(NumberedFile)
 String.include(SafeFileName)
+File.extend NumberedFile
 
 class File
-  extend NumberedFile
+  # extend NumberedFile
 
   def self.File(file)
     file = file.to_path if file.respond_to? :to_path
@@ -101,9 +103,10 @@ class File
   def self.backup(f)
     path, f_ = splitpath(f)
     begin
-      FileUtils.cp(f, File.join(path, f_.filename_succ))
-    rescue StandardError
-      nil
+      FileUtils.cp(f, File.join(path, filename_succ(f_)))
+    rescue StandardError => e
+      # nil
+      # p [path, f, e.backtrace]
     end
   end
 

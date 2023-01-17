@@ -123,6 +123,12 @@ module Screen
 
       def clear()=puts("\e[0m")   # clear format
 
+      def on(_color=:white, &block)
+        color(@color_codes[_color])
+        block.call
+        clear()
+      end
+
       @color_codes.each do |k, v|
           define_method(k){ color(v)}
       end

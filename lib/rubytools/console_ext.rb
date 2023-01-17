@@ -28,33 +28,53 @@ class IO
   module Screen
     module_function
 
+    def cursor_cmd
+      {
+        clear: "\033[2J",
+        cursor_save:  "\033[s",
+        cursor_restore: "\033[u",
+        cursor_down: ->(n){ print "\033[#{n}A" },
+        cursor_xy: ->(x,y){ print format("\033[%d;%dH", x, y) },
+        cursor_hide: "\033[?25l",
+        cursor_show: "\033[?25h"
+      }
+    end
+
     def printxy(x, y, text = '')
       print(format("\033[%d;%dH%s", x, y, text))
     end
     alias gotoxy printxy
 
     def clear
-      print "\033[2J"
+      print cursor_cmd[__method__]
     end
 
     def cursor_save
-      print "\033[s"
+      print cursor_cmd[__method__]
     end
 
     def cursor_restore
-      print "\033[u"
+      print cursor_cmd[__method__]
     end
 
     def cursor_down(n)
-      print "\033[#{n}A"
+      cursor_cmd[__method__][n]
     end
 
-    def cursor_hide
-      print "\033[?25l"
+    def cursor_xy(x, y)
+      cursor_cmd[__method__][x, y]
+    end
+
+    def cursor_hide(&block)
+      print cursor_cmd[__method__]
+      if block
+        block.call
+        cursor_show
+      end
     end
 
     def cursor_show
-      print "\033[?25h"
+      print cursor_cmd[__method__]
     end
 
     def quiet_draw

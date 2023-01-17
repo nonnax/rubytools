@@ -6,7 +6,10 @@ module NumericExt
     # def is_number?
       # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
     # end
-    alias human to_s
+    def human(n=2, &block)
+      numeric? ? to_f.to_human(n) : block&.call
+    end
+
     def numeric?
      true if Float(self) rescue false
     end
@@ -30,6 +33,19 @@ module NumericExt
 
   end
 
+  refine Float do
+    def human(dec=2)
+      return if infinite?
+      to_str(dec).with_commas
+    end
+    alias to_human human
+
+    def to_str(digit=nil)
+      fmt_str = digit ? "%0.#{digit}f"  : "%0.2f"
+      fmt_str % self
+    end
+  end
+
   refine Integer do
     def to_base32(padding: 6)
       to_s(32).rjust(padding, '0')
@@ -37,15 +53,9 @@ module NumericExt
   end
 
   refine Object do
-    def is_number?
-      to_s.is_number?
-    end
-    alias numeric? is_number?
-
     def in?(enum)
       enum.include?(self) if enum.respond_to?(:include?)
     end
-
   end
 end
 
@@ -60,12 +70,6 @@ module CollectionPager
     .to_h
   end
 end
-
-
-# pages=50.pages_of(6)
-# p pages[0]
-# p pages[6]
-
 #
 ## Helper methods for working with time units other than seconds
 module NumericExt
@@ -125,28 +129,6 @@ module NumericExt
       self / (60 * 60 * 24 * 7.0)
     end
   end
-end
-
-
-using NumericExt
-
-module FloatExt
-  refine Float do
-    def human(dec=nil)
-      return if infinite?
-      to_s(dec).with_commas
-    end
-
-
-    def to_s(digit=nil)
-      fmt_str = digit ? "%0.#{digit}f"  : "%0.2f"
-      fmt_str % self
-    end
-  end
-end
-
-module NumericExt
-  include FloatExt
 end
 
 Integer.include(CollectionPager)

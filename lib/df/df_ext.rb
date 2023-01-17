@@ -64,6 +64,8 @@ module ArrayExt
         .join("\n")
     end
 
+    alias to_s to_table
+
     def except(*rejects)
       reject.with_index{|_e, i| rejects.include?(i) }
     end
