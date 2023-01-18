@@ -2,7 +2,7 @@
 # Id$ nonnax 2023-01-13 16:25:21
 require 'file/filer'
 
-def ARGV.captures(f="#{File.basename($PROGRAM_NAME, '.*')}.log", &block)
+def ARGV.captures(f=".#{File.basename($PROGRAM_NAME, '.*')}.log", &block)
    arg_to_i=->(f){f.scan(/\d+/).first.to_i}
 
    selected = self.uniq.sort{|a, b| arg_to_i[a]<=>arg_to_i[b] }
