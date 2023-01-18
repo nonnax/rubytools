@@ -1,48 +1,61 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 module NumericExt
   refine String do
     # def is_number?
-      # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
+    # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
     # end
-    def human(n=2, &block)
+
+    def human(n = 2, &block)
       numeric? ? to_f.to_human(n) : block&.call
     end
 
+    alias_method :to_human, :human
+
     def numeric?
-     true if Float(self) rescue false
+      true if Float(self)
+    rescue StandardError
+      false
     end
-    alias is_number? numeric?
+    alias_method :is_number?, :numeric?
 
     def base32_to_i
       to_i(32)
     end
 
-    def as_number
-      self.scan(/[+-.\d]+/).first
+    def as_number(re = /[+-.,\d]+/)
+      tr(',', '').scan(re) # .first
     end
+
+    def to_number(&block)
+      if numeric?
+        match?(/\./) ? Float(s) : Integer(s)
+      else
+        block&.call
+      end
+    end
+
+    alias_method :to_digits, :as_number
 
     def with_commas
       i, _, d = partition('.')
-      d='00' if d.empty?
-      int=i.reverse.split(//).each_slice(3).to_a.map(&:join).join('_').reverse
+      d = '00' if d.empty?
+      int = i.reverse.split(//).each_slice(3).to_a.map(&:join).join('_').reverse
       [int, d].join('.')
     end
-    alias with_comma with_commas
-
+    alias_method :with_comma, :with_commas
   end
 
   refine Float do
-    def human(dec=2)
+    def human(dec = 2)
       return if infinite?
+
       to_str(dec).with_commas
     end
-    alias to_human human
+    alias_method :to_human, :human
 
-    def to_str(digit=nil)
-      fmt_str = digit ? "%0.#{digit}f"  : "%0.2f"
-      fmt_str % self
+    def to_str(digit = 2)
+      format("%0.#{digit}f", self)
     end
   end
 
@@ -61,19 +74,23 @@ end
 
 module CollectionPager
   def pages_of(n)
-    self
-    .times
-    .each_slice(n)
-    .map.with_index do |pgs, pg|
+    times
+      .each_slice(n)
+      .map.with_index do |pgs, pg|
       [pg, pgs]
     end
-    .to_h
+      .to_h
   end
 end
+
 #
 ## Helper methods for working with time units other than seconds
 module NumericExt
   refine Numeric do
+    def numeric?
+      self
+    end
+
     # Convert time intervals to seconds
     def milliseconds
       self / 1000.0
@@ -82,27 +99,27 @@ module NumericExt
     def seconds
       self
     end
-    alias second seconds
+    alias_method :second, :seconds
 
     def minutes
       self * 60
     end
-    alias minute minutes
+    alias_method :minute, :minutes
 
     def hours
       self * 60 * 60
     end
-    alias hour hours
+    alias_method :hour, :hours
 
     def days
       self * 60 * 60 * 24
     end
-    alias day days
+    alias_method :day, :days
 
     def weeks
       self * 60 * 60 * 24 * 7
     end
-    alias week weeks
+    alias_method :week, :weeks
 
     # Convert seconds to other intervals
     def to_milliseconds

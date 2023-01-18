@@ -83,7 +83,7 @@ module Plotter
     nformat=->x{
       return x unless x.to_s.numeric?
       width = x < 1 ? label_width : 2
-      x.to_f.to_s(width)
+      x.to_f.to_human(width)
     }
     ->text{
         t=nformat[text]

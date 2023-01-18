@@ -29,17 +29,17 @@ module MathExt
       delta_change(to).to_percent.human.to_f
     end
 
-    def percent_up(pct, &block)
-      x = self * pct.to_f
-      block&.call(x)
-      self + x
-    end
-
-    def percent_down(pct, &block)
-      x = self * pct.to_f.abs
-      block&.call((self - x) - self)
-      (self - x).abs
-    end
+    # def percent_up(pct, &block)
+      # x = self * pct.to_f
+      # block&.call(x)
+      # self + x
+    # end
+#
+    # def percent_down(pct, &block)
+      # x = self * pct.to_f.abs
+      # block&.call((self - x) - self)
+      # (self - x).abs
+    # end
 
     def percent_of(n)
       # decimal percent/non-fractional, e.g. 5% of 100 == 5
@@ -49,6 +49,7 @@ module MathExt
     def percent_inc(n)
       n + percent_of(n)
     end
+    alias percent percent_inc
 
     def percent_dec(n)
       n - percent_of(n)
