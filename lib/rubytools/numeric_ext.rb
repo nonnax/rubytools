@@ -29,7 +29,7 @@ module NumericExt
 
     def to_number(&block)
       if numeric?
-        match?(/\./) ? Float(s) : Integer(s)
+        match?(/\./) ? Float(self) : Integer(self)
       else
         block&.call
       end
