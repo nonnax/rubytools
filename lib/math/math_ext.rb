@@ -22,9 +22,11 @@ module MathExt
       Float(to) / self - 1
     end
     alias_method :delta, :delta_change
+
     def to_percent
       self * 100
     end
+
 
     def human_auto
       format_big_small=->(n){ n.between?(0, 1) ? n.human(7) : n.human}
@@ -33,6 +35,10 @@ module MathExt
 
     def percent_change(to)
       delta_change(to).to_percent.human.to_f
+    end
+
+    def percent_ratio(to)
+      (to_f/to.to_f)
     end
 
     def percent_of(n)
@@ -76,6 +82,10 @@ module MathExt
 
     def to_delta
       to_change :delta_change
+    end
+
+    def to_percent_ratio
+      to_change(:percent_ratio)&.to_percent
     end
 
     def to_percent_change
