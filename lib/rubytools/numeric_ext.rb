@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'date'
 
 module NumericExt
   refine String do
@@ -11,6 +12,11 @@ module NumericExt
     end
 
     alias_method :to_human, :human
+
+    def as_human_fraction
+      zero, _, digits = rpartition(/\./)
+      [zero, digits[0...9].ljust(9, '0').split(//).each_slice(3).map(&:join).join('_') ].join('.')
+    end
 
     def numeric?
       true if Float(self)
@@ -63,6 +69,24 @@ module NumericExt
     def to_base32(padding: 6)
       to_s(32).rjust(padding, '0')
     end
+
+    def human(n = 2, &block)
+      return if infinite?
+      to_s.to_human(n, &block)
+    end
+    alias_method :to_human, :human
+  end
+
+  refine Time do
+    def human(n=2, &block)
+      to_s.to_human(n, &block)
+    end
+  end
+
+  refine Date do
+    def human(n=2, &block)
+      to_s.to_human(n, &block)
+    end
   end
 
   refine Object do
@@ -91,6 +115,28 @@ module NumericExt
       self
     end
 
+    def as_human
+      formatter=->(div, suffix, dec=1){format("%03.#{dec}f%s", (self/div.to_f), suffix )}
+      sizer=->(k){ self >= k ? k : false}
+      case
+        when k=sizer[1_000**5]
+          formatter[k, 'Q']
+        when k=sizer[1_000**4]
+          formatter[k, 'T']
+        when k=sizer[1_000**3]
+          formatter[k, 'B']
+        when k=sizer[1_000**2]
+          formatter[k, 'M']
+        when k=sizer[1_000]
+          formatter[k, 'K']
+        when self.abs > 1
+          human
+        when self.abs.between?(0, 1)
+          to_s.as_human_fraction
+        else
+          to_s
+      end
+    end
     # Convert time intervals to seconds
     def milliseconds
       self / 1000.0
@@ -147,5 +193,7 @@ module NumericExt
     end
   end
 end
+
+
 
 Integer.include(CollectionPager)

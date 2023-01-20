@@ -10,12 +10,14 @@ require 'file/file_ext'
 require 'file/filer'
 require 'time_ext'
 require 'math/math_ext'
+require 'nil_class_ext'
 
 module CoreExt
   include StringExt
   include NumericExt
   include EnumerableExt
   include MathExt
+  include NilClassExt
 
   refine NilClass do
     # +nil+ is blank:
@@ -94,8 +96,7 @@ module CoreExt
       return unless arr.respond_to?(:<<)
       arr<<self
     end
-    alias human to_s
-
+    alias human to_s  #TODO: test if it causes conflicts
   end
 
 end

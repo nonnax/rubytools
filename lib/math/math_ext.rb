@@ -4,6 +4,7 @@
 # Id$ nonnax 2022-12-09 10:58:57
 require 'rubytools/numeric_ext'
 require 'rubytools/array_ext'
+require 'rubytools/time_ext'
 using NumericExt
 
 module MathExt
@@ -23,6 +24,11 @@ module MathExt
     alias_method :delta, :delta_change
     def to_percent
       self * 100
+    end
+
+    def human_auto
+      format_big_small=->(n){ n.between?(0, 1) ? n.human(7) : n.human}
+      format_big_small[self]
     end
 
     def percent_change(to)

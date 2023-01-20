@@ -16,6 +16,12 @@ class String
   alias is_time? is_date?
 end
 
+class Integer
+  def to_time
+    Time.at(self)
+  end
+end
+
 class Time
   def to_datetime
     # Convert seconds + microseconds into a fractional number of seconds
@@ -62,6 +68,12 @@ class Date
       dest.sec,
       usec
     )
+  end
+end
+
+module TimeHuman
+  def human(n=2, &block)
+    to_s.to_human(n, &block)
   end
 end
 
@@ -119,14 +131,17 @@ end
 
 class Time
   include TimeToWords
+  include TimeHuman
 end
 
 class Date
   include TimeToWords
+  include TimeHuman
 end
 
 class DateTime
   include TimeToWords
+  include TimeHuman
   def default_date_format
     strftime('%Y-%m-%d')
   end
@@ -209,7 +224,7 @@ class Time
 end
 
 module Strftime
-  def as_time
+  def as_strftime
     Time.now.strftime(self)
   end
 end
