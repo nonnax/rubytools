@@ -92,6 +92,11 @@ module MathExt
     end
     alias sigma stdev
 
+    def coefficient_of_variation
+      (stdev/mean)*100
+    end
+    alias cv coefficient_of_variation
+
     def delta_change
       each_cons(2)
         .map(&:to_delta)
