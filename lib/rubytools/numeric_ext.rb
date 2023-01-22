@@ -11,7 +11,7 @@ module NumericExt
       # numeric? ? to_f.to_human(n) : block&.call(self)
     # end
 
-    alias_method :human, :to_s
+    # alias_method :human, :to_s
 
     def as_human_fraction
       zero, _, digits = rpartition(/\./)
