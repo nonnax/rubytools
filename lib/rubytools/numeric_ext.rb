@@ -7,11 +7,11 @@ module NumericExt
     # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
     # end
 
-    def human(n = 2, &block)
-      numeric? ? to_f.to_human(n) : block&.call
-    end
+    # def human(n = 2, &block)
+      # numeric? ? to_f.to_human(n) : block&.call(self)
+    # end
 
-    alias_method :to_human, :human
+    alias_method :human, :to_s
 
     def as_human_fraction
       zero, _, digits = rpartition(/\./)
@@ -37,7 +37,7 @@ module NumericExt
       if numeric?
         match?(/\./) ? Float(self) : Integer(self)
       else
-        block&.call
+        block&.call(self)
       end
     end
 
@@ -58,7 +58,6 @@ module NumericExt
 
       to_str(dec).with_commas
     end
-    alias_method :to_human, :human
 
     def to_str(digit = 2)
       format("%0.#{digit}f", self)
@@ -70,28 +69,30 @@ module NumericExt
       to_s(32).rjust(padding, '0')
     end
 
-    def human(n = 2, &block)
+    def human(n = 0, &block)
       return if infinite?
-      to_s.to_human(n, &block)
+      to_f.human(n, &block)
     end
-    alias_method :to_human, :human
   end
 
   refine Time do
     def human(n=2, &block)
-      to_s.to_human(n, &block)
+      to_s
     end
   end
 
   refine Date do
     def human(n=2, &block)
-      to_s.to_human(n, &block)
+      to_s
     end
   end
 
   refine Object do
     def in?(enum)
       enum.include?(self) if enum.respond_to?(:include?)
+    end
+    def to_human(n=2, &block)
+      respond_to?(:human) ? human(n, &block) : self
     end
   end
 end
