@@ -5,6 +5,8 @@
 require 'rubytools/numeric_ext'
 require 'rubytools/array_ext'
 require 'rubytools/time_ext'
+# require 'math'
+
 using NumericExt
 
 module MathExt
@@ -26,7 +28,6 @@ module MathExt
     def to_percent
       self * 100
     end
-
 
     def human_auto
       format_big_small=->(n){ n.between?(0, 1) ? n.human(7) : n.human}
@@ -56,6 +57,12 @@ module MathExt
     end
   end
 
+  refine Object do
+    def to_human_auto
+      respond_to?(:human_auto) ? self.human_auto : self
+    end
+  end
+
   refine String do
     def human_auto
       self
@@ -73,6 +80,17 @@ module MathExt
       sum / size.to_f
     end
     alias_method :average, :mean
+
+    def variance
+      m = self.mean
+      sum = self.inject(0){|accum, i| accum + (i - m) ** 2 }
+      return sum / (self.size - 1).to_f
+    end
+
+    def stdev
+      return Math.sqrt(self.variance)
+    end
+    alias sigma stdev
 
     def delta_change
       each_cons(2)
