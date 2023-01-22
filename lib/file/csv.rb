@@ -13,8 +13,13 @@ CSV::Converters[:timex] = lambda{|s|
 }
 
 class CSVFile < Serializer
-  def read
-    CSV.read(@path, converters: %i[numeric date timex])
+  def read(**opts)
+    v=CSV.read(@path, **opts.merge(converters: %i[numeric date timex]))
+    if opts[:headers]
+      v.map(&:to_h)
+    else
+      v
+    end
   end
   def write(obj)
     File.write @path, to_csv(obj)

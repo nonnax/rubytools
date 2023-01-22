@@ -11,8 +11,8 @@ class Serializer
   def write(obj)
     # stub
   end
-  def self.read(f, &block)
-    new(f).read(&block)
+  def self.read(f, **opts, &block)
+    new(f).read(**opts, &block)
   end
   def self.write(f, obj)
     new(f).write(obj)

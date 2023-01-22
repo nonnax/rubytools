@@ -41,7 +41,11 @@ class IO
     end
 
     def printxy(x, y, text = '')
-      print(format("\033[%d;%dH%s", x, y, text))
+      cursor_save
+      cursor_hide do
+        print(format("\033[%d;%dH%s", x, y, text))
+      end
+      cursor_restore
     end
     alias gotoxy printxy
 
