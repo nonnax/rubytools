@@ -39,28 +39,20 @@ module NumberedFile
   UNDERSCORE = '-'
   RE_END_DIGIT = /#{UNDERSCORE}\d+$/
 
-  def get_next_name(bn, ext)
-    out = nil
-    loop do
-      bn = bn.match?(RE_END_DIGIT) ? bn.succ : "#{bn}-001"
-      out = [bn, ext].join('.')
-      break unless File.exist?(out)
-    end
-    out
+  def next_name(fname)
+   File.basename(fname).partition('.') => [f, dot, ext]
+   f = f[/\d{3}$/].nil? ? f+'-000' : f.succ
+   fn = [f, dot, ext].join
+   File.exist?(fn) ? next_name(fn) : fn
   end
 
-  def filename_succ(f)
-    basename, _, ext = f.rpartition('.')
-    out = nil
-    bn = basename.empty? ? ext : basename # check dot-files
-    get_next_name(bn, ext)
+  def backup!(fname)
+    FileUtils.cp fname, next_name(fname)
   end
-  alias to_safe_filename filename_succ
 
-  def filename_next(f)
-    fname = f.match?(RE_END_DIGIT) ? f : "#{f}-001"
-    File.exist?(fname) ? filename_next(fname.succ) : fname
-  end
+  alias to_safe_filename backup!
+  alias filename_succ backup!
+
 end
 
 # String.include(NumberedFile)
@@ -98,16 +90,6 @@ class File
 
   class << self
     alias safe_filename filename_succ
-  end
-
-  def self.backup(f)
-    path, f_ = splitpath(f)
-    begin
-      FileUtils.cp(f, File.join(path, filename_succ(f_)))
-    rescue StandardError => e
-      # nil
-      # p [path, f, e.backtrace]
-    end
   end
 
   def self.flock(f, mode)

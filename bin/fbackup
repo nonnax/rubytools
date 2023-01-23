@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2023-01-23 12:17:57
+require 'file/file_ext'
+f=ARGV.shift
+File.backup!(f) if f

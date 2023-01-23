@@ -29,6 +29,10 @@ module MathExt
       self * 100
     end
 
+    def diff(to)
+      to-self
+    end
+
     def human_auto
       format_big_small=->(n){ n.between?(0, 1) ? n.human(7) : n.human}
       format_big_small[self]
@@ -115,6 +119,10 @@ module MathExt
       to_change :percent_change
     end
 
+    def to_diff
+      to_change :diff
+    end
+
     def to_change(method_type = :delta_change)
       # precondition: a two-element array or the opposite elements of an array
       # return:  Numeric
@@ -141,7 +149,7 @@ module MathExt
     end
 
     def meansert
-      (self << mean).flatten.uniq.sort
+      (self << mean.round(9)).flatten.uniq.sort
     end
 
     def means(n = 1)
