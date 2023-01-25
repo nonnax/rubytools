@@ -4,8 +4,8 @@ require_relative 'serializer'
 require 'yaml'
 
 class YAMLFile < Serializer
-  def read
-    YAML.load(File.read(@path))
+  def read(**opts)
+    YAML.load(File.read(@path), **opts)
   end
   def write(obj)
     File.write @path, obj.to_yaml

@@ -4,7 +4,20 @@
 # Id$ nonnax 2023-01-13 10:52:55
 require 'rubytools/core_ext'
 require 'math/math_ext'
+require 'df/df_ext'
 using MathExt
+using DFExt
+
+require 'df/df_plot_ext'
+
+using DFPlotExt
+
+module PlotTrio
+ module_function
+ def trio(*data, **opts)
+  puts data.map{|e| e.round(15)}.prepend(0).plot_bars(**{label_width: 7, scale: 15}.merge(opts))
+ end
+end
 
 module Scrapemathics
   include MathExt
@@ -13,9 +26,25 @@ module Scrapemathics
     def scan_to_f(re = /[\d.,]+/)
       scan(re).map { |n| n.tr ',', '' }.map(&:to_f)
     end
-  end
+    def desc
+      scan_to_f.desc
+    end
 
+    def scan_plot(remove:'24h Low / 24h High', **opts, &block)
+      s=tr(remove, '')
+      s=block.call(s) if block
+      PlotTrio.trio(*s.scan_to_f, **opts)
+    end
+  end
+  refine Hash do
+   def display
+    puts self.transpose.to_table
+   end
+  end
   refine Array do
+    def desc
+      %i[means sigma CV].zip([means, sigma.human(7), cv.human]).to_h.display
+    end
     def pair_describe
       first_last.then do |pair|
         pair_delta = pair.then { |d| [[d, d.to_percent_change]].to_h }

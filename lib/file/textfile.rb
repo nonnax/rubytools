@@ -3,8 +3,8 @@
 require_relative 'serializer'
 
 class TextFile < Serializer
-  def read
-    File.read(@path)
+  def read(**opts)
+    File.read(@path, **opts)
   end
   def write(obj)
     File.write @path, obj

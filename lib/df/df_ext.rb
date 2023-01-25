@@ -5,6 +5,7 @@
 require 'math/math_ext'
 require 'rubytools/numeric_ext'
 
+
 module ObjectExt
   refine Object do
     def deep_dup
@@ -76,6 +77,10 @@ module ArrayExt
         self[i] = char
       end
       self
+    end
+
+    def hashes_to_df
+      [first.keys] + map(&:values)
     end
 
     # def to_html

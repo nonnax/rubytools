@@ -47,7 +47,8 @@ module NumberedFile
   end
 
   def backup!(fname)
-    FileUtils.cp fname, next_name(fname)
+    dirname, f=File.splitpath(fname)
+    FileUtils.cp fname, File.join(dirname, next_name(f))
   end
 
   alias to_safe_filename backup!

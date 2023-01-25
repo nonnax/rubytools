@@ -4,8 +4,8 @@ require_relative 'serializer'
 require 'json'
 
 class JSONFile < Serializer
-  def read
-    JSON.parse(File.read(@path))
+  def read(**opts)
+    JSON.parse(File.read(@path), **opts)
   end
   def write(obj)
     File.write @path, JSON.pretty_generate(obj)

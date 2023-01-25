@@ -19,9 +19,9 @@ class Filer
     @strategy=strategy
   end
 
-  def read(&block)
+  def read(**opts, &block)
   # run default block on exception
-    @strategy.read
+    @strategy.read(**opts)
   rescue=>e
     puts e
     block&.call
@@ -37,8 +37,8 @@ class Filer
     }
   end
 
-  def self.read(strategy, &block)
-    new(strategy).read(&block)
+  def self.read(strategy, **opts, &block)
+    new(strategy).read(**opts, &block)
   end
 
   def self.write(strategy, obj)
