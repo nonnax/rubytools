@@ -216,6 +216,21 @@ module DFPlotExt
       plot_data = init_plot unless first.is_a?(Array) && first.size==3
       OpenClose.new(**params).plot(plot_data)
     end
+
+    def to_diff_bar(scale: 20, prev: :red, curr: :yellow)
+      def diff_to_s(x, y, ch='#', scale:20)
+        max=[x,y].map(&:abs).max.to_f
+        nsize=(([x,y].to_diff.abs/max)*scale).clamp(1, scale-2)
+        (ch*nsize)
+      end
+
+      prev, curr=Plotter::DENSITY_SIGNS.values_at(1, -1)
+      [first, last].then{|a, b|
+        c=a+b
+        [diff_to_s(b, c, curr, scale:), diff_to_s(a, c, '#', scale:)].join.ljust(scale, '@')[0...scale-1]
+      }
+    end
+
   end
 end
 
