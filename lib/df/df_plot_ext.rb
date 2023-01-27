@@ -37,8 +37,8 @@ module Plotter
   module_function
 
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
-  # BOX_HORIZ = '─'.freeze
-  BOX_HORIZ = '-'
+  BOX_HORIZ = '─'.freeze
+  # BOX_HORIZ = '-'
   # BOX_HORIZ_VERT = '┼'.freeze
   BOX_HORIZ_VERT = '┼'
   # BOX_VERT = '|'.freeze
@@ -54,6 +54,7 @@ module Plotter
   def initialize(**params)
     @x_axis_limit = params.fetch(:scale, 100/5)
     @label_width = params.fetch(:label_width, 1)
+    @nocolor = params.fetch(:nocolor, false)
   end
 
   def xplot(data, **params, &block)
@@ -141,11 +142,11 @@ class Candlestick
         when -1
           Unicode::TOP
         when 0
-          BOX_HORIZ_VERT
+          Unicode::HALF_BODY_TOP
         when 1
           Unicode::BOTTOM
         else
-          0
+          '#'
       end
 
     else
@@ -153,7 +154,10 @@ class Candlestick
       len = (stop - start).abs
       bar.fill(start, (start + len), Unicode::BODY)
     end
-    up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
+
+    return bar if @nocolor
+
+    up_down.negative? ? bar.map(&:magenta) : bar.map(&:yellow)
   end
 
   def plot(data, **params)
@@ -182,14 +186,16 @@ class OpenClose
     case len
     when 0
       start = [start - 1, 0].max
-      bar[start] = BOX_HORIZ_VERT
+      bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
       start, stop = [open, close].minmax
       len = (stop - start).abs
       bar.fill(start, (start + len), Unicode::BODY)
     end
 
-    up_down.negative? ? bar.map(&:magenta) : bar.map(&:cyan)
+    return bar if @nocolor
+
+    up_down.negative? ? bar.map(&:magenta) : bar.map(&:yellow)
   end
 
   def plot(data)

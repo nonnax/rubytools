@@ -51,7 +51,7 @@ module ArrayExt
         end
     end
 
-    def to_table(separator: ' ', width: nil)
+    def to_table(separator: ' ', width: nil, &block)
       widths = width ? max_column_widths.map{ width } : max_column_widths
 
       deep_dup
@@ -61,6 +61,7 @@ module ArrayExt
           r.map { |e| e.to_s.rjust(widths[i], ' ') }
         end
         .transpose
+        .map { |r| block ? block.call(r) : r}
         .map { |r| r.join(separator) }
         .join("\n")
     end
