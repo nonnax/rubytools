@@ -25,6 +25,18 @@ module MathExt
     end
     alias_method :delta, :delta_change
 
+    def delta_changed(delta)
+      self/(delta+1)
+    end
+
+    # def percent_changed(delta_inc)
+     # self/(delta_inc+1)
+    # end
+
+    def percent_changed(percent)
+      self/(percent/100.0+1)
+    end
+
     def to_percent
       self * 100
     end

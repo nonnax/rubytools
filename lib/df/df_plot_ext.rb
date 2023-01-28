@@ -160,6 +160,10 @@ class Candlestick
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:yellow)
   end
 
+  def self.draw(open, high, low, close, min = 0, max = 100, **params)
+    new(**params).draw('candle', open, high, low, close, min, max)
+  end
+
   def plot(data, **params)
     xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
   end
@@ -198,14 +202,41 @@ class OpenClose
     up_down.negative? ? bar.map(&:magenta) : bar.map(&:yellow)
   end
 
+  def self.draw(open, high, low, close, min = 0, max = 100, **params)
+    new.draw(nil, open, high, low, close, min, max, **params)
+  end
+
   def plot(data)
     xplot(data.deep_dup){|row, min, max| draw(*row, min, max)}
+  end
+end
+
+
+module ScalePlotter
+  refine Numeric do
+    def to_volume_bar(scale: 42, color: 'black', bg_color: 'light_black', quiet:false)
+      vratio = self.clamp(0..100)
+      ch=Unicode::HALF_BODY_BOTTOM
+      tick=Unicode::TOP
+      vbar_size = (vratio*(scale/100.0)).to_i
+      trail_size = scale-vbar_size
+      max_bar = ch * trail_size
+      volume_bar = ch * vbar_size
+      max_bar.chop! if vbar_size.zero?
+      min_bar=[volume_bar.chop, ch.light_white].join
+      [min_bar.send(color), max_bar.send(bg_color)].join
+    end
+    def puts_volume_bar(scale:42, color: 'black', bg_color: 'light_black', quiet:false)
+      asciibar = to_volume_bar(scale:, color:, bg_color: , quiet:)
+      puts asciibar
+    end
   end
 end
 
 module DFPlotExt
   include NumericExt
   include DFExt
+  include ScalePlotter
 
   refine Array do
     def init_plot
@@ -217,6 +248,7 @@ module DFPlotExt
       plot_data = self #.map{|r| [r, r.min, r.max] }
       Candlestick.new(**params).plot(plot_data)
     end
+
     def plot_bars(**params)
       plot_data = self
       plot_data = init_plot unless first.is_a?(Array) && first.size==3
@@ -239,4 +271,3 @@ module DFPlotExt
 
   end
 end
-
