@@ -29,12 +29,16 @@ module MathExt
       self/(delta+1)
     end
 
-    # def percent_changed(delta_inc)
-     # self/(delta_inc+1)
-    # end
-
     def percent_changed(percent)
       self/(percent/100.0+1)
+    end
+
+    def percent_origin_of(n)
+      n.to_f/(self/100.0+1)
+    end
+
+    def percent_change(to)
+      delta_change(Float(to)).to_percent.human.to_f
     end
 
     def to_percent
@@ -48,10 +52,6 @@ module MathExt
     def human_auto
       format_big_small=->(n){ n=Float(n); n.between?(0, 1) ? n.human(7) : n.human}
       format_big_small[self]
-    end
-
-    def percent_change(to)
-      delta_change(Float(to)).to_percent.human.to_f
     end
 
     def percent_ratio(to)
@@ -69,11 +69,14 @@ module MathExt
       n + percent_of(n)
     end
     alias percent percent_inc
+    alias percent_above percent_inc
 
     def percent_dec(n)
       n=Float(n)
       n - percent_of(n)
     end
+    alias percent_below percent_dec
+
   end
 
   refine Object do
