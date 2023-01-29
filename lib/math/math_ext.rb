@@ -36,6 +36,7 @@ module MathExt
     def percent_origin_of(n)
       n.to_f/(self/100.0+1)
     end
+    alias percentage_of percent_origin_of
 
     def percent_change(to)
       delta_change(Float(to)).to_percent.human.to_f
