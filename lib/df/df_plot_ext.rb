@@ -186,7 +186,10 @@ class Candlestick
     # row format == [:row_1, o, h, l, c, min, max]
     #
     bar_char=Unicode::DENSITY_SIGNS[-1]
-    @x_axis_limit = 20
+
+    @x_axis_limit = params.fetch(:scale){ 20 }
+    @color = params.fetch(:color){ true }
+
     bar = [''] * @x_axis_limit
 
     up_down = (close <=> open)
@@ -199,11 +202,11 @@ class Candlestick
     # normalize to percentage
     open, high, low, close =
     [open, high, low, close]
-    .map { |e| e / max * 1 }
-    .map{|e| e*@x_axis_limit }
+    .map{|e| e / max }
+    .map{|e| e * @x_axis_limit }
     .map(&:to_i) # .map(&:floor)
 
-    len = (high - low)
+    len = (high - low).abs
     bar.fill(low, (low + len), Unicode::BOX_HORIZ)
 
     start, stop = [open, close].minmax
@@ -211,25 +214,12 @@ class Candlestick
     case len
     when 0
       start = [start - 1, 0].max # no negative numbers
-      bar[start] =
-      case up_down
-        when -1
-          # Unicode::TOP
-          '<'
-        when 0
-          Unicode::BOX_VERT
-        when 1
-          # Unicode::BOTTOM
-          '>'
-        else
-          '#'
-      end
-
+      bar[start] = Unicode::BOX_HORIZ_VERT
     else
       bar.fill(start, (start + len), bar_char)
     end
 
-    return bar if @nocolor
+    return bar unless @color
 
     up_down.negative? ? bar.map(&:light_magenta).join : bar.map(&:light_yellow).join
   end

@@ -6,7 +6,9 @@ require 'ruby-filemagic'
 require 'fileutils'
 require 'pathname'
 require 'file/file_importer'
+# require 'file/enable_cache'
 require 'rubytools/editor'
+require 'rubytools/cache'
 
 class String
   def is_text_file?

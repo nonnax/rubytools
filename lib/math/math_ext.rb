@@ -17,6 +17,14 @@ module MathExt
     def display
       Kernel.puts self
     end
+
+    def prepend_to(arr)
+      arr.prepend(self)
+    end
+
+    def append_to(arr)
+      arr.push(self)
+    end
   end
 
   refine Numeric do
