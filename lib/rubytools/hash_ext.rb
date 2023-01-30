@@ -43,6 +43,23 @@ module HashExt
       end
       newh
     end
+
+   def remap_keys(&block)
+    instance_eval(&block)
+   end
+
+   def remap!(a, b)
+     self.tap do |h|
+      h[b]=h.delete(a)
+     end
+   end
+
+   def remap(a, b)
+     self.tap do |h|
+      h[b]=h[a].dup
+     end
+   end
+
   end
 end
 

@@ -3,7 +3,9 @@
 require 'rubytools/editor'
 require 'math/scrapemathics'
 require 'df/df_ext'
+require 'rubytools/string_ext'
 using DFExt
+using StringExt
 using Scrapemathics
 
 tmp='/tmp/eval.rb'
