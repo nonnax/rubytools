@@ -26,6 +26,10 @@ module Unicode
   TEE_DOWN = "⊤"
   MIN_DIFF_THRESHOLD = 0.25
   MAX_DIFF_THRESHOLD = 0.75
+  DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
+  BOX_HORIZ = '─'.freeze
+  BOX_HORIZ_VERT = '┼'
+  BOX_VERT = WICK
 end
 
 module Plotter
@@ -124,10 +128,17 @@ class Candlestick
 
     up_down = (close <=> open)
     # normalize to zero x-axis
-    open, low, high, close, min, max = [open, low, high, close, min, max].map(&:to_f).map{ |e| e - min.to_f }
+    open, low, high, close, min, max =
+    [open, low, high, close, min, max]
+    .map(&:to_f)
+    .map{ |e| e - min.to_f }
 
     # normalize to percentage
-    open, high, low, close = [open, high, low, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
+    open, high, low, close =
+    [open, high, low, close]
+    .map { |e| (e / max) }
+    .map{|e| e*@x_axis_limit }
+    .map(&:to_i) # .map(&:floor)
 
     len = (high - low)
     bar.fill(low, (low + len), BOX_VERT)
@@ -166,6 +177,61 @@ class Candlestick
 
   def plot(data, **params)
     xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
+  end
+
+
+  def self.candle(open, high, low, close, min = 0, max = 100, **params)
+    #
+    # plot an OHLC row as candlestick pattern
+    # row format == [:row_1, o, h, l, c, min, max]
+    #
+    bar_char=Unicode::DENSITY_SIGNS[-1]
+    @x_axis_limit = 20
+    bar = [''] * @x_axis_limit
+
+    up_down = (close <=> open)
+    # normalize to zero x-axis
+    open, high, low, close, min, max =
+    [open, high, low, close, min, max]
+    .map(&:to_f)
+    .map{ |e| e - min.to_f }
+
+    # normalize to percentage
+    open, high, low, close =
+    [open, high, low, close]
+    .map { |e| e / max * 1 }
+    .map{|e| e*@x_axis_limit }
+    .map(&:to_i) # .map(&:floor)
+
+    len = (high - low)
+    bar.fill(low, (low + len), Unicode::BOX_HORIZ)
+
+    start, stop = [open, close].minmax
+    len = (stop - start).abs # reuse len
+    case len
+    when 0
+      start = [start - 1, 0].max # no negative numbers
+      bar[start] =
+      case up_down
+        when -1
+          # Unicode::TOP
+          '<'
+        when 0
+          Unicode::BOX_VERT
+        when 1
+          # Unicode::BOTTOM
+          '>'
+        else
+          '#'
+      end
+
+    else
+      bar.fill(start, (start + len), bar_char)
+    end
+
+    return bar if @nocolor
+
+    up_down.negative? ? bar.map(&:light_magenta).join : bar.map(&:light_yellow).join
   end
 end
 
