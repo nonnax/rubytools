@@ -190,7 +190,7 @@ class Candlestick
     @x_axis_limit = params.fetch(:scale){ 20 }
     @color = params.fetch(:color){ true }
 
-    bar = [''] * @x_axis_limit
+    bar = [' '] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
@@ -206,7 +206,7 @@ class Candlestick
     .map{|e| e * @x_axis_limit }
     .map(&:to_i) # .map(&:floor)
 
-    len = (high - low).abs
+    len = [(high - low).abs - 1, 0].max
     bar.fill(low, (low + len), Unicode::BOX_HORIZ)
 
     start, stop = [open, close].minmax

@@ -146,4 +146,5 @@ class String
       light_white
     end
   end
+  alias color_numbers color_number
 end
