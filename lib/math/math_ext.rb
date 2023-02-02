@@ -86,6 +86,10 @@ module MathExt
     end
     alias percent_below percent_dec
 
+    def percent_profit(n)
+       percent_inc(n.to_f)-n.to_f
+    end
+    alias percent_income percent_profit
   end
 
   refine Object do

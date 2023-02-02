@@ -84,6 +84,13 @@ module ArrayExt
       [first.keys] + map(&:values)
     end
 
+    # hash array chainable utils
+    def hashes_select(*keys, where://, &block)
+      # select keys on matching re
+      select { |h| keys.any? { |k| h[k].to_s.match?( Regexp.new(where) ) } }
+      .tap { |a| a.map(&block) if block }
+    end
+
     # def to_html
       # IRuby::HTML.table(self)
     # end

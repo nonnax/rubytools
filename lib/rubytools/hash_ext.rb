@@ -60,6 +60,14 @@ module HashExt
      end
    end
 
+  def update_values_at(*keys, &block)
+    self.dup.tap do |h|
+      keys.each do |k|
+        h[k]=block.call(h[k])
+      end
+    end
+  end
+
   end
 end
 

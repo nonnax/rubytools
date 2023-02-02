@@ -27,9 +27,47 @@ module Unicode
   MIN_DIFF_THRESHOLD = 0.25
   MAX_DIFF_THRESHOLD = 0.75
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
+  BLOCK_UPPER_HALF = '▀'
+  BLOCK_LOWER_HALF = '▄'
+  BLOCK_LOWER_Q3 = '▃'
   BOX_HORIZ = '─'.freeze
   BOX_HORIZ_VERT = '┼'
   BOX_VERT = WICK
+
+  # Code 	Result 	Description
+  # U+2580 	▀ 	Upper half block
+  # U+2581 	▁ 	Lower one eighth block
+  # U+2582 	▂ 	Lower one quarter block
+  # U+2583 	▃ 	Lower three eighths block
+  # U+2584 	▄ 	Lower half block
+  # U+2585 	▅ 	Lower five eighths block
+  # U+2586 	▆ 	Lower three quarters block
+  # U+2587 	▇ 	Lower seven eighths block
+  # U+2588 	█ 	Full block
+  # U+2589 	▉ 	Left seven eighths block
+  # U+258A 	▊ 	Left three quarters block
+  # U+258B 	▋ 	Left five eighths block
+  # U+258C 	▌ 	Left half block
+  # U+258D 	▍ 	Left three eighths block
+  # U+258E 	▎ 	Left one quarter block
+  # U+258F 	▏ 	Left one eighth block
+  # U+2590 	▐ 	Right half block
+  # U+2591 	░ 	Light shade
+  # U+2592 	▒ 	Medium shade
+  # U+2593 	▓ 	Dark shade
+  # U+2594 	▔ 	Upper one eighth block
+  # U+2595 	▕ 	Right one eighth block
+  # U+2596 	▖ 	Quadrant lower left
+  # U+2597 	▗ 	Quadrant lower right
+  # U+2598 	▘ 	Quadrant upper left
+  # U+2599 	▙ 	Quadrant upper left and lower left and lower right
+  # U+259A 	▚ 	Quadrant upper left and lower right
+  # U+259B 	▛ 	Quadrant upper left and upper right and lower left
+  # U+259C 	▜ 	Quadrant upper left and upper right and lower right
+  # U+259D 	▝ 	Quadrant upper right
+  # U+259E 	▞ 	Quadrant upper right and lower left
+  # U+259F 	▟ 	Quadrant upper right and lower left and lower right
+
 end
 
 module Plotter
@@ -62,7 +100,7 @@ module Plotter
   end
 
   def xplot(data, **params, &block)
-    bars = plot_map(data.deep_dup, &block)
+    bars = data_remap(data.deep_dup, &block)
 
     header = plot_horiz_labels(bars, data, **params)
 
@@ -72,7 +110,7 @@ module Plotter
     .to_table(separator:'')
   end
 
-  def plot_map(data, &block)
+  def data_remap(data, &block)
     #
     # block returns strategy
     # candlestick(*row, min, max)
@@ -186,6 +224,9 @@ class Candlestick
     # row format == [:row_1, o, h, l, c, min, max]
     #
     bar_char=Unicode::DENSITY_SIGNS[-1]
+    # bar_char_table={}
+    # bar_char_table[1] = Unicode::BLOCK_UPPER_HALF
+    # bar_char_table[-1] = Unicode::BLOCK_LOWER_HALF
 
     @x_axis_limit = params.fetch(:scale){ 20 }
     @color = params.fetch(:color){ true }
@@ -193,6 +234,9 @@ class Candlestick
     bar = [' '] * @x_axis_limit
 
     up_down = (close <=> open)
+
+    # bar_char = bar_char_table.fetch(up_down){ bar_char_table[1] }
+
     # normalize to zero x-axis
     open, high, low, close, min, max =
     [open, high, low, close, min, max]
@@ -221,7 +265,7 @@ class Candlestick
 
     return bar unless @color
 
-    up_down.negative? ? bar.map(&:light_magenta).join : bar.map(&:light_yellow).join
+    up_down.negative? ? bar.join.light_magenta : bar.join.light_yellow
   end
 end
 
