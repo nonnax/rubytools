@@ -46,7 +46,7 @@ module NumericExt
     def with_commas
       i, _, d = partition('.')
       d = '00' if d.empty?
-      int = i.reverse.split(//).each_slice(3).to_a.map(&:join).join('_').reverse
+      int = i.reverse.split(//).each_slice(3).to_a.map(&:join).join('_').reverse.gsub(/^-_/,'-')
       [int, d].join('.')
     end
     alias_method :with_comma, :with_commas

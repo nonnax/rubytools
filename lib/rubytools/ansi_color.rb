@@ -140,7 +140,7 @@ class String
   end
 
   def color_number
-    if strip.numeric?
+    if strip.tr(',_','').numeric?
       to_f.negative? ? light_magenta : light_yellow
     else
       light_white
