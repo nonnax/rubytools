@@ -60,9 +60,17 @@ module HashExt
      end
    end
 
-  def update_values_at(*keys, &block)
+  def update_values_at(*selected_keys, &block)
     self.dup.tap do |h|
-      keys.each do |k|
+      selected_keys.each do |k|
+        h[k]=block.call(h[k])
+      end
+    end
+  end
+
+  def update_values_except(*selected_keys, &block)
+    self.dup.tap do |h|
+      (h.keys-selected_keys).each do |k|
         h[k]=block.call(h[k])
       end
     end

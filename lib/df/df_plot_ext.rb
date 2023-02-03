@@ -24,13 +24,18 @@ module Unicode
   WICK_UPPER = "╷"
   TEE_UP = "⊥"
   TEE_DOWN = "⊤"
+  TICK_LEFT='╼'
+  TICK_RIGHT='╾'
   MIN_DIFF_THRESHOLD = 0.25
   MAX_DIFF_THRESHOLD = 0.75
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
+  SQUARE_BLACK = '■'
+  SQUARE_WHITE = '□'
   BLOCK_UPPER_HALF = '▀'
   BLOCK_LOWER_HALF = '▄'
   BLOCK_LOWER_Q3 = '▃'
   BOX_HORIZ = '─'.freeze
+  BOX_HORIZ_HEAVY = '━'
   BOX_HORIZ_VERT = '┼'
   BOX_VERT = WICK
 
@@ -78,15 +83,15 @@ module Plotter
 
   module_function
 
-  DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
-  BOX_HORIZ = '─'.freeze
-  # BOX_HORIZ = '-'
-  # BOX_HORIZ_VERT = '┼'.freeze
-  BOX_HORIZ_VERT = '┼'
-  # BOX_VERT = '|'.freeze
-  BOX_VERT = Unicode::WICK
-
-  BAR_XLIMIT = 50
+  # DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
+  # BOX_HORIZ = '─'.freeze
+  # # BOX_HORIZ = '-'
+  # # BOX_HORIZ_VERT = '┼'.freeze
+  # BOX_HORIZ_VERT = '┼'
+  # # BOX_VERT = '|'.freeze
+  # BOX_VERT = Unicode::WICK
+#
+  # BAR_XLIMIT = 50
   @x_axis_limit = nil
 
   class << self
@@ -179,7 +184,7 @@ class Candlestick
     .map(&:to_i) # .map(&:floor)
 
     len = (high - low)
-    bar.fill(low, (low + len), BOX_VERT)
+    bar.fill(low, (low + len), Unicode::BOX_VERT)
 
     start, stop = [open, close].minmax
     len = (stop - start) # reuse len
@@ -217,26 +222,33 @@ class Candlestick
     xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
   end
 
+end
+
+
+
+class Candlestick
 
   def self.candle(open, high, low, close, min = 0, max = 100, **params)
     #
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    bar_char=Unicode::DENSITY_SIGNS[-1]
-    # bar_char_table={}
-    # bar_char_table[1] = Unicode::BLOCK_UPPER_HALF
-    # bar_char_table[-1] = Unicode::BLOCK_LOWER_HALF
+    # bar_char=Unicode::DENSITY_SIGNS[-1]
+
+    bar_char_table={}
+    bar_char_table[1] = Unicode::DENSITY_SIGNS[-1]
+    bar_char_table[-1] = Unicode::DENSITY_SIGNS[1]
 
     @x_axis_limit = params.fetch(:scale){ 20 }
-    @color = params.fetch(:color){ true }
+    @color = params.fetch(:color){ false }
 
     bar = [' '] * @x_axis_limit
 
     up_down = (close <=> open)
 
-    # bar_char = bar_char_table.fetch(up_down){ bar_char_table[1] }
-
+    bar_char =
+    bar_char_table
+    .fetch(up_down){ bar_char_table[1] }
     # normalize to zero x-axis
     open, high, low, close, min, max =
     [open, high, low, close, min, max]
@@ -250,20 +262,23 @@ class Candlestick
     .map{|e| e * @x_axis_limit }
     .map(&:to_i) # .map(&:floor)
 
-    len = [(high - low).abs - 1, 0].max
+    len = (high - low)
     bar.fill(low, (low + len), Unicode::BOX_HORIZ)
 
     start, stop = [open, close].minmax
-    len = (stop - start).abs # reuse len
+    len = (stop - start).abs  # reuse len
     case len
     when 0
       start = [start - 1, 0].max # no negative numbers
       bar[start] = Unicode::BOX_HORIZ_VERT
     else
+      # start, stop = [open, close].minmax
+      # len = (stop - start).abs
+
       bar.fill(start, (start + len), bar_char)
     end
 
-    return bar unless @color
+    return bar.join unless @color
 
     up_down.negative? ? bar.join.light_magenta : bar.join.light_yellow
   end
@@ -316,8 +331,8 @@ module ScalePlotter
   refine Numeric do
     def to_volume_bar(scale: 42, color: 'black', bg_color: 'light_black', quiet:false)
       vratio = self.clamp(0..100)
-      ch=Unicode::HALF_BODY_BOTTOM
-      tick=Unicode::TOP
+      ch = Unicode::HALF_BODY_BOTTOM
+      tick = Unicode::TOP
       vbar_size = (vratio*(scale/100.0)).to_i
       trail_size = scale-vbar_size
       max_bar = ch * trail_size
@@ -362,7 +377,7 @@ module DFPlotExt
         (ch*nsize)
       end
 
-      prev, curr=Plotter::DENSITY_SIGNS.values_at(1, -1)
+      prev, curr = Unicode::DENSITY_SIGNS.values_at(1, -1)
       [first, last].then{|a, b|
         c=a+b
         [diff_to_s(b, c, curr, scale:), diff_to_s(a, c, '#', scale:)].join.ljust(scale, '@')[0...scale-1]
