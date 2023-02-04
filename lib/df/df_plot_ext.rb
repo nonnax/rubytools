@@ -237,6 +237,7 @@ end
 class Candlestick
   BOX_HORIZ = '-'
   BOX_HORIZ_VERT = '+'
+  BOX_HORIZ_DOGI = '|'
   def self.candle(open, high, low, close, min = 0, max = 100, **params)
     #
     # plot an OHLC row as candlestick pattern
@@ -262,6 +263,7 @@ class Candlestick
       bar_char =
       bar_char_table
       .fetch(up_down){ bar_char_table[1] }
+
       # normalize to zero x-axis
       open, high, low, close, min, max =
       [open, high, low, close, min, max]
@@ -283,7 +285,11 @@ class Candlestick
       case len
       when 0
         start = [start - 1, 0].max # no negative numbers
-        bar[start] = BOX_HORIZ_VERT
+        if [close, open, high].uniq.uniq!
+          bar[start] = BOX_HORIZ_DOGI
+        else
+          bar[start] = BOX_HORIZ_VERT
+        end
       else
         # start, stop = [open, close].minmax
         # len = (stop - start).abs
