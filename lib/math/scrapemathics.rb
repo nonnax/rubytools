@@ -3,10 +3,12 @@
 
 # Id$ nonnax 2023-01-13 10:52:55
 require 'rubytools/core_ext'
-require 'math/math_ext'
-require 'df/df_ext'
-using MathExt
-using DFExt
+require 'coingecko/coin_gecko'
+# require 'math/math_ext'
+# require 'df/df_ext'
+# using MathExt
+# using DFExt
+using CoingeckoExt
 
 require 'df/df_plot_ext'
 
@@ -29,11 +31,20 @@ module Scrapemathics
     def desc
       scan_to_f.desc
     end
-
     def scan_plot(remove:'24h Low / 24h High', **opts, &block)
       s=tr(remove, '')
       s=block.call(s) if block
       PlotTrio.trio(*s.scan_to_f, **opts)
+    end
+    def coindesc
+      CoinGecko.new(CoingeckoMarkets, self) do |coin|
+        units = bank[:units].sum
+        curr_amount = (coin.current_price*units).to_human_auto
+        puts describe{|h|
+          h.merge!(watch_price:, units: , bank_amount: bank[:amount].sum, curr_amount: , candle: price_candlestick)
+          h.transform_values!{|v| v.to_s.numeric? ? v.to_human_auto : v }
+        }.transpose.to_table
+      end
     end
   end
   refine Hash do

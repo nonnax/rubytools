@@ -17,6 +17,12 @@ end
 module ArrayExt
   using ObjectExt
 
+  refine String do
+    def to_a
+      self.split(//)
+    end
+  end
+
   refine Array do
     def ljust(width=1, padding = nil)
       dup + ([padding] * (width - size))
@@ -94,8 +100,10 @@ module ArrayExt
     # def to_html
       # IRuby::HTML.table(self)
     # end
-
-  end
+     def strings_to_df
+       self.map(&:to_a)
+     end
+   end
 end
 
 module HashExt

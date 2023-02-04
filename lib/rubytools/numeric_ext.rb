@@ -81,6 +81,12 @@ module NumericExt
     end
   end
 
+  refine Symbol do
+    def human(n=2, &block)
+      to_s
+    end
+  end
+
   refine Date do
     def human(n=2, &block)
       to_s

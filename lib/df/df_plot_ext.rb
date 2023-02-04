@@ -12,6 +12,9 @@ using DFExt
 
 module Unicode
   # Chart characters
+  # https://www.compart.com/en/unicode/category/So
+  # https://www.vertex42.com/ExcelTips/unicode-symbols.html#block
+  # https://gist.github.com/ivandrofly/0fe20773bd712b303f78
   BODY = "┃"
   BOTTOM = "╿"
   HALF_BODY_BOTTOM = "╻"
@@ -29,6 +32,7 @@ module Unicode
   MIN_DIFF_THRESHOLD = 0.25
   MAX_DIFF_THRESHOLD = 0.75
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
+  SQUARE_SIGNS = ['🟨', '🟫','🟥' ].freeze
   SQUARE_BLACK = '■'
   SQUARE_WHITE = '□'
   BLOCK_UPPER_HALF = '▀'
@@ -38,6 +42,10 @@ module Unicode
   BOX_HORIZ_HEAVY = '━'
   BOX_HORIZ_VERT = '┼'
   BOX_VERT = WICK
+  BLACK_SMALL_SQUARE='▪'
+  WHITE_SMALL_SQUARE='▫'
+  BLACK_RECTANGLE= '▬'
+  WHITE_RECTANGLE= '▭'
 
   # Code 	Result 	Description
   # U+2580 	▀ 	Upper half block
@@ -227,7 +235,8 @@ end
 
 
 class Candlestick
-
+  BOX_HORIZ = '-'
+  BOX_HORIZ_VERT = '+'
   def self.candle(open, high, low, close, min = 0, max = 100, **params)
     #
     # plot an OHLC row as candlestick pattern
@@ -236,51 +245,59 @@ class Candlestick
     # bar_char=Unicode::DENSITY_SIGNS[-1]
 
     bar_char_table={}
-    bar_char_table[1] = Unicode::DENSITY_SIGNS[-1]
-    bar_char_table[-1] = Unicode::DENSITY_SIGNS[1]
+
+    # bar_char_table[1] = Unicode::DENSITY_SIGNS[-1]
+    # bar_char_table[-1] = Unicode::DENSITY_SIGNS[1]
+    bar_char_table[1] = Unicode::SQUARE_BLACK
+    bar_char_table[-1] = Unicode::SQUARE_WHITE
 
     @x_axis_limit = params.fetch(:scale){ 20 }
     @color = params.fetch(:color){ false }
 
-    bar = [' '] * @x_axis_limit
+    plot_bar = [' '] * @x_axis_limit
 
-    up_down = (close <=> open)
+    plot_bar.tap do |bar|
+      up_down = (close <=> open)
 
-    bar_char =
-    bar_char_table
-    .fetch(up_down){ bar_char_table[1] }
-    # normalize to zero x-axis
-    open, high, low, close, min, max =
-    [open, high, low, close, min, max]
-    .map(&:to_f)
-    .map{ |e| e - min.to_f }
+      bar_char =
+      bar_char_table
+      .fetch(up_down){ bar_char_table[1] }
+      # normalize to zero x-axis
+      open, high, low, close, min, max =
+      [open, high, low, close, min, max]
+      .map(&:to_f)
+      .map{ |e| e - min.to_f }
 
-    # normalize to percentage
-    open, high, low, close =
-    [open, high, low, close]
-    .map{|e| e / max }
-    .map{|e| e * @x_axis_limit }
-    .map(&:to_i) # .map(&:floor)
+      # normalize to percentage
+      open, high, low, close =
+      [open, high, low, close]
+      .map{|e| e / max }
+      .map{|e| e * @x_axis_limit }
+      .map(&:to_i) # .map(&:floor)
 
-    len = (high - low)
-    bar.fill(low, (low + len), Unicode::BOX_HORIZ)
+      len = (high - low)
+      bar.fill(low, (low + len), BOX_HORIZ)
 
-    start, stop = [open, close].minmax
-    len = (stop - start).abs  # reuse len
-    case len
-    when 0
-      start = [start - 1, 0].max # no negative numbers
-      bar[start] = Unicode::BOX_HORIZ_VERT
-    else
-      # start, stop = [open, close].minmax
-      # len = (stop - start).abs
+      start, stop = [open, close].minmax
+      len = (stop - start).abs  # reuse len
+      case len
+      when 0
+        start = [start - 1, 0].max # no negative numbers
+        bar[start] = BOX_HORIZ_VERT
+      else
+        # start, stop = [open, close].minmax
+        # len = (stop - start).abs
+        # up_or_down = ->(a, b){ up_down.negative? ? a : b }
+        # bar_up_or_down = ->(){ up_down.negative? ? Unicode::SQUARE_WHITE : Unicode::SQUARE_BLACK }
 
-      bar.fill(start, (start + len), bar_char)
+        bar.fill(start, (start + len), bar_char)
+
+        # x=up_or_down[start, (start + len)]
+        # bar[x] = bar_up_or_down[]
+      end
+      # return bar.join unless @color
     end
-
-    return bar.join unless @color
-
-    up_down.negative? ? bar.join.light_magenta : bar.join.light_yellow
+    # up_down.negative? ? bar.join.light_magenta : bar.join.light_yellow
   end
 end
 
