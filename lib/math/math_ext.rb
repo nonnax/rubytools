@@ -150,6 +150,14 @@ module MathExt
       to_change :percent_change
     end
 
+    def to_percent_ratios
+      map{|x| x/max.to_f}
+    end
+
+    def to_percent_ratios_pairs
+      zip(map{|x| x/max.to_f})
+    end
+
     def to_diff
       to_change :diff
     end

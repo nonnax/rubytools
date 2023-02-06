@@ -76,6 +76,13 @@ module HashExt
     end
   end
 
+  def sort_keys
+    # returns a new hash with sorted keys
+    keys.sort.to_a.each_with_object({}) do |k, hash|
+       hash[k] = (self[k])
+    end
+  end
+
   end
 end
 

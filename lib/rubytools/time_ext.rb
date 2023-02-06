@@ -107,7 +107,7 @@ module TimeToWords
   end
 
   # (date)
-  def to_days
+  def to_human_days
     date = begin
       send(:to_date)
     rescue StandardError
@@ -126,6 +126,16 @@ module TimeToWords
 
     date.strftime('%a, %Y-%b-%e')
   end
+
+  def to_days
+    date = begin
+      send(:to_date)
+    rescue StandardError
+      self
+    end
+    (date - Date.today).to_i
+  end
+
   alias to_day to_days
 end
 

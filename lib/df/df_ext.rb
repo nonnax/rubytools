@@ -4,7 +4,7 @@
 # Id$ nonnax 2022-12-05 15:35:08
 require 'math/math_ext'
 require 'rubytools/numeric_ext'
-
+require 'sparkr'
 
 module ObjectExt
   refine Object do
@@ -102,6 +102,10 @@ module ArrayExt
     # end
      def strings_to_df
        self.map(&:to_a)
+     end
+
+     def to_sparkline
+        Sparkr.sparkline(self)
      end
    end
 end
