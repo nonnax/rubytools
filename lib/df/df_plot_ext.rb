@@ -411,21 +411,23 @@ module DFPlotExt
     end
 
    def to_sparkline_pairs
-     self.zip(self.to_percent_ratios.to_sparkline.split(//))
+     self.zip(self.to_sparkline.split(//))
    end
 
-   def to_sparkline_colors
+   def to_sparkline_colors(join:"", &block)
       self.to_sparkline_pairs.map{|val, spark |
         color = val.negative? ? 'red' : 'yellow'
-        [val, spark.send(color)]
-      }
+        spark.send(color).tap{|sp|
+          block&.call(sp, val)
+        }
+      }.join(join)
    end
    def to_sparkline_chart
-      self.to_sparkline_colors.map{|val, spark |
-          [spark, val.to_s.split(//).map(&:white)].flatten
-      }.to_table
+      chart=[]
+      self.to_sparkline_colors{|spark, val|
+        chart<<[spark, val.to_s.split(//).map(&:white)].flatten
+      }
+      chart.to_table
    end
-
-
   end
 end

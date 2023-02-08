@@ -15,7 +15,7 @@ module NumericExt
 
     def as_human_fraction
       zero, _, digits = rpartition(/\./)
-      [zero, digits[0...9].ljust(9, '0').split(//).each_slice(3).map(&:join).join('_') ].join('.')
+      [zero, digits[0...6].ljust(6, '0').split(//).each_slice(3).map(&:join).join('_') ].join('.')
     end
 
     def numeric?
@@ -123,7 +123,7 @@ module NumericExt
     end
 
     def as_human
-      formatter=->(div, suffix, dec=1){format("%03.#{dec}f%s", (self/div.to_f), suffix )}
+      formatter=->(div, suffix, dec=1){format("(%s)%0.1f", suffix, (self/div.to_f) )}
       sizer=->(k){ self >= k ? k : false}
       case
         when k=sizer[1_000**5]
@@ -137,7 +137,7 @@ module NumericExt
         when k=sizer[1_000]
           formatter[k, 'K']
         when self.abs > 1
-          human
+          human(1)
         when self.abs.between?(0, 1)
           to_s.as_human_fraction
         else
