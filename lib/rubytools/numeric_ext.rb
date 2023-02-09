@@ -7,9 +7,9 @@ module NumericExt
     # !/\A[+-]?\d+(\.\d+)?\z/.match?(self).nil?
     # end
 
-    # def human(n = 2, &block)
-      # numeric? ? to_f.to_human(n) : block&.call(self)
-    # end
+    def human(n = 2, &block)
+      numeric? ? to_f.to_human(n) : block&.call(self)
+    end
 
     # alias_method :human, :to_s
 

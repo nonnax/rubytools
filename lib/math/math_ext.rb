@@ -58,8 +58,8 @@ module MathExt
       Float(to)-self
     end
 
-    def human_auto
-      format_big_small=->(n){ n=Float(n); n.between?(0, 1) ? n.human(7) : n.human}
+    def human_auto(dec=1)
+      format_big_small=->(n){ n=Float(n); n.abs.between?(0, 1) ? n.human(7) : n.human(dec)}
       format_big_small[self]
     end
 
@@ -93,19 +93,19 @@ module MathExt
   end
 
   refine Object do
-    def to_human_auto
-      respond_to?(:human_auto) ? self.human_auto : self
+    def to_human_auto(n=2)
+      respond_to?(:human_auto) ? self.human_auto(n) : self
     end
   end
 
   refine String do
-    def human_auto
+    def human_auto(n=0)
       self
     end
   end
 
   refine Time do
-    def human_auto
+    def human_auto(n=0)
       self
     end
   end
@@ -204,6 +204,39 @@ module MathExt
 
     def first_last
       [first, last]
+    end
+
+    def quantiles(probs=[0.25, 0.50, 0.75])
+      values = self.sort
+
+      probs.map do |prob|
+        h = 1 + (values.size - 1) * prob
+        mod = h % 1
+        (1 - mod) * values[h.floor - 1] + (mod) * values[h.ceil - 1]
+      end
+    end
+
+    # If you just want one quantile, then do data.quantiles([0.95]).
+
+    # vector type math
+    def plus(one)
+      optr(one, fn=:+)
+    end
+
+    def minus(one)
+      optr(one, fn=:-)
+    end
+
+    def mult(one)
+      optr(one, fn=:*)
+    end
+
+    def div(one)
+      optr(one, fn=:/)
+    end
+
+    def optr(one, fn=:+)
+      zip([one]*size).map{|r| r.inject(fn)}
     end
 
   end

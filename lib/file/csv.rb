@@ -14,7 +14,7 @@ CSV::Converters[:timex] = lambda{|s|
 
 class CSVFile < Serializer
   def read(**opts)
-    v=CSV.read(@path, **opts.merge(converters: %i[numeric date timex]))
+    v=CSV.read(@path, **opts.merge(header_converters: :symbol, converters: %i[all date timex]))
     if opts[:headers]
       v.map(&:to_h)
     else

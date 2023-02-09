@@ -90,6 +90,19 @@ module ArrayExt
       [first.keys] + map(&:values)
     end
 
+    def hashes_to_h
+      # array of hashes
+      # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
+      # hash of arrays
+      # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
+      each_with_object({}) do |hash, hacc|
+        hash.keys.each do |k|
+          hacc[k] ||=[]
+          hacc[k] << hash[k]
+        end
+      end
+    end
+
     # hash array chainable utils
     def hashes_select(*keys, where://, &block)
       # select keys on matching re

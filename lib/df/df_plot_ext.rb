@@ -318,24 +318,23 @@ class OpenClose
     # plot an OC row as a directional bar pattern
     # row format == [:row_1, o, c, min, max]
     #
-    bar = [''] * @x_axis_limit
+    bar = Array.new(@x_axis_limit){''}
 
     up_down = (close <=> open)
-    # normalize to zero x-axis
-    open, close, min, max = [open, close, min, max].map(&:to_f).map{ |e| e - min.to_f }
+
     # normalize to percentage
     open, close = [open, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
 
     start, stop = [open, close].minmax
+
     len = (stop - start).abs
+
     case len
     when 0
-      start = [start - 1, 0].max
+      # start = [start - 1, 0].max
       bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
-      start, stop = [open, close].minmax
-      len = (stop - start).abs
-      bar.fill(start, (start + len), Unicode::BODY)
+      bar.fill(start, (start + len + 1), Unicode::BODY)
     end
 
     return bar if @nocolor
@@ -422,6 +421,7 @@ module DFPlotExt
         }
       }.join(join)
    end
+
    def to_sparkline_chart
       chart=[]
       self.to_sparkline_colors{|spark, val|
