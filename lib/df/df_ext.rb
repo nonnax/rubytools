@@ -3,7 +3,7 @@
 
 # Id$ nonnax 2022-12-05 15:35:08
 require 'math/math_ext'
-require 'rubytools/numeric_ext'
+require 'file/filer'
 require 'sparkr'
 
 module ObjectExt
@@ -90,15 +90,15 @@ module ArrayExt
       [first.keys] + map(&:values)
     end
 
-    def hashes_to_h
+    def hashes_to_vectors
       # array of hashes
       # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
       # hash of arrays
       # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
-      each_with_object({}) do |hash, hacc|
-        hash.keys.each do |k|
+      each_with_object({}) do |h, hacc|
+        h.keys.each do |k|
           hacc[k] ||=[]
-          hacc[k] << hash[k]
+          hacc[k] << h[k]
         end
       end
     end
@@ -148,6 +148,18 @@ module HashExt
       to_flat_array
         .to_table
     end
+
+    def vectors_to_df
+      keys
+      .map do |k|
+        self[k]
+      end
+      .prepend((1..first.last.size).to_a)
+      .transpose
+      .prepend(['-']+keys)
+      .transpose
+    end
+
   end
 end
 
@@ -156,5 +168,4 @@ module DFExt
   include HashExt
   include ObjectExt
   include MathExt
-  include NumericExt
 end

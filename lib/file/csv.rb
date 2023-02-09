@@ -3,6 +3,8 @@
 require_relative 'serializer'
 require 'csv'
 require 'date'
+require 'math/math_ext'
+using MathExt
 
 CSV::Converters[:timex] = lambda{|s|
   begin
@@ -14,12 +16,21 @@ CSV::Converters[:timex] = lambda{|s|
 
 class CSVFile < Serializer
   def read(**opts)
-    v=CSV.read(@path, **opts.merge(header_converters: :symbol, converters: %i[all date timex]))
-    if opts[:headers]
-      v.map(&:to_h)
+    opts[:headers]=opts.fetch(:vectors){true}
+    v=CSV.read(@path, **opts.except(:vectors).merge(header_converters: :symbol, converters: %i[all date timex]))
+
+    case opts
+    in vectors: true
+      v
+      .map(&:to_h)
+      .hashes_to_vectors
+    in headers: true
+      v
+      .map(&:to_h)
     else
       v
     end
+
   end
   def write(obj)
     File.write @path, to_csv(obj)

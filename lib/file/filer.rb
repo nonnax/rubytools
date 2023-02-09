@@ -47,3 +47,12 @@ class Filer
 
 end
 
+class Filer
+  def self.read_csv(f, **opts)
+    read(CSVFile.new(f), **opts)
+  end
+  def self.write_csv(f, df)
+    write(CSVFile.new(f), df)
+  end
+end
+
