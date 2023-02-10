@@ -206,7 +206,10 @@ module MathExt
       [first, last]
     end
 
-    def quantiles(probs=[0.25, 0.50, 0.75])
+    def quantiles(*probs)
+      probs=[0.25, 0.50, 0.75] if probs.empty?
+      probs.flatten!
+
       values = self.sort
 
       probs.map do |prob|
@@ -214,6 +217,12 @@ module MathExt
         mod = h % 1
         (1 - mod) * values[h.floor - 1] + (mod) * values[h.ceil - 1]
       end
+    end
+
+    def median
+      return nil if empty?
+      sorted = sort
+      (sorted[(size - 1) / 2] + sorted[size / 2]) / 2.0
     end
 
     # If you just want one quantile, then do data.quantiles([0.95]).

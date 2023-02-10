@@ -62,6 +62,17 @@ module NumericExt
     def to_str(digit = 2)
       format("%0.#{digit}f", self)
     end
+
+    def decimal_places
+      # x.0000000
+      self.to_s.partition(/\./).last.size
+    end
+
+    def decimal_to_int
+      # magnify decimal into integer
+      self*(10**(self.decimal_places))
+    end
+
   end
 
   refine Integer do

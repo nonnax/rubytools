@@ -258,7 +258,7 @@ class Candlestick
     @x_axis_limit = params.fetch(:scale){ 20 }
     @color = params.fetch(:color){ false }
 
-    plot_bar = Array.new(@x_axis_limit){' '}
+    plot_bar = Array.new(@x_axis_limit){''}
 
     plot_bar.tap do |bar|
       up_down = (close <=> open)
@@ -322,8 +322,17 @@ class OpenClose
 
     up_down = (close <=> open)
 
+    # normalize to zero x-axis
+    open, close =
+    [open, close]
+    .map(&:to_f)
+    .map{ |e| e - min.to_f }
+
     # normalize to percentage
-    open, close = [open, close].map { |e| (e / max) * @x_axis_limit }.map(&:to_i) # .map(&:floor)
+    open, close =
+    [open, close]
+    .map { |e| (e / max) * @x_axis_limit }
+    .map(&:to_i) # .map(&:floor)
 
     start, stop = [open, close].minmax
 
@@ -331,7 +340,7 @@ class OpenClose
 
     case len
     when 0
-      # start = [start - 1, 0].max
+      start = [start - 1, 0].max
       bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
       bar.fill(start, (start + len + 1), Unicode::BODY)

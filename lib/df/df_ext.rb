@@ -117,8 +117,16 @@ module ArrayExt
        self.map(&:to_a)
      end
 
+     using MathExt
      def to_sparkline
-        Sparkr.sparkline(self)
+       # increase magnitude to handle numbers below 1
+       sample=
+       if self.mean<1
+         self.map{|x| x*(10**max.decimal_places)}
+       else
+         self
+       end
+       Sparkr.sparkline(sample)
      end
    end
 end
@@ -131,7 +139,7 @@ module HashExt
       map(&:flatten)
     end
 
-    def reshape(width=nil, padding=nil)
+    def reshape(padding=nil, width=nil)
       max_width = width || values.longest_row
       dup
         .transform_values{|v| v.ljust(max_width, padding)}
@@ -150,14 +158,32 @@ module HashExt
     end
 
     def vectors_to_df
+      even_hash=reshape(padding=0)
+      keys=even_hash.keys
+
       keys
       .map do |k|
-        self[k]
+        even_hash[k]
       end
-      .prepend((1..first.last.size).to_a)
+      .prepend((1..even_hash.first.last.size).to_a)
       .transpose
       .prepend(['-']+keys)
       .transpose
+    end
+
+    def at(*keys, &block)
+      # alternately map column values into df rows
+      # the shortest-sized column is used for iteration count
+      # after block for row-wise map operations
+      shortest=self.values_at(*keys).map(&:size).min
+      shortest
+      .times
+      .map do |i|
+         keys.map do |k|
+           self[k][i] #? self[k][i] : 0
+         end
+      end
+      .then{|arr| block ? arr.map(&block) : arr}
     end
 
   end
