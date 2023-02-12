@@ -24,9 +24,22 @@ module Unicode
   MAX_DIFF_THRESHOLD = 0.75
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
   SQUARE_SIGNS = ['🟨', '🟫','🟥' ].freeze
+  SQUARE_WITH_FILL = %w[■ □ ▢ ▣ ▤ ▥ ▧ ▨ ▩].freeze
+# ■  	U+25A0 (alt-09632)	BLACK SQUARE = moding mark (in ideographic text)
+# □  	U+25A1 (alt-09633)	WHITE SQUARE = quadrature = alchemical symbol for salt
+# ▢  	U+25A2 (alt-09634)	WHITE SQUARE WITH ROUNDED CORNERS
+# ▣  	U+25A3 (alt-09635)	WHITE SQUARE CONTAINING BLACK SMALL SQUARE
+# ▤  	U+25A4 (alt-09636)	SQUARE WITH HORIZONTAL FILL
+# ▥  	U+25A5 (alt-09637)	SQUARE WITH VERTICAL FILL
+# ▦  	U+25A6 (alt-09638)	SQUARE WITH ORTHOGONAL CROSSHATCH FILL
+# ▧  	U+25A7 (alt-09639)	SQUARE WITH UPPER LEFT TO LOWER RIGHT FILL
+# ▨  	U+25A8 (alt-09640)	SQUARE WITH UPPER RIGHT TO LOWER LEFT FILL
+# ▩  	U+25A9 (alt-09641)	SQUARE WITH DIAGONAL CROSSHATCH FILL
   SQUARE_BLACK = '■'
   SQUARE_WHITE = '□'
-  BLOCK_UPPER_HALF = '▀'   # ┼ ⊤  ⊥ ▀─▄ █ ▀ ▇ ▆
+  SQUARES = %w[□ ■]
+
+  BLOCK_UPPER_HALF = '▀'   # ┼ ⊤  ⊥ ▀━▄ █ ▀ ▇ ▆
   BLOCK_LOWER_HALF = '▄'   # │╵┼╷─⊥⊤           ▀
   BLOCK_LOWER_Q3 = '▃'     # │     ⊤⊥
   BOX_HORIZ = '─'.freeze
@@ -35,18 +48,26 @@ module Unicode
   BOX_VERT = WICK
   BLACK_SMALL_SQUARE='▪'
   WHITE_SMALL_SQUARE='▫'
-  BLACK_RECTANGLE= '▬'
-  WHITE_RECTANGLE= '▭'
+  BLACK_RECTANGLE ='▬'  	#U+25AC (alt-09644)
+  WHITE_RECTANGLE = '▭'  	#U+25AD (alt-09645)
+  RECTANGLES = %w[▭ ▬]  	#U+25AD (alt-09645)
   WHITE_MEDIUM_SMALL_SQUARE='◽'  	#U+25FD (alt-09725)
   BLACK_MEDIUM_SMALL_SQUARE='◾'  	#U+25FE (alt-09726)
   WHITE_MEDIUM_SQUARE='◻'  	#U+25FB (alt-09723)	 = always (modal operator)
   BLACK_MEDIUM_SQUARE='◼'  	#U+25FC (alt-09724)
-
+  BLACK_VERTICAL_RECTANGLE ='▮'  #	U+25AE (alt-09646)
+  WHITE_VERTICAL_RECTANGLE= '▯'  #	U+25AF (alt-09647)
+  VERTICAL_RECTANGLES = %w[▯ ▮]
+  SQUARE_BRACKET_EXTENSIONS = %w[⎢ ⎥]  	#U+23A2 (alt-09122)
+  TACKS = %w[⊢ ⊣]
+  LOW_LINE = '_'
+# ⊢  	U+22A2 (alt-08866)	RIGHT TACK = turnstile = proves, implies, yields = reducible
+# ⊣  	U+22A3 (alt-08867)	LEFT TACK = reverse turnstile = non-theorem, does not yield
   # Code 	Result 	Description
 
   # U+2580 	▀ 	Upper half block
 
-  # U+2581 	▁ 	Lower one eighth block   ▁ ▂
+  # U+2581 	▁ 	Lower one eighth block   ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▀ ▔━▁
 
   # U+2582 	▂ 	Lower one quarter block
 

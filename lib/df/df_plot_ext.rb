@@ -163,6 +163,10 @@ module Plotter
     }
   end
 
+  # MathExt.normalize_axis(min)
+  # def normalize_axis(min)
+    # self.map{ |e| e - min }
+  # end
 end
 
 class Candlestick
@@ -178,14 +182,14 @@ class Candlestick
     # plot an OHLC row as candlestick pattern
     # row format == [:row_1, o, h, l, c, min, max]
     #
-    bar = [''] * @x_axis_limit
+    bar = Array.new(@x_axis_limit){''} #[''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
     open, low, high, close, min, max =
     [open, low, high, close, min, max]
     .map(&:to_f)
-    .map{ |e| e - min.to_f }
+    .normalize_axis(min)
 
     # normalize to percentage
     open, high, low, close =
@@ -201,7 +205,7 @@ class Candlestick
     len = (stop - start) # reuse len
     case len
     when 0
-      start = [start - 1, 0].max
+      # start = [start - 1, 0].max
       bar[start] =
       case up_down
         when -1
@@ -217,7 +221,7 @@ class Candlestick
     else
       start, stop = [open, close].minmax
       len = (stop - start).abs
-      bar.fill(start, (start + len), Unicode::BODY)
+      bar.fill(start, (start + len + 1), Unicode::BODY)
     end
 
     return bar if @nocolor
@@ -248,12 +252,14 @@ class Candlestick
     #
     # bar_char=Unicode::DENSITY_SIGNS[-1]
 
-    bar_char_table={}
+    bar_char_table=[1, -1].zip(Unicode::VERTICAL_RECTANGLES).to_h
 
     # bar_char_table[1] = Unicode::DENSITY_SIGNS[-1]
     # bar_char_table[-1] = Unicode::DENSITY_SIGNS[1]
-    bar_char_table[1] = Unicode::SQUARE_BLACK
-    bar_char_table[-1] = Unicode::SQUARE_WHITE
+    # bar_char_table[1] = Unicode::SQUARE_BLACK
+    # bar_char_table[-1] = Unicode::SQUARE_WHITE
+    # bar_char_table[1] = Unicode::SQUARE_BLACK
+    # bar_char_table[-1] = Unicode::SQUARE_WHITE
 
     @x_axis_limit = params.fetch(:scale){ 20 }
     @color = params.fetch(:color){ false }
@@ -271,7 +277,7 @@ class Candlestick
       open, high, low, close, min, max =
       [open, high, low, close, min, max]
       .map(&:to_f)
-      .map{ |e| e - min.to_f }
+      .normalize_axis(min)
 
       # normalize to percentage
       open, high, low, close =
@@ -287,7 +293,7 @@ class Candlestick
       len = (stop - start).abs  # reuse len
       case len
       when 0
-        start = [start - 1, 0].max # no negative numbers
+        # start = [start - 1, 0].max # no negative numbers
         if [close, open, high].uniq.uniq!
           bar[start] = BOX_HORIZ_DOGI
         else
@@ -299,7 +305,7 @@ class Candlestick
         # up_or_down = ->(a, b){ up_down.negative? ? a : b }
         # bar_up_or_down = ->(){ up_down.negative? ? Unicode::SQUARE_WHITE : Unicode::SQUARE_BLACK }
 
-        bar.fill(start, (start + len), bar_char)
+        bar.fill(start, (start + len + 1), bar_char)
 
         # x=up_or_down[start, (start + len)]
         # bar[x] = bar_up_or_down[]
@@ -324,9 +330,7 @@ class OpenClose
 
     # normalize to zero x-axis
     open, close =
-    [open, close]
-    .map(&:to_f)
-    .map{ |e| e - min.to_f }
+    [open, close].normalize_axis(min)
 
     # normalize to percentage
     open, close =
@@ -340,7 +344,7 @@ class OpenClose
 
     case len
     when 0
-      start = [start - 1, 0].max
+      # start = [start - 1, 0].max
       bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
       bar.fill(start, (start + len + 1), Unicode::BODY)

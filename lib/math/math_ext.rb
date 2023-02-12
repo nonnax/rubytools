@@ -90,6 +90,50 @@ module MathExt
        percent_inc(n.to_f)-n.to_f
     end
     alias percent_income percent_profit
+
+    def percent_margins(n)
+       points=[self, self*2].meansert
+       points=points+points.map{|e| e*-1}
+       points
+       .map{|e| e/100.0}
+       .map do |i|
+         n * (1+i)
+       end
+       .push(n)
+       .map{|e| e.round(2)}
+       .sort
+       .then{|arr|
+        points
+        .push(0)
+        .sort
+        .map(&:to_s)
+        .zip(arr)
+        .to_h
+       }
+    end
+
+    def to_quantiles(point=25)
+      points=[point, point*3].meansert
+      points
+      .map{|e| e/100.0 }
+      .map{|e| self * (1+e) }
+      .map{|e| e.round(7) }
+      .then do|arr|
+       points.map(&:to_s).zip(arr).to_h
+      end
+    end
+
+    def quantiles_to(point=50)
+      points=[point/3, point].meansert
+      points
+      .map{|e| e/100.0 }
+      .map{|e| self * (1+e) }
+      .map{|e| e.round(7) }
+      .then do|arr|
+       points.map(&:to_s).zip(arr).to_h
+      end
+    end
+
   end
 
   refine Object do
@@ -202,6 +246,15 @@ module MathExt
       each_cons(interval).map(&at).flatten.map
     end
 
+    # def each_step(interval, &block)
+      # # maps with skips at interval
+      # (0...self.size).step(interval).map{|i|
+        # v=self[i]
+        # block ? block.call(v) : v
+      # }
+      # .to_a
+    # end
+
     def first_last
       [first, last]
     end
@@ -223,6 +276,12 @@ module MathExt
       return nil if empty?
       sorted = sort
       (sorted[(size - 1) / 2] + sorted[size / 2]) / 2.0
+    end
+
+    # useful for plotting graphs
+
+    def normalize_axis(min)
+      map{ |e| e - min }
     end
 
     # If you just want one quantile, then do data.quantiles([0.95]).

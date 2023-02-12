@@ -55,10 +55,10 @@ module ArrayOfHashes
       crit=
         criteria
           .except(:any?, :all?)
-          .map{|k, v|
+          .filter_map{|k, v|
             # criterias are regexp(s) 
             re = Regexp.new(v.to_s, true)
-            hsh[k].to_s.match(re)
+            hsh[k].to_s.match?(re)
         }
       if block
         block[crit] 
@@ -89,10 +89,16 @@ if __FILE__==$0 then
   p "dbase.grep_hash(username: '\bna', age: 18, all?: true)"
   p dbase.grep_hash(username: '\bna', age: 18, all?: true)
   # all?:|any?: only key presence significant. any value is valid
-  p dbase.grep_hash(username: '\bna', age: 18, all?: 'yes')
-  p dbase.grep_hash(username: '\bna', age: 18, all?: 1)
-  p dbase.grep_hash(username: '\bna', age: 18, all?: nil)
-  p dbase.grep_hash(username: '\bna', age: 18){|join| join.any?}
-  p dbase.grep_hash(username: '\bna', age: 18){|join| join.all?}
-  p dbase.grep_hash(username: '\bna', age: 18){ false }
+  p 'dbase.grep_hash(username: "\\bna", age: 18, all?: "yes")'
+  p dbase.grep_hash(username: "\\bna", age: 18, all?: "yes")
+  p 'dbase.grep_hash(username: "\\bna", age: 18, all?: 1)'
+  p dbase.grep_hash(username: "\\bna", age: 18, all?: 1)
+  p 'dbase.grep_hash(username: "\\bna", age: 18, all?: nil)'
+  p dbase.grep_hash(username: "\\bna", age: 18, all?: nil)
+  p 'dbase.grep_hash(username: "\\bna", age: 18){|join| join.any?}'
+  p dbase.grep_hash(username: "\\bna", age: 18){|join| join.any?}
+  p 'dbase.grep_hash(username: "\\bna", age: 18){|join| join.all?}'
+  p dbase.grep_hash(username: "\\bna", age: 18){|join| join.all?}
+  p 'dbase.grep_hash(username: "\\bna", age: 18){ false }'
+  p dbase.grep_hash(username: "\\bna", age: 18){ false }
 end
