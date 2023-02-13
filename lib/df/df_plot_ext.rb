@@ -8,6 +8,7 @@ require 'df/df_ext'
 require 'rubytools/ansi_color'
 require 'rubytools/numeric_ext'
 require 'df/mod_unicode'
+require 'sparkr'
 
 using NumericExt
 using DFExt
@@ -421,6 +422,18 @@ module DFPlotExt
         [diff_to_s(b, c, curr, scale:), diff_to_s(a, c, '#', scale:)].join.ljust(scale, '@')[0...scale-1]
       }
     end
+
+   using MathExt
+   def to_sparkline
+     # increase magnitude to handle numbers below 1
+     sample=
+     if self.mean<1
+       self.map{|x| x*(10**max.decimal_places)}
+     else
+       self
+     end
+     Sparkr.sparkline(sample)
+   end
 
    def to_sparkline_pairs
      self.zip(self.to_sparkline.split(//))

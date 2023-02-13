@@ -4,7 +4,6 @@
 # Id$ nonnax 2022-12-05 15:35:08
 require 'math/math_ext'
 require 'file/filer'
-require 'sparkr'
 
 module ObjectExt
   refine Object do
@@ -117,17 +116,6 @@ module ArrayExt
        self.map(&:to_a)
      end
 
-     using MathExt
-     def to_sparkline
-       # increase magnitude to handle numbers below 1
-       sample=
-       if self.mean<1
-         self.map{|x| x*(10**max.decimal_places)}
-       else
-         self
-       end
-       Sparkr.sparkline(sample)
-     end
    end
 end
 

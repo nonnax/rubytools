@@ -4,7 +4,7 @@
 # csv pseudo-array
 require 'csv'
 require 'forwardable'
-require 'rubytools/thread_ext'
+require 'thread/thread_ext'
 require 'file/file_ext'
 
 class Array
