@@ -19,7 +19,8 @@ module ArrayGrep
       grep_h(scope: :all?, **q, &block)
     end
     def grep_h(scope: :any?, **q, &block)
-      select{|e| q.keys.send(scope){|k| e[k].to_s.match?(q[k]) }}.map(&block)
+      select{|e| q.keys.send(scope){|k| e[k].to_s.match?(q[k]) }}
+      .map(&block)
     end
     def map_slice(*keys, &block)
       map { |h| h.slice(*keys).tap { |hs| block[hs] if block } }

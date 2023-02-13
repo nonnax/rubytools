@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 require 'date'
 
+module ComparableExt
+  refine Comparable do
+  # Returns false if obj < min and obj > max
+  # true otherwise.
+    def within?(min, max)
+      [self>min, self<max].all?
+    end
+  end
+end
+
 module NumericExt
   refine String do
     # def is_number?
@@ -129,6 +139,9 @@ end
 ## Helper methods for working with time units other than seconds
 module NumericExt
   refine Numeric do
+
+    using ComparableExt
+    
     def numeric?
       self
     end
@@ -151,7 +164,7 @@ module NumericExt
           human(1)
         when self.zero?
           '0.0'
-        when [self.abs<1, self.abs>0].all?
+        when self.abs.within?(0, 1)
           human(7).as_human_fraction
         else
           to_s
@@ -214,6 +227,8 @@ module NumericExt
   end
 end
 
-
+module NumericExt
+  include ComparableExt
+end
 
 Integer.include(CollectionPager)

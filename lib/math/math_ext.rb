@@ -28,6 +28,7 @@ module MathExt
   end
 
   refine Numeric do
+    
     def delta_change(to)
       Float(to) / self - 1
     end
@@ -100,37 +101,40 @@ module MathExt
          n * (1+i)
        end
        .push(n)
-       .map{|e| e.round(2)}
+       .map{|e| e.round(7)}
        .sort
        .then{|arr|
         points
         .push(0)
         .sort
+        .map{|v| v.round(2)}
         .map(&:to_s)
         .zip(arr)
         .to_h
        }
     end
 
-    def to_quantiles(point=25)
-      points=[point, point*3].meansert
+    # Returns a 3-element hash of quantiles starting at the `min` percent value
+    def to_quantiles(min=25)
+      points=[min, min*3].meansert
       points
       .map{|e| e/100.0 }
       .map{|e| self * (1+e) }
       .map{|e| e.round(7) }
       .then do|arr|
-       points.map(&:to_s).zip(arr).to_h
+       points.map{|v| v.round(2)}.map(&:to_s).zip(arr).to_h
       end
     end
 
-    def quantiles_to(point=50)
-      points=[point/3, point].meansert
+    # Returns a  3-element hash of quantiles up to the `max` percent value
+    def quantiles_upto(max=50)
+      points=[max/3, max].meansert
       points
       .map{|e| e/100.0 }
       .map{|e| self * (1+e) }
       .map{|e| e.round(7) }
       .then do|arr|
-       points.map(&:to_s).zip(arr).to_h
+       points.map{|v| v.round(2)}.map(&:to_s).zip(arr).to_h
       end
     end
 

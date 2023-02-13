@@ -57,7 +57,7 @@ module ArrayOfHashes
           .except(:any?, :all?)
           .filter_map{|k, v|
             # criterias are regexp(s) 
-            re = Regexp.new(v.to_s, true)
+            re = Regexp.new(v.to_s, ?i)
             hsh[k].to_s.match?(re)
         }
       if block
