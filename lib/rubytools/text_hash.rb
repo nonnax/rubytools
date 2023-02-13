@@ -3,8 +3,8 @@
 require 'file/filer'
 require 'math/math_ext'
 using MathExt
-# transforms a two column rowed textfile entries into hash pairs
-class JText
+# transforms a two columned lines of 'key` `number' pairs into a hash
+class TextHash
  def initialize(text)
    @text=text
  end
