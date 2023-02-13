@@ -31,9 +31,13 @@ class Filer
     obj.tap{|o| @strategy.write(o) }
   end
 
-  def self.load(strategy, &block)
+  # self.load 
+  # reads or creates a new file 
+  #
+  # returns a pair [filer_object, container_obj]
+  def self.load(strategy, **opts, &block)
     new(strategy).then{|o|
-      [o, o.read{ o.write block&.call(o)}]
+      [o, o.read(**opts){ block&.call.tap{|default| o.write default } }]
     }
   end
 
@@ -48,11 +52,18 @@ class Filer
 end
 
 class Filer
-  def self.read_csv(f, **opts)
-    read(CSVFile.new(f), **opts)
+  def self.load_csv(f, **opts, &)
+    load(CSVFile.new(f), **opts, &)
   end
   def self.write_csv(f, df)
     write(CSVFile.new(f), df)
+  end
+
+  def self.load_json(f, **opts, &)
+    load(JSONFile.new(f), **opts, &)
+  end
+  def self.write_json(f, df)
+    write(JSONFile.new(f), df)
   end
 end
 

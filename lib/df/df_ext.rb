@@ -152,9 +152,9 @@ module HashExt
         .to_hash
     end
 
-    def to_table
+    def to_table(**, &)
       to_flat_array
-        .to_table
+        .to_table(**, &)
     end
 
     def vectors_to_df
