@@ -3,21 +3,29 @@
 
 # CoArray
 # Cooperative Arrays are bounded together internally
-# when they alternately iterate with all other instances of CoArray(s)
+#
+# `map` schedules the iteration of instances
+#
+# `join` yields the mapped arrays and returns a new Array of mapped values
 #
 class CoArray < Array
-  @@fibers={}
-
+  @fibers = {}
+  
+  def self.fibers
+    @fibers
+  end
+  
   def initialize(n, &block)
     super(n)
     if block
       instance_eval(&block)
-      join()
+      return join()
     end
   end
 
-  # map only schedules the method
-  # the actual iteration happens when `join` is called
+  # `map` schedules the method to run
+  #
+  # the real iteration runs by a call to `join`
   alias _map map
   def map(&block)
      maps=[]
@@ -30,15 +38,18 @@ class CoArray < Array
         end
       maps # last value returned to Fiber.resume
      end
-     .then{|f| @@fibers[self.object_id]=f }
+     .then{|f| self.class.fibers[self.object_id]=f }
     self
   end
   
-  # call join on any of the instance of CoArray objects runs `map` on all of them
+  # `join` iterates the instances alternately. 
+  #
+  # the method yields the mappings and returns an Array of maps
+  # 
   def join(&block)
     vals=[]
-    while @@fibers.values.any?(&:alive?)
-      @@fibers.map do |obj_id, f|
+    while self.class.fibers.values.any?(&:alive?)
+      self.class.fibers.map do |obj_id, f|
         next unless f.alive?
         v = f.resume
         vals << v if Array===v
@@ -49,6 +60,7 @@ class CoArray < Array
 end
 
 # CoArrays
+#
 # accepts regular arrays on initialization
 # to act as cooperative CoArray(s)
 class CoArrays
