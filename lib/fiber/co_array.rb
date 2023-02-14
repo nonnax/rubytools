@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2023-02-14 00:11:17
 
-# CoArray
-# Cooperative Arrays are bounded together internally
+# CoArray, cooperative arrays. Initalized arrays are bounded, and iterate together.
 #
 # `map` schedules the iteration of instances
 #
@@ -26,7 +25,9 @@ class CoArray < Array
   # `map` schedules the method to run
   #
   # the real iteration runs by a call to `join`
-  alias _map map
+  alias _map map #no-doc
+  private _map
+  
   def map(&block)
      maps=[]
      Fiber
