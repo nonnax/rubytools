@@ -4,6 +4,13 @@ require 'file/file_ext'
 require 'stringio'
 
 module EnableCache
+  def __file__
+    __FILE__
+  end
+  
+  def cache_path_using(*args)
+     ['.', File.basename(__file__, '.*'), '-', args.join('_'), '.cache'].join
+  end
 
   def cache(timeout:30, on: self, path: nil, &block)
     string_io = StringIO.new
