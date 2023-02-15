@@ -9,7 +9,8 @@ module EnableCache
   end
   
   def cache_path_using(*args)
-     ['.', File.basename(__file__, '.*'), '-', args.join('_'), '.cache'].join
+    descrimitor = args.join('_').to_base64
+    ['.', File.basename(__file__, '.*'), '-', descrimitor, '.cache'].join
   end
 
   def cache(timeout:30, on: self, path: nil, &block)

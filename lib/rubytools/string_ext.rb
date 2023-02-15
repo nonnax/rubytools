@@ -4,6 +4,8 @@
 require 'erb'
 require 'base64'
 require 'cgi'
+require 'rubytools/regexp_ext'
+require 'rubytools/xxh_sum'
 
 module StringExt
   refine String do
@@ -49,7 +51,8 @@ module StringExt
     def encode64
       Base64.encode64(self)
     end
-
+    alias to_base64 encode64
+    
     def decode64
       Base64.decode64(self)
     end
@@ -66,7 +69,10 @@ module StringExt
         .times {|n| text[n] = (text[n].ord ^ key[n.modulo key.size].ord).chr }
       }
     end
-
+    
+    def to_hexdigest
+      Digest::SHA256.hexdigest(self)
+    end
   end
 end
 
@@ -105,6 +111,8 @@ end
 
 StringExt.include(TextScanner)
 StringExt.include(QueryStringConverter)
+StringExt.include(RegexpExt)
+StringExt.include(XXHSum)
 # String.include(RenderERB)
 # String.include(StringBase64)
 # String.include(StringXOR)
