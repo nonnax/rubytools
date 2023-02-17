@@ -16,7 +16,10 @@ class NokoParty
   def self.get(url, &block)
     http_handler = block&.call(url) || default_handler(url)
     http_handler
-    .then{ |html| Nokogiri::HTML(html) }
+    .then{ |html|
+      return [] if html.match?(/not found/i) 
+      Nokogiri::HTML(html) 
+    }
   end
   def self.read(fname)
     File.open(fname){|f| Nokogiri::HTML(f) }

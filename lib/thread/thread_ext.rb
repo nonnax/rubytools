@@ -31,9 +31,9 @@ module NThreadExt
     #
     #   xprocess(q.pop()) until q.empty?
     # }
-    def threads(queue:1, &block)
-      q=queue.thread_queues
-      qblock=->{
+    def threads(queue=1, &block)
+      q = queue.thread_queues
+      qblock =-> {
         until q.empty?
           block.call(q.pop)
         end
@@ -59,10 +59,10 @@ class DThreadArray<SimpleDelegator
   #   xprocess(arr_item)
   # 
   # }
-  def map(threads=4, &block)
-    values=[]
-    threads.threads(queue: self.size) do |q|
-      values<<block.call(*self.shift)
+  def map(thread_queues = 4, &block)
+    values = []
+    thread_queues.threads(self.size) do |q|
+      values << block.call(*self.shift)
     end
     values
   end

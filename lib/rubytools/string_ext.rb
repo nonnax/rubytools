@@ -73,6 +73,10 @@ module StringExt
     def to_hexdigest
       Digest::SHA256.hexdigest(self)
     end
+
+    def to_xxhash **params
+      XXHSum.xxhash(self, **params)
+    end
   end
 end
 
@@ -112,7 +116,6 @@ end
 StringExt.include(TextScanner)
 StringExt.include(QueryStringConverter)
 StringExt.include(RegexpExt)
-StringExt.include(XXHSum)
-# String.include(RenderERB)
+# String.include(XXHSum)
 # String.include(StringBase64)
 # String.include(StringXOR)

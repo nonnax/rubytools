@@ -21,8 +21,8 @@ module NumericExt
       numeric? ? to_f.to_human(n) : block&.call(self)
     end
 
-    # alias_method :human, :to_s
-
+    alias_method :as_human, :to_s
+    
     def as_human_fraction
       zero, _, digits = rpartition(/\./)
       [0, digits[0...6].ljust(6, '0').split(//).each_slice(3).map(&:join).join('_') ].join('.')
@@ -146,8 +146,12 @@ module NumericExt
       self
     end
 
-    def as_human
-      formatter=->(div, suffix, dec=1){format("(%s)%0.1f", suffix, (self/div.to_f) )}
+    def as_human(dec=1)
+      formatter=->(div, suffix){
+        fmt="(%s)%0.#{dec}f" 
+
+        format(fmt, suffix, (self/div.to_f) )
+      }
       sizer=->(k){ self >= k ? k : false}
       case
         when k=sizer[1_000**5]
@@ -161,9 +165,9 @@ module NumericExt
         when k=sizer[1_000]
           formatter[k, 'K']
         when self.abs > 1
-          human(1)
+          human(2)
         when self.zero?
-          '0.0'
+          format "%0.#{dec}f", 0
         when self.abs.within?(0, 1)
           human(7).as_human_fraction
         else
