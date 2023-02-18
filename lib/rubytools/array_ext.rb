@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Id$ nonnax 2021-12-01 16:43:18 +0800
-require 'rubytools/array_of_hashes'
+# require 'rubytools/array_of_hashes'
 require 'rubytools/array_grep'
 
 module ArrayPaging

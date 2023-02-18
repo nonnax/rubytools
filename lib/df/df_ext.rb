@@ -144,7 +144,7 @@ module HashExt
       to_flat_array
         .to_table(**, &)
     end
-
+    
     def vectors_to_df
       even_hash=reshape(padding=0)
       keys=even_hash.keys
