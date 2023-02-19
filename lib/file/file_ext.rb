@@ -52,9 +52,9 @@ module NumberedFile
   def backup!(fname)
     dirname, f=File.splitpath(fname)
     File
-    .join(dirname, next_name(f) 
+    .join(dirname, next_name(f) )
     .tap{|valid_name|
-      FileUtils.cp fname, valid_name)
+      FileUtils.cp fname, valid_name
     }
   end
 
