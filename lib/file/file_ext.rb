@@ -48,9 +48,14 @@ module NumberedFile
    File.exist?(fn) ? next_name(fn) : fn
   end
 
+  # backup!(`fname`) creates a new name if `fname` already exists
   def backup!(fname)
     dirname, f=File.splitpath(fname)
-    FileUtils.cp fname, File.join(dirname, next_name(f))
+    File
+    .join(dirname, next_name(f) 
+    .tap{|valid_name|
+      FileUtils.cp fname, valid_name)
+    }
   end
 
   alias to_safe_filename backup!
