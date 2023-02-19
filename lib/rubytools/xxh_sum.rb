@@ -17,10 +17,12 @@ module XXHSum
   def xxh32sum(text, seed:)
     xxhash(text, seed:)
   end
+  alias xxh32 xxh32sum
 
   def xxh64sum(text, seed:)
     xxhash(text, seed:, bit64: true)
   end
+  alias xxh64 xxh32sum
 
   def xxhash(text, seed: 0, bit64: false)
     # fast version

@@ -9,7 +9,7 @@ require 'file/file_ext'
 require 'optparse'
 
 f=ARGV.first
-exit unless f && f.text_file?
+exit unless test(?f, f)
 
 @options = {}
 OptionParser.new do |opt|
