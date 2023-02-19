@@ -37,11 +37,11 @@ class Time
     strftime('%Y-%m-%d')
   end
 
-  def this_min
+  def self.this_min
    t = now.deconstruct_keys(nil)
    sday =t.values_at(:year, :month, :day, :hour, :min).join('-')
    stime = t.values_at(:hour, :min).join(':')
-   Time.parse([sday, stime].join(' '))
+   parse([sday, stime].join(' '))
   end
 
 end
