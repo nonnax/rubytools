@@ -8,7 +8,7 @@ require 'string_ext'
 require 'hash_ext'
 require 'file/file_ext'
 require 'file/filer'
-require 'time_ext'
+require 'time/time_ext'
 require 'math/math_ext'
 require 'nil_class_ext'
 

@@ -38,10 +38,10 @@ class Time
   end
 
   def self.this_min
-   t = now.deconstruct_keys(nil)
-   sday =t.values_at(:year, :month, :day, :hour, :min).join('-')
-   stime = t.values_at(:hour, :min).join(':')
-   parse([sday, stime].join(' '))
+    now.deconstruct_keys(nil)  => {year:, month:, day:, hour:, min:}
+    sday =  [year, month, day] * '-'
+    stime = [hour, min] * ':'
+    parse([sday, stime].join(' '))
   end
 
 end

@@ -74,8 +74,12 @@ module StringExt
       Digest::SHA256.hexdigest(self)
     end
 
-    def to_xxhash **params
+    def to_xxhash(**params)
       XXHSum.xxhash(self, **params)
+    end
+
+    def to_xxh64(**params)
+      XXHSum.xxh64(self, **params)
     end
   end
 end

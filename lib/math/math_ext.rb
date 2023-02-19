@@ -4,7 +4,7 @@
 # Id$ nonnax 2022-12-09 10:58:57
 require 'rubytools/numeric_ext'
 require 'rubytools/array_ext'
-require 'rubytools/time_ext'
+require 'time/time_ext'
 # require 'math'
 
 using NumericExt

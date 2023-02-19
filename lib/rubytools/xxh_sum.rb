@@ -14,15 +14,18 @@ module XXHSum
     end.split(/\s+/).first
   end
 
-  def xxh32sum(text, seed:)
+  def xxh32sum(text, seed:0)
     xxhash(text, seed:)
   end
-  alias xxh32 xxh32sum
 
-  def xxh64sum(text, seed:)
+  def xxh64sum(text, seed:0)
     xxhash(text, seed:, bit64: true)
   end
-  alias xxh64 xxh32sum
+
+  class << self
+    alias xxh32 xxh32sum
+    alias xxh64 xxh64sum
+  end
 
   def xxhash(text, seed: 0, bit64: false)
     # fast version
