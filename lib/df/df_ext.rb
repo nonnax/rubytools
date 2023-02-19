@@ -109,6 +109,13 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
+    # hash array chainable utils
+    def hashes_slice(*keys, &block)
+      # select keys on matching re
+      map { |h| h.slice(*keys) }
+      .tap { |a| a.map(&block) if block }
+    end
+
     # def to_html
       # IRuby::HTML.table(self)
     # end
@@ -144,7 +151,7 @@ module HashExt
       to_flat_array
         .to_table(**, &)
     end
-    
+
     def vectors_to_df
       even_hash=reshape(padding=0)
       keys=even_hash.keys
@@ -171,7 +178,7 @@ module HashExt
            self[k][i] #? self[k][i] : 0
          end
       end
-      .then{|arr| block ? arr.map(&block) : arr}
+      .then{|arr| block ? arr.map{|v| block.call(*v) } : arr}
     end
 
   end
