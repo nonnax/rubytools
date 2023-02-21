@@ -116,6 +116,18 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
+    def hashes_merge(other, on: nil, left: false)
+      each_with_object([]) do |r, acc|
+        v=r[on]
+        found = other.detect{|h| [h[on], v].uniq.size==1 }
+        unless found
+          acc << r if left
+        else
+          acc << r.merge(found) if found
+        end
+      end
+    end
+
     # def to_html
       # IRuby::HTML.table(self)
     # end
