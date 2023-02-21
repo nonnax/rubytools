@@ -92,7 +92,7 @@ module ArrayExt
     def hashes_to_vectors
       # array of hashes
       # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
-      # hash of arrays
+      # into a hash of arrays
       # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
       each_with_object({}) do |h, hacc|
         h.keys.each do |k|
@@ -102,9 +102,8 @@ module ArrayExt
       end
     end
 
-    # hash array chainable utils
+    # select on keys for matching `where: /regexp/`
     def hashes_select(*keys, where://, &block)
-      # select keys on matching re
       select { |h| keys.any? { |k| h[k].to_s.match?( Regexp.new(where) ) } }
       .tap { |a| a.map(&block) if block }
     end
@@ -116,14 +115,16 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
+    # hashes_merge merges an array of hashes on a `key` value
     def hashes_merge(other, on: nil, left: false)
+      raise 'missing on: key' unless on
       each_with_object([]) do |r, acc|
-        v=r[on]
-        found = other.detect{|h| [h[on], v].uniq.size==1 }
+        v = r[on]
+        found = other.detect{|h| [h[on], v].uniq.one? }
         unless found
           acc << r if left
         else
-          acc << r.merge(found) if found
+          acc << r.merge(found.except(on)) if found
         end
       end
     end
@@ -131,6 +132,7 @@ module ArrayExt
     # def to_html
       # IRuby::HTML.table(self)
     # end
+
      def strings_to_df
        self.map(&:to_a)
      end
@@ -164,6 +166,21 @@ module HashExt
         .to_table(**, &)
     end
 
+    def at(*keys, &block)
+      # alternately map column values into df rows
+      # the shortest-sized column is used for iteration count
+      # after block for row-wise map operations
+      shortest=self.values_at(*keys).map(&:size).min
+      shortest
+      .times
+      .map do |i|
+         keys.map do |k|
+           self[k][i] #? self[k][i] : 0
+         end
+      end
+      .then{|arr| block ? arr.map{|v| block.call(*v) } : arr}
+    end
+
     def vectors_to_df
       even_hash=reshape(padding=0)
       keys=even_hash.keys
@@ -178,19 +195,10 @@ module HashExt
       .transpose
     end
 
-    def at(*keys, &block)
-      # alternately map column values into df rows
-      # the shortest-sized column is used for iteration count
-      # after block for row-wise map operations
-      shortest=self.values_at(*keys).map(&:size).min
-      shortest
-      .times
-      .map do |i|
-         keys.map do |k|
-           self[k][i] #? self[k][i] : 0
-         end
-      end
-      .then{|arr| block ? arr.map{|v| block.call(*v) } : arr}
+    # vectors to array of hashes
+    def vectors_to_hashes
+     at(*keys){|*cols| cols }
+     .map{|r| keys.zip(r).to_h }
     end
 
   end
