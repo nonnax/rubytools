@@ -3,7 +3,7 @@
 
 # Id$ nonnax 2022-12-05 15:35:08
 require 'math/math_ext'
-require 'file/filer'
+# require 'file/filer'
 
 module ObjectExt
   refine Object do
@@ -168,14 +168,15 @@ module HashExt
 
     def at(*keys, &block)
       # alternately map column values into df rows
-      # the shortest-sized column is used for iteration count
+      # the shortest-sized column is used for max iteration count
       # after block for row-wise map operations
       shortest=self.values_at(*keys).map(&:size).min
+      indexes = (0...shortest.size)
       shortest
       .times
-      .map do |i|
-         keys.map do |k|
-           self[k][i] #? self[k][i] : 0
+      .map do |outer_i|
+         keys.map do |inner_k|
+           self[inner_k][outer_i] #? self[k][i] : 0
          end
       end
       .then{|arr| block ? arr.map{|v| block.call(*v) } : arr}
@@ -194,7 +195,9 @@ module HashExt
       .prepend(['-']+keys)
       .transpose
     end
-
+    def vectors_to_csv_df
+        vectors_to_hashes.hashes_to_df
+    end
     # vectors to array of hashes
     def vectors_to_hashes
      at(*keys){|*cols| cols }
@@ -209,4 +212,25 @@ module DFExt
   include HashExt
   include ObjectExt
   include MathExt
+end
+
+# DF Decorator
+# proxy DFExt methods to any DF-compatible object
+#
+class DDF
+ using DFExt
+ def initialize(df)
+  @df=df
+ end
+ def method_missing(m, *a)
+  @df.send(m)
+ end
+end
+
+# DF(df_obj) candy method
+#
+module Kernel
+  def DF(df)
+    DDF.new(df)
+  end
 end

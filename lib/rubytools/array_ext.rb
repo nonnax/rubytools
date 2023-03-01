@@ -4,6 +4,7 @@
 # Id$ nonnax 2021-12-01 16:43:18 +0800
 # require 'rubytools/array_of_hashes'
 require 'rubytools/array_grep'
+# require 'fiber/co_array'
 
 module ArrayPaging
   def from(at)
@@ -34,7 +35,7 @@ end
 
 module ArrayExt
  refine Array do
-  # maps each  `step` interval  
+  # maps each  `step` interval
   # optional: `at` selects which end of the slice to pick
   def each_step(step=1, at=:first, &block)
     each_slice(step)
