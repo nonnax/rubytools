@@ -222,6 +222,9 @@ class DDF
  def initialize(df)
   @df=df
  end
+ def pipe(*methods)
+  methods.reduce(@df){ |df, m| df.send(m) }
+ end
  def method_missing(m, *a)
   @df.send(m)
  end
