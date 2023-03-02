@@ -336,8 +336,10 @@ class OpenClose
     # normalize to percentage
     open, close =
     [open, close]
-    .map { |e| (e / max) * @x_axis_limit }
+    .map { |e| (e / max.to_f) * @x_axis_limit }
     .map(&:to_i) # .map(&:floor)
+
+    p [open, close]
 
     start, stop = [open, close].minmax
 
@@ -345,7 +347,7 @@ class OpenClose
 
     case len
     when 0
-      # start = [start - 1, 0].max
+      start = [start - 1, 0].max
       bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
       bar.fill(start, (start + len + 1), Unicode::BODY)

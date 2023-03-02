@@ -31,8 +31,8 @@ class Filer
     obj.tap{|o| @strategy.write(o) }
   end
 
-  # self.load 
-  # reads or creates a new file 
+  # self.load
+  # reads or creates a new file
   #
   # returns a pair [filer_object, container_obj]
   def self.load(strategy, **opts, &block)
@@ -52,6 +52,12 @@ class Filer
 end
 
 class Filer
+  def self.load_marshal(f, **opts, &)
+    load(MarshalFile.new(f), **opts, &)
+  end
+  def self.write_marshal(f, df)
+    write(MarshalFile.new(f), df)
+  end
   def self.load_csv(f, **opts, &)
     load(CSVFile.new(f), **opts, &)
   end
