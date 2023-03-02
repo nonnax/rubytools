@@ -339,8 +339,6 @@ class OpenClose
     .map { |e| (e / max.to_f) * @x_axis_limit }
     .map(&:to_i) # .map(&:floor)
 
-    p [open, close]
-
     start, stop = [open, close].minmax
 
     len = (stop - start).abs
