@@ -389,12 +389,13 @@ end
 
 # Barchart `data` is an array of hashes, row format: {k => v}
 class BarChart
-  attr :scale, :max, :percent_bars
-  def initialize data=[], scale: 20, max: 1
+  attr :scale, :percent_bars, :max
+  def initialize data=[], scale: 20
     @data = data
     @percent_bars=[]
     @scale = scale
-    @max = max
+    @max=data.map(&:values).flatten.max
+    @keywidth=data.map(&:keys).flatten.map{|k| k.to_s.split(//).size}.max+1
   end
 
   def build
@@ -405,7 +406,8 @@ class BarChart
   end
 
   def percent_bar(k, v)
-    @percent_bars<<format("%s %02d %03d ", Unicode::BODY*((v/max.to_f)*scale), k, (v/max.to_f)*100)
+    # @percent_bars<<format("%s %02d %03d ", (Unicode::BODY*((v/max.to_f)*scale)).rjust(@scale), k, (v/max.to_f)*100 )
+    @percent_bars<< [(Unicode::BODY*((v/max.to_f)*scale)).rjust(@scale), k.to_s.ljust(@keywidth)].join(' ')
   end
 
   def display
