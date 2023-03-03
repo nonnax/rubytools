@@ -387,6 +387,41 @@ module ScalePlotter
   end
 end
 
+# Barchart `data` is an array of hashes, row format: {k => v}
+class BarChart
+  attr :scale, :max, :percent_bars
+  def initialize data=[], scale: 20, max: 1
+    @data = data
+    @percent_bars=[]
+    @scale = scale
+    @max = max
+  end
+
+  def build
+    @data.each do |h|
+      k, v = h.to_a.flatten
+      percent_bar(k, v)
+    end
+  end
+
+  def percent_bar(k, v)
+    @percent_bars<<format("%s %02d %03d ", Unicode::BODY*((v/max.to_f)*scale), k, (v/max.to_f)*100)
+  end
+
+  def display
+    build
+    chart = AsciiPlot.new(percent_bars).rotate_strings(separator: '')
+    chart
+    .split("\n")
+    .map
+    .with_index{|r, i|
+      percent = (((scale-i)/scale.to_f)*100).to_i
+      i < scale ? r.prepend(percent.to_s.rjust(3)+' - ') : r.prepend((' '*3)+' . ')
+    }
+    .then(&method(:puts))
+  end
+end
+
 module DFPlotExt
   include NumericExt
   include DFExt

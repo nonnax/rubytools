@@ -7,8 +7,11 @@ require 'df/df_ext'
 require 'rubytools/ansi_color'
 using DFExt
 
+# Renders strings vertically
+# a trailing dash (-) renders a red bar
+# a trailing dash (-) renders a red bar
 class DArrayRotate < SimpleDelegator
-  def rotate_left(delimiter: ' . ', &block)
+  def rotate_left(separator: '', &block)
     def expand_rows(&block)
       max_width = map(&:size).max
       map!  do |r|
@@ -21,11 +24,13 @@ class DArrayRotate < SimpleDelegator
     end
 
     dup
-    .expand_rows{|bar, marked| marked ? bar.map(&:light_magenta) : bar.map(&:light_yellow) }
+    .expand_rows{|bar, marked| marked ? bar.map(&:light_magenta) : bar.map(&:light_white) }
     .map(&:reverse)
-    .to_table(separator:'')
+    .to_table(separator:)
   end
+  alias rotate_strings rotate_left
 end
+
 
 if __FILE__ == $PROGRAM_NAME
   data = []
@@ -37,8 +42,8 @@ if __FILE__ == $PROGRAM_NAME
   puts '# data'
   puts data
 
-  puts "# 2.times{ |i| puts DArrayRotate.new(data).rotate_left(delimiter: ' '*i)  }"
-  2.times{ |i| puts DArrayRotate.new(data).rotate_left(delimiter: ' '*i)  }
+  puts "# 2.times{ |i| puts DArrayRotate.new(data).rotate_left(separator: ' '*i)  }"
+  2.times{ |i| puts DArrayRotate.new(data).rotate_left(separator: ' '*i )  }
 
   puts '# puts data.rotate_left'
   puts DArrayRotate.new(data).rotate_left
