@@ -147,4 +147,23 @@ class String
     end
   end
   alias color_numbers color_number
+
+  def to_colors()
+   re=/
+   _([[:alpha:]]+)
+   \( ([^)]+?) \)
+   /x
+
+   gsub(re){
+     _, func, string = Regexp.last_match.to_a
+     color_method=['light_', func.downcase].join.to_sym
+     string.respond_to?(color_method) ? string.send(color_method) : string
+   }
+  end
+end
+
+module Kernel
+  def c(text)
+    text.to_colors
+  end
 end

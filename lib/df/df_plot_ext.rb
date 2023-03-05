@@ -395,7 +395,7 @@ class BarChart
     @percent_bars=[]
     @scale = scale
     @max=data.map(&:values).flatten.max
-    @keywidth=data.map(&:keys).flatten.map{|k| k.to_s.split(//).size}.max+1
+    @keywidth=data.map(&:keys).flatten.map{|k| k.to_s.split(//).size}.max
   end
 
   def build
@@ -407,7 +407,9 @@ class BarChart
 
   def percent_bar(k, v)
     # @percent_bars<<format("%s %02d %03d ", (Unicode::BODY*((v/max.to_f)*scale)).rjust(@scale), k, (v/max.to_f)*100 )
-    @percent_bars<< [(Unicode::BODY*((v/max.to_f)*scale)).rjust(@scale), k.to_s.ljust(@keywidth)].join(' ')
+    val = (v/max.to_f)*scale
+    body = val.to_i.zero? ?  Unicode::HALF_BODY_BOTTOM : Unicode::BODY * val
+    @percent_bars<< [body.rjust(@scale+1), k.to_s.ljust(@keywidth+1)].join(' ')
   end
 
   def display
