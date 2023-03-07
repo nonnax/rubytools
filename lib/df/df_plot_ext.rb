@@ -7,8 +7,10 @@
 require 'df/df_ext'
 require 'rubytools/ansi_color'
 require 'rubytools/numeric_ext'
+require 'ascii_plot/ascii_plot'
 require 'df/mod_unicode'
 require 'sparkr'
+require 'rbcat'
 
 using NumericExt
 using DFExt
@@ -424,6 +426,7 @@ class BarChart
     }
     .then(&method(:puts))
   end
+  alias render display
 end
 
 module DFPlotExt
@@ -495,4 +498,64 @@ module DFPlotExt
       chart.to_table
    end
   end
+end
+
+require 'open3'
+class Gnuplot
+  def self.u(*cols, file:'', with: :lines)
+    @using<<"'#{file}' using #{cols.join(':')} with #{with}"
+  end
+
+  def self.plot(f='', time_series: false, height:nil, width:nil, &block)
+    @using = []
+
+    time_series_clause = <<~___
+    set xdata time
+    set timefmt "%Y-%m-%dT%H:%M"
+    ___
+
+    time_series_clause = '' unless time_series
+
+    instance_eval &block
+    plot_cmd = "plot " + @using.join(", ")
+
+    cmd =<<~___
+      set terminal dumb #{width} #{height}
+      set datafile separator ','
+      set key autotitle columnhead # use the first line as title
+      #{time_series_clause}
+      #{plot_cmd}
+    ___
+
+    @output, _pid = Open3.capture2("gnuplot", stdin_data: cmd )
+    puts
+  end
+
+  def self.puts
+    rules = {
+      hashes: {
+        regexp: /\#/m,
+        color: :red
+      },
+      stars: {
+        regexp: /\*/m,
+        color: :bright_yellow
+      },
+      dollar: {
+        regexp: /\$/m,
+        color: :bright_blue
+      },
+      upcase_words: {
+        regexp: /[A-Z]{2,}/m,
+        color: :bold
+      },
+      inside_round_brackets: {
+        regexp: /\(.*?\)/m,
+        color: :cyan
+      },
+    }
+
+    Kernel.puts Rbcat.colorize(@output, rules: rules)
+  end
+
 end
