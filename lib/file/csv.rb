@@ -32,11 +32,19 @@ class CSVFile < Serializer
     end
 
   end
+
   def write(obj)
-    File.write @path, to_csv(obj)
+    File.write @path, to_csv(to_df(obj))
   end
+
   def to_csv(a)
     Array(a).map(&:to_csv).join
   end
+
+  def to_df(data)
+    return data if Array===data.last
+    data.map{|e| [e]}
+  end
+
 end
 

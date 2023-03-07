@@ -503,18 +503,22 @@ end
 require 'open3'
 class Gnuplot
   def self.u(*cols, file:'', with: :lines)
+    file=@file || file
     @using<<"'#{file}' using #{cols.join(':')} with #{with}"
   end
 
-  def self.plot(f='', time_series: false, height:nil, width:nil, &block)
+  def self.plot(f=nil, xdata: nil, timefmt: "%Y-%m-%dT%H:%M", height:nil, width:nil, &block)
     @using = []
+    @file = f
 
-    time_series_clause = <<~___
-    set xdata time
-    set timefmt "%Y-%m-%dT%H:%M"
-    ___
+    xdata_time_section = nil
 
-    time_series_clause = '' unless time_series
+    if xdata==:time
+      xdata_time_section =<<~___
+      set xdata time
+      set timefmt '#{timefmt}'
+      ___
+    end
 
     instance_eval &block
     plot_cmd = "plot " + @using.join(", ")
@@ -523,7 +527,7 @@ class Gnuplot
       set terminal dumb #{width} #{height}
       set datafile separator ','
       set key autotitle columnhead # use the first line as title
-      #{time_series_clause}
+      #{xdata_time_section}
       #{plot_cmd}
     ___
 
