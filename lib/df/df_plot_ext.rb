@@ -8,6 +8,7 @@ require 'df/df_ext'
 require 'rubytools/ansi_color'
 require 'rubytools/numeric_ext'
 require 'ascii_plot/ascii_plot'
+require 'ascii_plot/gnuplot'
 require 'df/mod_unicode'
 require 'sparkr'
 require 'rbcat'
@@ -498,68 +499,4 @@ module DFPlotExt
       chart.to_table
    end
   end
-end
-
-require 'open3'
-class Gnuplot
-  def self.u(*cols, file:'', with: :lines)
-    file=@file || file
-    @using<<"'#{file}' using #{cols.join(':')} with #{with}"
-  end
-
-  def self.plot(f=nil, xdata: nil, timefmt: "%Y-%m-%dT%H:%M", height:nil, width:nil, &block)
-    @using = []
-    @file = f
-
-    xdata_time_section = nil
-
-    if xdata==:time
-      xdata_time_section =<<~___
-      set xdata time
-      set timefmt '#{timefmt}'
-      ___
-    end
-
-    instance_eval &block
-    plot_cmd = "plot " + @using.join(", ")
-
-    cmd =<<~___
-      set terminal dumb #{width} #{height}
-      set datafile separator ','
-      set key autotitle columnhead # use the first line as title
-      #{xdata_time_section}
-      #{plot_cmd}
-    ___
-
-    @output, _pid = Open3.capture2("gnuplot", stdin_data: cmd )
-    puts
-  end
-
-  def self.puts
-    rules = {
-      hashes: {
-        regexp: /\#/m,
-        color: :red
-      },
-      stars: {
-        regexp: /\*/m,
-        color: :bright_yellow
-      },
-      dollar: {
-        regexp: /\$/m,
-        color: :bright_blue
-      },
-      upcase_words: {
-        regexp: /[A-Z]{2,}/m,
-        color: :bold
-      },
-      inside_round_brackets: {
-        regexp: /\(.*?\)/m,
-        color: :cyan
-      },
-    }
-
-    Kernel.puts Rbcat.colorize(@output, rules: rules)
-  end
-
 end

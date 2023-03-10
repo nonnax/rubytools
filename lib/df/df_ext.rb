@@ -195,13 +195,21 @@ module HashExt
       .prepend(['-']+keys)
       .transpose
     end
+
     def vectors_to_csv_df
         vectors_to_hashes.hashes_to_df
     end
+
     # vectors to array of hashes
-    def vectors_to_hashes
+    # yield each hash if block given
+    def vectors_to_hashes(&block)
      at(*keys){|*cols| cols }
-     .map{|r| keys.zip(r).to_h }
+     .map{|r|
+      keys
+      .zip(r)
+      .to_h
+      .tap{|h| block&.call(h)}
+     }
     end
 
   end

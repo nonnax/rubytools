@@ -35,6 +35,8 @@ class CSVFile < Serializer
 
   def write(obj)
     File.write @path, to_csv(to_df(obj))
+  rescue
+    raise 'File not found' # unless @path
   end
 
   def to_csv(a)
