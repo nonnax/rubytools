@@ -234,7 +234,7 @@ class DDF
   methods.reduce(@df){ |df, m| df.send(m) }
  end
  def method_missing(m, *a)
-  @df.send(m)
+  @df.send(m, *a)
  end
 end
 

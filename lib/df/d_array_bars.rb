@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require 'delegate'
-require 'rubytools/array_table'
+# require 'rubytools/array_table'
 require 'rubytools/ansi_color'
 
 class DArrayBars < SimpleDelegator
@@ -24,6 +24,7 @@ class DArrayBars < SimpleDelegator
     .to_table(delimiter:)
   end
 end
+
 if __FILE__ == $PROGRAM_NAME
   data = []
 

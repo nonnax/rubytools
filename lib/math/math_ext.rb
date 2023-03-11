@@ -28,7 +28,7 @@ module MathExt
   end
 
   refine Numeric do
-    
+
     def delta_change(to)
       Float(to) / self - 1
     end
@@ -92,6 +92,7 @@ module MathExt
     end
     alias percent_income percent_profit
 
+    # percent intervals
     def percent_margins(n)
        points=[self, self*2].meansert
        points=points+points.map{|e| e*-1}
