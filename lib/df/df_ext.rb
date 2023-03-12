@@ -227,15 +227,25 @@ end
 #
 class DDF
  using DFExt
+
  def initialize(df)
   @df=df
  end
+
+ # pipe for method chaining
+ # arguments are methods,
+ # methods = [Symbol | Array (to add method arguments)]
  def pipe(*methods)
-  methods.reduce(@df){ |df, m| df.send(m) }
+  methods.reduce(@df){ |df, m|
+    m = [m, nil] unless m.is_a?(Array)
+    df.send(*m.compact)
+  }
  end
+
  def method_missing(m, *a)
   @df.send(m, *a)
  end
+
 end
 
 # DF(df_obj) candy method

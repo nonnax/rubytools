@@ -8,6 +8,7 @@ require 'df/df_ext'
 require 'rubytools/ansi_color'
 require 'rubytools/numeric_ext'
 require 'ascii_plot/ascii_plot'
+# require 'df/df_array_bars'
 require 'ascii_plot/gnuplot'
 require 'df/mod_unicode'
 require 'sparkr'
@@ -434,6 +435,7 @@ module DFPlotExt
   include NumericExt
   include DFExt
   include ScalePlotter
+  # include ArrayBarsExt
 
   refine Array do
     def init_plot
