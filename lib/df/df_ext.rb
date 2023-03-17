@@ -110,7 +110,7 @@ module ArrayExt
       # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
       # into a hash of arrays
       # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
-      each_with_object() do |h, hacc|
+      each_with_object({}) do |h, hacc|
         h.keys.each do |k|
           hacc[k] ||= []
           hacc[k] << h[k]
