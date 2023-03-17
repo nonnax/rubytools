@@ -23,14 +23,29 @@ module ArrayExt
   end
 
   refine Array do
+
+    # Array#ljust
+    # left justify array with `padding` as default value
+    #
     def ljust(width=1, padding = nil)
       dup + ([padding] * (width - size))
     end
 
+    # Array#longest_row
+    # returns: longest nested array or vector
     def longest_row
       map(&:size).max
     end
 
+    # Array#shape?
+    # returns: [rows, cols]
+    def shape?
+      [size, longest_row]
+    end
+
+    # Array#reshape
+    # left justify nested arrays with `padding` as default value
+    #
     def reshape(width = nil, padding = nil)
       max_width = width || longest_row
       map { |r| r.ljust(max_width, padding) }
@@ -42,6 +57,7 @@ module ArrayExt
         h[r.shift] = r
       end
     end
+    alias to_hashes to_hash
 
     def max_column_widths
       deep_dup
@@ -94,15 +110,17 @@ module ArrayExt
       # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
       # into a hash of arrays
       # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
-      each_with_object({}) do |h, hacc|
+      each_with_object() do |h, hacc|
         h.keys.each do |k|
-          hacc[k] ||=[]
+          hacc[k] ||= []
           hacc[k] << h[k]
         end
       end
     end
 
     # select on keys for matching `where: /regexp/`
+    # each value is transformed into a `String` upon matching
+    #
     def hashes_select(*keys, where://, &block)
       select { |h| keys.any? { |k| h[k].to_s.match?( Regexp.new(where) ) } }
       .tap { |a| a.map(&block) if block }
@@ -115,18 +133,28 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
-    # hashes_merge merges an array of hashes on a `key` value
-    def hashes_merge(other, on: nil, left: false)
-      raise 'missing on: key' unless on
-      each_with_object([]) do |r, acc|
-        v = r[on]
-        found = other.detect{|h| [h[on], v].uniq.one? }
-        unless found
-          acc << r if left
+    # hashes_merge merges an array of hashes on a values of a `on` or `[on, foreign_on]` pair
+    # lookup_default is a `hash object` to fillup unmatched rows
+    # otherwise the lookup_default is an `other` element (hash) with 0 (zero) values {key1: 0, ..., key_n : 0}
+    def hashes_merge(other, on: nil, left: false, lookup_default: nil )
+      raise 'missing param: on' unless on
+
+      on, other_on = on.is_a?(Array) ? on : [on, on]
+
+      lookup = other.group_by{|h| h.delete(other_on) }.transform_values(&:pop)
+
+      hashes = []
+      each do |h|
+        found = lookup[ h[on] ]
+        if found
+          hashes << found.merge(h)
         else
-          acc << r.merge(found.except(on)) if found
+          next unless left
+          lookup_default ||= other.first.keys.zip(other.first.values.map{ 0 }).to_h
+          hashes << lookup_default.merge(h)
         end
       end
+      hashes
     end
 
     # def to_html

@@ -14,7 +14,7 @@ class Gnuplot
     tf.path
   end
 
-  def self.plot(f=nil, data:nil, xdata: nil, x2data: nil, terminal: :dumb, timefmt: "%Y-%m-%dT%H:%M", height:nil, width:nil, &block)
+  def self.plot(f=nil, data:nil, xdata: nil, x2data: nil, terminal: :dumb, timefmt: "%Y-%m-%dT%H:%M", height:nil, width:nil, ylabel: '', xlabel: '', title: '', &block)
     @using = []
     @file = f
     @file = make_tempfile(data) if data
@@ -40,6 +40,9 @@ class Gnuplot
       set key autotitle columnhead # use the first line as title
       set y2tics # enable second axis
       set x2tics # enable second axis
+      set title '#{title}'
+      set xlabel '#{xlabel}'
+      set ylabel '#{ylabel}'
 
       #{xdata_time_section}
       #{plot_cmd}
