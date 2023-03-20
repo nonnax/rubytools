@@ -101,6 +101,14 @@ module ArrayExt
       self
     end
 
+    def fill!(start, stop, char='x')
+      stop=stop.clamp(0..self.size)
+      map.with_index do |x, i|
+        (start...stop).include?(i) ? char : x
+      end
+      .then{|arr| self.replace arr}
+    end
+
     def hashes_to_df
       [first.keys] + map(&:values)
     end
@@ -136,7 +144,7 @@ module ArrayExt
     # hashes_merge merges an array of hashes on a values of a `on` or `[on, foreign_on]` pair
     # lookup_default is a `hash object` to fillup unmatched rows
     # otherwise the lookup_default is an `other` element (hash) with 0 (zero) values {key1: 0, ..., key_n : 0}
-    def hashes_merge(other, on: nil, left: false, lookup_default: nil )
+    def hashes_merge(other, on: nil, left_join: false, lookup_default: nil )
       raise 'missing param: on' unless on
 
       on, other_on = on.is_a?(Array) ? on : [on, on]
@@ -149,12 +157,42 @@ module ArrayExt
         if found
           hashes << found.merge(h)
         else
-          next unless left
+          next unless left_join
           lookup_default ||= other.first.keys.zip(other.first.values.map{ 0 }).to_h
           hashes << lookup_default.merge(h)
         end
       end
       hashes
+    end
+
+    # hashes_join merges an array of hashes on a values of a `on` or `[on, foreign_on]` pair
+    # missing values will have default values of nil
+    # returns : vectors
+    def hashes_join(other, on: nil, left_join:true)
+      vectors=Hash.new{|h, k| h[k]=[] }
+      indexed = other.to_a.group_by { |r| r.values_at(on) }
+      indexed.default = []
+
+      keys=(self.map(&:keys) + other.map(&:keys)).flatten.uniq
+
+      each do |r|
+        matches = indexed[r.values_at(on)]
+        if matches.empty?
+          if left_join
+            keys.each do |k|
+              vectors[k] << r[k]
+            end
+          end
+        else
+          matches.each do |r2|
+            keys.each do |k|
+              # `other` array overrides orig hash values
+              vectors[k] << (r2[k] || r[k])
+            end
+          end
+        end
+      end
+      vectors
     end
 
     # def to_html
@@ -163,6 +201,15 @@ module ArrayExt
 
      def strings_to_df
        self.map(&:to_a)
+     end
+
+     # overlay_at
+     # overlay `another_array` at `index` of original
+     def overlay_at(other, idx=0)
+      other=other.map
+      map.with_index{|x, i|
+       (idx...idx+other.size).include?(i) ? other.next : x
+      }
      end
 
    end

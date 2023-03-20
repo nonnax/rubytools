@@ -16,97 +16,16 @@ require 'rbcat'
 
 using NumericExt
 using DFExt
-#
-# module Unicode
-  # # Chart characters
-  # # https://www.compart.com/en/unicode/category/So
-  # # https://www.vertex42.com/ExcelTips/unicode-symbols.html#block
-  # # https://gist.github.com/ivandrofly/0fe20773bd712b303f78
-  # BODY = "┃"
-  # BOTTOM = "╿"
-  # HALF_BODY_BOTTOM = "╻"
-  # HALF_BODY_TOP = "╹"
-  # FILL = "┃"
-  # TOP = "╽"
-  # VOID = " "
-  # WICK = "│"
-  # WICK_LOWER = "╵"
-  # WICK_UPPER = "╷"
-  # TEE_UP = "⊥"
-  # TEE_DOWN = "⊤"
-  # TICK_LEFT='╼'
-  # TICK_RIGHT='╾'
-  # MIN_DIFF_THRESHOLD = 0.25
-  # MAX_DIFF_THRESHOLD = 0.75
-  # DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
-  # SQUARE_SIGNS = ['🟨', '🟫','🟥' ].freeze
-  # SQUARE_BLACK = '■'
-  # SQUARE_WHITE = '□'
-  # BLOCK_UPPER_HALF = '▀'
-  # BLOCK_LOWER_HALF = '▄'
-  # BLOCK_LOWER_Q3 = '▃'
-  # BOX_HORIZ = '─'.freeze
-  # BOX_HORIZ_HEAVY = '━'
-  # BOX_HORIZ_VERT = '┼'
-  # BOX_VERT = WICK
-  # BLACK_SMALL_SQUARE='▪'
-  # WHITE_SMALL_SQUARE='▫'
-  # BLACK_RECTANGLE= '▬'
-  # WHITE_RECTANGLE= '▭'
-#
-  # # Code 	Result 	Description
-  # # U+2580 	▀ 	Upper half block
-  # # U+2581 	▁ 	Lower one eighth block
-  # # U+2582 	▂ 	Lower one quarter block
-  # # U+2583 	▃ 	Lower three eighths block
-  # # U+2584 	▄ 	Lower half block
-  # # U+2585 	▅ 	Lower five eighths block
-  # # U+2586 	▆ 	Lower three quarters block
-  # # U+2587 	▇ 	Lower seven eighths block
-  # # U+2588 	█ 	Full block
-  # # U+2589 	▉ 	Left seven eighths block
-  # # U+258A 	▊ 	Left three quarters block
-  # # U+258B 	▋ 	Left five eighths block
-  # # U+258C 	▌ 	Left half block
-  # # U+258D 	▍ 	Left three eighths block
-  # # U+258E 	▎ 	Left one quarter block
-  # # U+258F 	▏ 	Left one eighth block
-  # # U+2590 	▐ 	Right half block
-  # # U+2591 	░ 	Light shade
-  # # U+2592 	▒ 	Medium shade
-  # # U+2593 	▓ 	Dark shade
-  # # U+2594 	▔ 	Upper one eighth block
-  # # U+2595 	▕ 	Right one eighth block
-  # # U+2596 	▖ 	Quadrant lower left
-  # # U+2597 	▗ 	Quadrant lower right
-  # # U+2598 	▘ 	Quadrant upper left
-  # # U+2599 	▙ 	Quadrant upper left and lower left and lower right
-  # # U+259A 	▚ 	Quadrant upper left and lower right
-  # # U+259B 	▛ 	Quadrant upper left and upper right and lower left
-  # # U+259C 	▜ 	Quadrant upper left and upper right and lower right
-  # # U+259D 	▝ 	Quadrant upper right
-  # # U+259E 	▞ 	Quadrant upper right and lower left
-  # # U+259F 	▟ 	Quadrant upper right and lower left and lower right
-#
-# end
 
+
+#
+# Unix-compatible Terminal OHLC data plotter
+# uses Unicode/ANSI box drawing chars
+#
 module Plotter
-  #
-  # Unix-compatible Terminal OHLC data plotter
-  # uses ANSI box drawing chars
-  #
 
   module_function
 
-  # DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
-  # BOX_HORIZ = '─'.freeze
-  # # BOX_HORIZ = '-'
-  # # BOX_HORIZ_VERT = '┼'.freeze
-  # BOX_HORIZ_VERT = '┼'
-  # # BOX_VERT = '|'.freeze
-  # BOX_VERT = Unicode::WICK
-#
-  # BAR_XLIMIT = 50
   @x_axis_limit = nil
 
   class << self
@@ -114,6 +33,7 @@ module Plotter
   end
 
   def initialize(**params)
+    @params = params
     @x_axis_limit = params.fetch(:scale, 100/5)
     @label_width = params.fetch(:label_width, 1)
     @nocolor = params.fetch(:nocolor, false)
@@ -125,17 +45,17 @@ module Plotter
     header = plot_horiz_labels(bars, data, **params)
 
     bars
-    .tap{|br| br.prepend(header)}
+    .prepend(header)
     .map(&:reverse)
     .to_table(separator:'')
+
   end
 
+  # data_remap
+  # block yields to a `strategy`:
+  # candlestick(*row, min, max)
+  # openclose(*row, min, max)
   def data_remap(data, &block)
-    #
-    # block returns strategy
-    # candlestick(*row, min, max)
-    # openclose(*row, min, max)
-
     min, max = data.map { |r| r.values_at(1..-1) }.flatten.minmax
 
     data.map do |row|
@@ -143,6 +63,9 @@ module Plotter
     end
   end
 
+  # label_format
+  # auto-justifies y-label widths
+  #
   def label_format(label, label_width=6)
     nformat=->x{
       return x unless x.to_s.numeric?
@@ -151,7 +74,7 @@ module Plotter
     }
     ->text{
         t=nformat[text]
-        t.rjust(label_width)[0...label_width]
+        # t.rjust(label_width)[0...label_width]
     }
     .call(label)
   end
@@ -159,19 +82,17 @@ module Plotter
   def plot_horiz_labels(bars, data, **params)
     min, max = data.dup.map(&:last).minmax # closing values only
     label_width = params.fetch(:label_width, @label_width)
+    ylabel=
     Array
     .new(bars.transpose.size){'-'}
-    .tap{|header|
-      header[-1]=label_format(max, label_width)
-      header[header.size/2]=label_format( (max+min)/2, label_width)
-      header[0]=label_format(min, label_width)
+
+    (0..ylabel.size).to_a.map.with_index{|y, i|
+      ylabel[i] = label_format(min+(y*(max-min)/@x_axis_limit), label_width) if (y%4).zero?
     }
+    ylabel[-1] = label_format(max, label_width)
+    ylabel.map(&:to_s).map{|e| e.rjust(@params[:label_width])+' '}
   end
 
-  # MathExt.normalize_axis(min)
-  # def normalize_axis(min)
-    # self.map{ |e| e - min }
-  # end
 end
 
 class Candlestick
@@ -182,41 +103,36 @@ class Candlestick
 
   include Plotter
 
+  # draw
+  # draw an OHLC row as a candlestick
+  # row format == [:row_1, o, h, l, c, min, max]
+  #
   def draw(_name, open, high, low, close, min = 0, max = 100, **params)
-    #
-    # plot an OHLC row as candlestick pattern
-    # row format == [:row_1, o, h, l, c, min, max]
-    #
     bar = Array.new(@x_axis_limit){''} #[''] * @x_axis_limit
 
     up_down = (close <=> open)
     # normalize to zero x-axis
-    open, low, high, close, min, max =
-    [open, low, high, close, min, max]
+    open, low, high, close =
+    [open, low, high, close]
     .map(&:to_f)
-    .normalize_axis(min)
+    .map{|e| (e-min)/(max-min)*@x_axis_limit}
+    # .map(&:to_i)
 
-    # normalize to percentage
-    open, high, low, close =
-    [open, high, low, close]
-    .map { |e| (e / max) }
-    .map{|e| e*@x_axis_limit }
-    .map(&:to_i) # .map(&:floor)
+    # draw wicks
+    len = (high - low).abs.to_i
+    bar.fill!(low.ceil, (low.floor + len), Unicode::BOX_VERT)
 
-    len = (high - low)
-    bar.fill(low, (low + len), Unicode::BOX_VERT)
-
+    # draw body
     start, stop = [open, close].minmax
-    len = (stop - start) # reuse len
+    len = (stop - start).abs.to_i # reuse len
     case len
     when 0
-      # start = [start - 1, 0].max
       bar[start] =
       case up_down
         when -1
           Unicode::TOP
         when 0
-          Unicode::HALF_BODY_TOP
+          Unicode::WICK
         when 1
           Unicode::BOTTOM
         else
@@ -224,9 +140,7 @@ class Candlestick
       end
 
     else
-      start, stop = [open, close].minmax
-      len = (stop - start).abs
-      bar.fill(start, (start + len + 1), Unicode::BODY)
+      bar.fill!(start.floor, (start.floor + len), Unicode::BODY)
     end
 
     return bar if @nocolor
@@ -238,7 +152,11 @@ class Candlestick
     new(**params).draw('candle', open, high, low, close, min, max)
   end
 
-  def plot(data, **params)
+  def plot(data)
+    params = @params
+    label_width = params.fetch(:label_width){data.map{|h| h.values_at(1..-1).flatten}.flatten.map(&:to_s).map(&:size).max+1}
+    params[:label_width]=label_width
+
     xplot(data.deep_dup, **params){|row, min, max| draw(*row, min, max)}
   end
 
@@ -292,7 +210,7 @@ class Candlestick
       .map(&:to_i) # .map(&:floor)
 
       len = (high - low)
-      bar.fill(low, (low + len), BOX_HORIZ)
+      bar.fill!(low, (low + len), BOX_HORIZ)
 
       start, stop = [open, close].minmax
       len = (stop - start).abs  # reuse len
@@ -310,7 +228,7 @@ class Candlestick
         # up_or_down = ->(a, b){ up_down.negative? ? a : b }
         # bar_up_or_down = ->(){ up_down.negative? ? Unicode::SQUARE_WHITE : Unicode::SQUARE_BLACK }
 
-        bar.fill(start, (start + len + 1), bar_char)
+        bar.fill!(start, (start + len + 1), bar_char)
 
         # x=up_or_down[start, (start + len)]
         # bar[x] = bar_up_or_down[]
@@ -352,7 +270,7 @@ class OpenClose
       start = [start - 1, 0].max
       bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
     else
-      bar.fill(start, (start + len + 1), Unicode::BODY)
+      bar.fill!(start, (start + len + 1), Unicode::BODY)
     end
 
     return bar if @nocolor
@@ -442,8 +360,9 @@ module DFPlotExt
       each_cons(2).map.with_index{|e, i| [i, e].flatten }
     end
 
+    # plot an OHLC dataframe as candlesticks
     def plot_candlestick(**params)
-      # plot an OHLC dataframe
+      raise 'invalid ohlc data' unless first.is_a?(Array) && first.size >= 5
       plot_data = self #.map{|r| [r, r.min, r.max] }
       Candlestick.new(**params).plot(plot_data)
     end

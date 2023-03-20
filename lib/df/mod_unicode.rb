@@ -11,6 +11,7 @@ module Unicode
   HALF_BODY_BOTTOM = "╻"
   HALF_BODY_TOP = "╹"
   FILL = "┃"
+  LEFT_THREE_QUARTERS_BLOCK = '▊'
   TOP = "╽"
   VOID = " "
   WICK = "│"
@@ -20,8 +21,6 @@ module Unicode
   TEE_DOWN = "⊤"
   TICK_LEFT='╼'
   TICK_RIGHT='╾'
-  MIN_DIFF_THRESHOLD = 0.25
-  MAX_DIFF_THRESHOLD = 0.75
   DENSITY_SIGNS = ['#', '░', '▒', '▓', '█'].freeze
   SQUARE_SIGNS = ['🟨', '🟫','🟥' ].freeze
   SQUARE_WITH_FILL = %w[■ □ ▢ ▣ ▤ ▥ ▧ ▨ ▩].freeze

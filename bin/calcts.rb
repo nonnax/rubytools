@@ -4,7 +4,6 @@
 # Id$ nonnax 2021-10-10 21:37:14 +0800
 require 'rubytools/core_ext'
 
-n, a = gets.split(/\t|,/)
 
 class String
   def plus(ts)
@@ -20,15 +19,17 @@ class String
       ts[0] == ''
       subt = true
     end
-    subt.nil? ? [ts, plus(ts)] : [minus(ts), ts]
+    subt.nil? ? plus(ts) : minus(ts)
   end
 end
 
-print "#{n}\t#{a}\t"
+
 
 # s=n.compute(a)
 # x, sec=s.split(/\./)
 # sec="%02d" % [(sec.to_i/1000.to_f)*100]
 # print s, "\t", [x, sec].join('.'), "\n"
 
-print n.compute(a).join(' | ')
+ARGF.readlines(chomp:true).map{|l| l.split(/\t|,/)}.each do |n, a|
+  puts [n, a, n.compute(a)].join("\t")
+end

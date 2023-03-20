@@ -200,11 +200,11 @@ module MathExt
     end
 
     def to_percent_ratios
-      map{|x| x/max.to_f}
+      map{|x| (x.to_f-min.to_f)/(max.to_f-min.to_f)}
     end
 
     def to_percent_ratios_pairs
-      zip(map{|x| x/max.to_f})
+      zip(map{|x| (x.to_f-min.to_f)/(max.to_f-min.to_f)})
     end
 
     def to_diff
