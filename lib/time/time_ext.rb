@@ -300,3 +300,33 @@ module Timestamp
     res.to_ts
   end
 end
+
+# TStamp
+# Timestamp calculator
+class TStamp
+  using TimestampExt
+  attr :msec
+  def initialize(ts)
+    @msec = ts.to_ms
+  end
+  def +(ts)
+    ts = TStamp.new(ts) unless ts.is_a?(TStamp)
+
+    (msec+ts.msec).to_ts
+  end
+
+  def -(ts)
+    ts = TStamp.new(ts) unless ts.is_a?(TStamp)
+
+    ms, ts = [msec, ts.msec].sort.reverse
+    (ms-ts).to_ts
+  end
+end
+
+module KernelExt
+  def TStamp(ts)
+    TStamp.new(ts)
+  end
+end
+
+Kernel.include(KernelExt)
