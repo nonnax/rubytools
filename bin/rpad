@@ -2,12 +2,13 @@
 # Id$ nonnax 2021-11-23 12:45:47 +0800
 require 'rubytools/editor'
 require 'math/scrapemathics'
-require 'df/df_ext'
+require 'df/df_plot_ext'
+require 'termplot'
 require 'rubytools/string_ext'
-using DFExt
+using DFPlotExt
 using StringExt
 using Scrapemathics
-
+include Termplot::Interactive
 tmp='/tmp/eval.rb'
 
 File

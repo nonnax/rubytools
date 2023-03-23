@@ -74,7 +74,6 @@ module Plotter
     }
     ->text{
         t=nformat[text]
-        # t.rjust(label_width)[0...label_width]
     }
     .call(label)
   end
@@ -84,13 +83,13 @@ module Plotter
     label_width = params.fetch(:label_width, @label_width)
     ylabel=
     Array
-    .new(bars.transpose.size){'-'}
+    .new(@x_axis_limit){'-'}
 
-    (0..ylabel.size).to_a.map.with_index{|y, i|
-      ylabel[i] = label_format(min+(y*(max-min)/@x_axis_limit), label_width) if (y%4).zero?
+    ylabel.map.with_index{|_, y|
+      ylabel[y] = label_format(min+(y*(max-min)/@x_axis_limit), label_width) if (y%4).zero?
     }
     ylabel[-1] = label_format(max, label_width)
-    ylabel.map(&:to_s).map{|e| e.rjust(@params[:label_width])+' '}
+    ylabel.map(&:to_s).map{|e| e.rjust(label_width)+' '}
   end
 
 end
@@ -116,18 +115,18 @@ class Candlestick
     [open, low, high, close]
     .map(&:to_f)
     .map{|e| (e-min)/(max-min)*@x_axis_limit}
-    # .map(&:to_i)
+    .map{|x| x.clamp(0..@x_axis_limit)}
 
     # draw wicks
-    len = (high - low).abs.to_i
-    bar.fill!(low.ceil, (low.floor + len), Unicode::BOX_VERT)
+    len = (high - low).abs.round
+    bar.fill!(low.round, (low.round + len), Unicode::BOX_VERT)
 
     # draw body
     start, stop = [open, close].minmax
-    len = (stop - start).abs.to_i # reuse len
+    len = (stop - start).abs.round # reuse len
     case len
     when 0
-      bar[start] =
+      bar[start.round] =
       case up_down
         when -1
           Unicode::TOP
@@ -138,9 +137,14 @@ class Candlestick
         else
           '#'
       end
-
     else
-      bar.fill!(start.floor, (start.floor + len), Unicode::BODY)
+      bar.fill!(start.round, (start.round + len), Unicode::BODY)
+      if (stop-high).abs.between?(0, 0.25)
+        bar[start.round + len]=Unicode::HALF_BODY_BOTTOM
+      elsif (stop.to_f-high.to_f).abs.between?(0.26, 0.5)
+        bar[start.round + len]=Unicode::TOP
+      end
+      bar
     end
 
     return bar if @nocolor
@@ -252,25 +256,22 @@ class OpenClose
     up_down = (close <=> open)
 
     # normalize to zero x-axis
-    open, close =
-    [open, close].normalize_axis(min)
-
     # normalize to percentage
     open, close =
     [open, close]
-    .map { |e| (e / max.to_f) * @x_axis_limit }
-    .map(&:to_i) # .map(&:floor)
+    .map { |e| (e-min)/(max.to_f-min) * @x_axis_limit }
+    .map(&:round) # .map(&:floor)
 
-    start, stop = [open, close].minmax
+    start, stop = [open, close].minmax.map{|e| e.clamp(0, @x_axis_limit)}
 
     len = (stop - start).abs
 
     case len
     when 0
-      start = [start - 1, 0].max
-      bar[start] = Unicode::HALF_BODY_TOP  # TODO: find center dot
+      # start = [start - 1, 0].max
+      bar[start] = Unicode::WICK  # TODO: find center dot
     else
-      bar.fill!(start, (start + len + 1), Unicode::BODY)
+      bar.fill!(start, (start + len), Unicode::BODY)
     end
 
     return bar if @nocolor

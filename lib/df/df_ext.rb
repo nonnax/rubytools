@@ -141,28 +141,57 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
-    # hashes_merge merges an array of hashes on a values of a `on` or `[on, foreign_on]` pair
-    # lookup_default is a `hash object` to fillup unmatched rows
+    # def hashes_merge_000(other, on: nil, left_join: false, lookup_default: nil )
+      # raise 'missing param: on' unless on
+#
+      # on, other_on = on.is_a?(Array) ? on : [on, on]
+#
+      # lookup = other.group_by{|h| h.delete(other_on) }.transform_values(&:pop)
+#
+      # hashes = []
+      # each do |h|
+        # found = lookup[ h[on] ]
+        # if found
+          # hashes << found.merge(h)
+        # else
+          # next unless left_join
+          # lookup_default ||= other.first.keys.zip(other.first.values.map{ 0 }).to_h
+          # hashes << lookup_default.merge(h)
+        # end
+      # end
+      # hashes
+    # end
+
+    # hashes_mergez
+    # merges an array of hashes on key `on` or `[on, foreign_on]` pair
+    # overwrite `orig_val` with `new_val`
+    # default is a `hash object` to fill-up unmatched rows
     # otherwise the lookup_default is an `other` element (hash) with 0 (zero) values {key1: 0, ..., key_n : 0}
-    def hashes_merge(other, on: nil, left_join: false, lookup_default: nil )
+    def hashes_merge(other, on: nil, left_join: false, default: nil )
       raise 'missing param: on' unless on
+
+      copy, other = [self, other].map{|arr| Marshal.load(Marshal.dump arr)} # prevents mutation on inputs
 
       on, other_on = on.is_a?(Array) ? on : [on, on]
 
-      lookup = other.group_by{|h| h.delete(other_on) }.transform_values(&:pop)
+      other = other.dup.map{|h| h[on]=h.delete(other_on); h}
+      lookup = other.group_by{|h| h.fetch(on) }.transform_values(&:pop)
+      o_default ||= other.first.dup.transform_values{0}
 
-      hashes = []
-      each do |h|
-        found = lookup[ h[on] ]
-        if found
-          hashes << found.merge(h)
-        else
-          next unless left_join
-          lookup_default ||= other.first.keys.zip(other.first.values.map{ 0 }).to_h
-          hashes << lookup_default.merge(h)
-        end
+      merge_keys = (first.keys+other.first.keys).uniq
+
+      # maintain order of orig keys
+      copy.each_with_object([]) do |h, arr|
+         if found = lookup[ h[on] ]
+            h.merge(found) # overwrite `orig_val` with `new_val`
+         else
+            # orig overwrites blank if `left_join`
+            o_default.merge(h) if left_join
+         end
+         .then do |res|
+            arr << res.slice(*merge_keys) if res
+         end
       end
-      hashes
     end
 
     # hashes_join merges an array of hashes on a values of a `on` or `[on, foreign_on]` pair
@@ -241,10 +270,11 @@ module HashExt
         .to_table(**, &)
     end
 
-    def at(*keys, &block)
+    def each_hash(&block)
       # alternately map column values into df rows
       # the shortest-sized column is used for max iteration count
       # after block for row-wise map operations
+      # keys = self.keys if keys.empty?
       shortest=self.values_at(*keys).map(&:size).min
       indexes = (0...shortest.size)
       shortest
@@ -254,7 +284,7 @@ module HashExt
            self[inner_k][outer_i] #? self[k][i] : 0
          end
       end
-      .then{|arr| block ? arr.map{|v| block.call(*v) } : arr}
+      .then{|arr| block ? arr.map{|v| block.call(keys.zip(v).to_h) } : arr}
     end
 
     def vectors_to_df
@@ -278,7 +308,7 @@ module HashExt
     # vectors to array of hashes
     # yield each hash if block given
     def vectors_to_hashes(&block)
-     at(*keys){|*cols| cols }
+     each_hash{|h| h.values }
      .map{|r|
       keys
       .zip(r)

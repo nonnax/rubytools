@@ -268,3 +268,35 @@ module TimeSlice
 end
 
 String.include(TimeSlice)
+
+module TimestampExt
+  refine String do
+    def plus(ts)
+      (to_ms + ts.to_ms).to_ts # (fmt: "%02d:%02d:%02d.%02d")
+    end
+
+    def minus(ts)
+      (to_ms - ts.to_ms).to_ts # (fmt: "%02d:%02d:%02d.%02d")
+    end
+  end
+end
+
+module Timestamp
+  using TimestampExt
+
+  module_function
+  def self.ts(ts)
+    ts.to_ms
+  end
+  def self.add(a, b, &block)
+    res=a.to_ms+b.to_ms
+    block&.call(res)
+    res.to_ts
+  end
+  def self.diff(a, b, &block)
+    a, b = [a.to_ms,b.to_ms].sort.reverse
+    res=a - b
+    block&.call(res)
+    res.to_ts
+  end
+end
