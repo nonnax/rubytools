@@ -44,6 +44,10 @@ class Time
     parse([sday, stime].join(' '))
   end
 
+  # returns age in seconds
+  def age
+    (Time.now-self)*1000
+  end
 end
 
 # Similar adjustments to Date will let you convert DateTime to Time .

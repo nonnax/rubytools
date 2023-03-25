@@ -5,6 +5,7 @@ require 'math/scrapemathics'
 require 'df/df_plot_ext'
 require 'termplot'
 require 'rubytools/string_ext'
+require 'time/time_ext'
 using DFPlotExt
 using StringExt
 using Scrapemathics
