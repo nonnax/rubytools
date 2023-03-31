@@ -86,25 +86,24 @@ module HashExt
   end
 end
 
-require 'English'
+
 class H < Hash
+  require 'English'
   # Gets or sets keys in the hash.
-  #
-  #   @cookies.my_favorite = :macadamian
-  #   @cookies.my_favorite
-  #   => :macadamian
-  #
+  # keys can be Strings or Symbols
   def method_missing(m,*a)
-      m.to_s.match?(/=$/) ? self[$PREMATCH]=a.first : (a==[] ? self[m.to_s] : super)
+    m.to_s.match(/=$/) ? self[$PREMATCH]=a.first : (a==[] ? (self[m] || self[m.to_s]) : super)
   end
   undef id, type if ?? == 63
 end
 
 
 # Id$ nonnax 2021-11-16 10:11:27 +0800
-require 'uri'
+
 
 module QueryStringHelper
+  require 'uri'
+
   def to_query_string(repeat_keys: false)
     repeat_keys ? send(:_repeat_keys) : send(:_single_keys)
   end

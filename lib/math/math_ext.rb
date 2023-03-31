@@ -264,6 +264,8 @@ module MathExt
       [first, last]
     end
 
+    # quantiles
+    # If you just want one quantile, then do data.quantiles([0.95]).
     def quantiles(*probs)
       probs=[0.25, 0.50, 0.75] if probs.empty?
       probs.flatten!
@@ -286,10 +288,8 @@ module MathExt
     # useful for plotting graphs
 
     def normalize_axis(min)
-      map{ |e| e - min }
+      map{ |e| (e - min)/(max - min) }
     end
-
-    # If you just want one quantile, then do data.quantiles([0.95]).
 
     # vector type math
     def plus(one)

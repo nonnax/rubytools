@@ -113,11 +113,11 @@ module ArrayExt
       [first.keys] + map(&:values)
     end
 
+    # array of hashes
+    # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
+    # into a hash of arrays
+    # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
     def hashes_to_vectors
-      # array of hashes
-      # [{:a=>1, :b=>"one"}, {:a=>2, :b=>"two"}, {:a=>3, :b=>"three"}]
-      # into a hash of arrays
-      # {:a=>[1, 2, 3], :b=>["one", "two", "three"]}
       each_with_object({}) do |h, hacc|
         h.keys.each do |k|
           hacc[k] ||= []
@@ -141,28 +141,7 @@ module ArrayExt
       .tap { |a| a.map(&block) if block }
     end
 
-    # def hashes_merge_000(other, on: nil, left_join: false, lookup_default: nil )
-      # raise 'missing param: on' unless on
-#
-      # on, other_on = on.is_a?(Array) ? on : [on, on]
-#
-      # lookup = other.group_by{|h| h.delete(other_on) }.transform_values(&:pop)
-#
-      # hashes = []
-      # each do |h|
-        # found = lookup[ h[on] ]
-        # if found
-          # hashes << found.merge(h)
-        # else
-          # next unless left_join
-          # lookup_default ||= other.first.keys.zip(other.first.values.map{ 0 }).to_h
-          # hashes << lookup_default.merge(h)
-        # end
-      # end
-      # hashes
-    # end
-
-    # hashes_mergez
+    # hashes_merge
     # merges an array of hashes on key `on` or `[on, foreign_on]` pair
     # overwrite `orig_val` with `new_val`
     # default is a `hash object` to fill-up unmatched rows
@@ -270,11 +249,12 @@ module HashExt
         .to_table(**, &)
     end
 
+    # each_hash
+    # alternately map column values into df rows
+    # the shortest-sized column is used for max iteration count
+    # after block for row-wise map operations
+    # keys = self.keys if keys.empty?
     def each_hash(&block)
-      # alternately map column values into df rows
-      # the shortest-sized column is used for max iteration count
-      # after block for row-wise map operations
-      # keys = self.keys if keys.empty?
       shortest=self.values_at(*keys).map(&:size).min
       indexes = (0...shortest.size)
       shortest
@@ -302,7 +282,7 @@ module HashExt
     end
 
     def vectors_to_csv_df
-        vectors_to_hashes.hashes_to_df
+      vectors_to_hashes.hashes_to_df
     end
 
     # vectors to array of hashes
