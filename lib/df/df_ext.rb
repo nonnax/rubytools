@@ -149,7 +149,7 @@ module ArrayExt
     def hashes_merge(other, on: nil, left_join: false, default: nil )
       raise 'missing param: on' unless on
 
-      copy, other = [self, other].map{|arr| Marshal.load(Marshal.dump arr)} # prevents mutation on inputs
+      copy, other = [self, other].map{|arr| arr.deep_dup } # prevent mutation of inputs
 
       on, other_on = on.is_a?(Array) ? on : [on, on]
 
@@ -248,6 +248,7 @@ module HashExt
       to_flat_array
         .to_table(**, &)
     end
+    alias inspect to_table
 
     # each_hash
     # alternately map column values into df rows
@@ -297,6 +298,7 @@ module HashExt
      }
     end
 
+
   end
 end
 
@@ -318,8 +320,8 @@ class DDF
  end
 
  # pipe for method chaining
- # arguments are methods,
- # methods = [Symbol | Array (to add method arguments)]
+ # arguments are method symbols,
+ # methods = [Symbol | Array (method with arguments)]
  def pipe(*methods)
   methods.reduce(@df){ |df, m|
     m = [m, nil] unless m.is_a?(Array)
