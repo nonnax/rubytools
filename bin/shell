@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+# Id$ nonnax 2023-03-23 11:54:59 +0800
+require 'cli/shell'
+require 'optparse'
+
+def help
+  <<~___
+    usage: shell template_file, key value key2 value2
+    templater: Texticle and FileImporter
+
+    any CLI command can be embedded in the template
+    multiple commands are separated by `&&` as usual
+
+    useful template commands:
+
+    @import 'partial.file'
+    basename(fname),
+    ts(timestamp) for timestamp math
+    plus all public ruby methods.
+
+    run `shell -t` to create a template file
+    chmod +x your template file to run it standalone
+  ___
+end
+
+opts={}
+OptionParser.new do |o|
+	o.on('-h', '--help', help)
+	o.on('-t', '--template')
+end
+.parse!(into: opts)
+
+
+f, *pairs = ARGV
+
+f = [File.basename(Dir.pwd),'.tt'].join unless f
+
+def create_template f
+  sample=<<~___
+    #!/usr/bin/env shell
+    echo
+    {{3.times do}}
+      hi {name}
+    {{end}}
+  ___
+
+  File.write(f, sample)
+end
+
+case opts
+in help: true
+  puts help
+else
+  unless File.exist?(f)
+    create_template f
+    raise "usage: shell template_file, key value key2 value2#\nedit template: #{f}"
+  end
+  params = pairs.each_slice(2).to_a.to_h
+
+  Shell.new(f, **params)
+  .tap{|o| puts o.cmd}
+  .run
+
+end
