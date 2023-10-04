@@ -9,7 +9,7 @@ require 'time/time_ext'
 using DFPlotExt
 using StringExt
 using Scrapemathics
-include Termplot::Interactive
+# include Termplot::Interactive
 tmp='/tmp/eval.rb'
 
 File
