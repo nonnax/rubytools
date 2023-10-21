@@ -2,14 +2,14 @@
 # Id$ nonnax 2022-11-23 12:45:54
 $LOAD_PATH<<'./lib'
 
-f, layout, basic =ARGV
-mod = basic ? 'texticle/texticle_one' : 'texticle/texticle'
+f, layout, full = ARGV
+mod = full ? 'texticle/texticle' : 'texticle/texticle_one'
 require mod
 
 unless f
   puts "file not found."
-  puts "usage: #{File.basename(__FILE__)} <file> <template> <any>"
-  puts "<any> flag discards interpolation"
+  puts "usage: #{File.basename(__FILE__)} <file> <template> <flag>"
+  puts "<any flag> flag allows interpolation"
   exit
 end
 

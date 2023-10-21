@@ -25,7 +25,7 @@ module NThreadExt
     #   xprocess(q.pop()) until q.empty?
     # }
     #
-    # method call with **params 
+    # method call with **params
     #
     # 16.threads(queue: 1500){|q|
     #
@@ -54,10 +54,10 @@ using NThreadExt
 class DThreadArray<SimpleDelegator
   # arr=(0..2500).to_a
   #
-  # ThreadArrayDeco.new(arr).map{|arr_item|
+  # DThreadArray.new(arr).map{|arr_item|
   #
   #   xprocess(arr_item)
-  # 
+  #
   # }
   def map(thread_queues = 4, &block)
     values = []
