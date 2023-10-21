@@ -1,24 +1,30 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-11-23 12:45:54
-$LOAD_PATH<<'./lib'
+# $LOAD_PATH<<'./lib'
 
-f, layout, full = ARGV
-mod = full ? 'texticle/texticle' : 'texticle/texticle_one'
+f, *params = ARGV
+flag = params.reject!{|e| e.match(/^-/)}
+mod = flag ? 'texticle/texticle_one' : 'texticle/texticle'
 require mod
 
 unless f
-  puts "file not found."
-  puts "usage: #{File.basename(__FILE__)} <file> <template> <flag>"
-  puts "<any flag> flag allows interpolation"
+  puts "input <file> not found."
+  puts "usage: #{File.basename(__FILE__)} <file>"
+  puts "flag: -n, no variables allowed"
   exit
 end
 
-unless layout
- layout = f
-else
- content = Texticle.render(f)
+def output(**h)
+  ->(content){Texticle.parse(content, **h)}
 end
 
-Texticle
-.render(layout){ content }
+h = params.each_slice(2).to_h.transform_keys(&:to_sym)
+
+content =
+f
+.then(&File.method(:read))
+.then(&FileImporter.method(:parse))
+.then(&output(**h))
 .then(&method(:puts))
+
+
