@@ -27,7 +27,7 @@ class Shell
   end
 
   def render
-    @cmd=Texticle.parse(@template, **@params).gsub(/\n+/, "; ")
+    @cmd=Texticle.parse(@template, **@params).gsub(/\n+/, "  ")
   end
 
   def run
