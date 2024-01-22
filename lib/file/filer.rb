@@ -72,14 +72,14 @@ class Filer
     write(JSONFile.new(f), df)
   end
   class << self
-    alias load_csv csv_load
-    alias write_csv csv_write
+    alias csv_load load_csv
+    alias csv_write write_csv
 
-    alias load_json json_load
-    alias write_json json_write
+    alias json_load load_json
+    alias json_write write_json
 
-    alias load_marshal marshal_load
-    alias write_marshal marshal_write
+    alias marshal_load load_marshal
+    alias marshal_write write_marshal
   end
 end
 
