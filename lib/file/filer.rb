@@ -71,5 +71,15 @@ class Filer
   def self.write_json(f, df)
     write(JSONFile.new(f), df)
   end
+  class << self
+    alias load_csv csv_load
+    alias write_csv csv_write
+
+    alias load_json json_load
+    alias write_json json_write
+
+    alias load_marshal marshal_load
+    alias write_marshal marshal_write
+  end
 end
 
